@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  posts         ForumPost[]
+  comments      ForumComment[]
+  events        Event[]        @relation("OrganizedEvents")
+  attending     EventAttendee[]
+  cityServices  CityService[]
+
+  @@index([email])
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  date        DateTime
+  location    String
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  organizer   User           @relation("OrganizedEvents", fields: [organizerId], references: [id])
+  organizerId String
+  attendees   EventAttendee[]
+
+  @@index([organizerId])
+  @@index([date])
+}
+
+model EventAttendee {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+}
+
+model ForumPost {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  views     Int      @default(0)
+
+  // Relations
+  author     User          @relation(fields: [authorId], references: [id])
+  authorId   String
+  comments   ForumComment[]
+
+  @@index([authorId])
+  @@index([category])
+  @@index([createdAt])
+}
+
+model ForumComment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  author   User      @relation(fields: [authorId], references: [id])
+  authorId String
+  post     ForumPost @relation(fields: [postId], references: [id])
+  postId   String
+
+  @@index([authorId])
+  @@index([postId])
+  @@index([createdAt])
+}
+
+model CityService {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  category    String
+  contactInfo String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  provider   User     @relation(fields: [providerId], references: [id])
+  providerId String
+
+  @@index([providerId])
+  @@index([category])
+}
