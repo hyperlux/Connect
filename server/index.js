@@ -6,6 +6,7 @@ import { eventsRouter } from './routes/events.js';
 import { forumsRouter } from './routes/forums.js';
 import { usersRouter } from './routes/users.js';
 import { servicesRouter } from './routes/services.js';
+import { notificationsRouter } from './routes/notifications.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { authenticate } from './middleware/authenticate.js';
 
@@ -24,14 +25,26 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// CORS configuration
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5000'],
+  origin: true, // Allow all origins in development
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   exposedHeaders: ['Authorization']
 }));
+
+// Parse JSON bodies
 app.use(express.json());
+
+// Log all requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`, {
+    body: req.body,
+    headers: req.headers
+  });
+  next();
+});
 
 // Public routes
 app.use('/auth', authRouter);
@@ -41,6 +54,7 @@ app.use('/api/events', eventsRouter);
 app.use('/api/forums', authenticate, forumsRouter);
 app.use('/api/users', authenticate, usersRouter);
 app.use('/api/services', authenticate, servicesRouter);
+app.use('/api/notifications', authenticate, notificationsRouter);
 
 // Error handling middleware
 app.use(errorHandler);

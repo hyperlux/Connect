@@ -21,6 +21,7 @@ model User {
   attending    EventAttendee[]
   comments     ForumComment[]
   posts        ForumPost[]
+  notifications Notification[]
 
   @@index([email])
 }
@@ -100,4 +101,19 @@ model CityService {
 
   @@index([providerId])
   @@index([category])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // 'event', 'attendance', 'forum'
+  title     String
+  message   String
+  link      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
 }

@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { api } from '../lib/api';
 
 interface User {
   id: string;
   name: string;
   email: string;
-  imageUrl?: string;
+  role: string;
 }
 
 interface AuthState {
@@ -31,43 +32,63 @@ export const useAuth = create<AuthState>()(
       login: async (email: string, password: string) => {
         try {
           set({ isLoading: true });
-          const response = await fetch('/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Login failed');
+          
+          const data = await api.post('/auth/login', { email, password });
+          
+          if (!data.token || !data.user) {
+            throw new Error('Invalid response from server');
           }
 
-          const data = await response.json();
-          set({ user: data.user, token: data.token, isAuthenticated: true });
+          // Set auth state
+          set({ 
+            user: data.user, 
+            token: data.token, 
+            isAuthenticated: true,
+            isLoading: false
+          });
+
+          // Store token for API requests
+          localStorage.setItem('auth-token', data.token);
         } catch (error) {
+          set({ 
+            user: null, 
+            token: null, 
+            isAuthenticated: false,
+            isLoading: false
+          });
           console.error('Login error:', error);
           throw error;
-        } finally {
-          set({ isLoading: false });
         }
       },
       logout: async () => {
         try {
           set({ isLoading: true });
-          await fetch('/auth/logout', {
-            method: 'POST',
-            credentials: 'include',
-          });
-          set({ user: null, token: null, isAuthenticated: false });
+          const token = localStorage.getItem('auth-token');
+          
+          if (token) {
+            await api.withAuth(token).post('/auth/logout', {});
+          }
         } catch (error) {
           console.error('Logout error:', error);
-          throw error;
         } finally {
-          set({ isLoading: false });
+          // Always clear state
+          set({ 
+            user: null, 
+            token: null, 
+            isAuthenticated: false,
+            isLoading: false 
+          });
+          localStorage.removeItem('auth-token');
         }
       },
     }),
     {
       name: 'auth-storage',
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated
+      })
     }
   )
 ); 

@@ -23,7 +23,7 @@ interface AuthState {
 
 export const useAuth = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       isAuthenticated: false,
@@ -33,7 +33,7 @@ export const useAuth = create<AuthState>()(
       login: async (email: string, password: string) => {
         try {
           set({ isLoading: true, error: null });
-          const { data } = await api.post('/auth/login', { email, password });
+          const data = await api.post('/auth/login', { email, password });
           set({
             user: data.user,
             token: data.token,
@@ -49,7 +49,7 @@ export const useAuth = create<AuthState>()(
       register: async ({ email, password, name }) => {
         try {
           set({ isLoading: true, error: null });
-          const { data } = await api.post('/auth/register', { email, password, name });
+          const data = await api.post('/auth/register', { email, password, name });
           set({ isLoading: false });
           return data;
         } catch (error: any) {
@@ -61,7 +61,10 @@ export const useAuth = create<AuthState>()(
       logout: async () => {
         try {
           set({ isLoading: true });
-          await api.post('/auth/logout');
+          const token = get().token;
+          if (token) {
+            await api.withAuth(token).post('/auth/logout', {});
+          }
           set({
             user: null,
             token: null,
@@ -86,12 +89,3 @@ export const useAuth = create<AuthState>()(
     }
   )
 );
-
-// Auth token interceptor
-api.interceptors.request.use((config) => {
-  const token = useAuth.getState().token;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});

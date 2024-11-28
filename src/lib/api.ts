@@ -1,31 +1,90 @@
-import axios from 'axios';
+const API_URL = 'http://localhost:5000';
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  withCredentials: true
-});
+async function apiRequest(endpoint: string, options: RequestInit = {}) {
+  const url = `${API_URL}${endpoint}`;
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    ...options.headers,
+  };
 
-// Add request interceptor for CORS preflight
-api.interceptors.request.use((config) => {
-  // Ensure OPTIONS requests are handled properly
-  if (config.method === 'options') {
-    config.headers['Access-Control-Request-Method'] = 'POST, GET, DELETE, PUT';
-    config.headers['Access-Control-Request-Headers'] = 'Content-Type, Authorization';
+  const response = await fetch(url, {
+    ...options,
+    headers,
+    mode: 'cors'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+    throw new Error(errorData.message || 'Request failed');
   }
-  return config;
-});
 
-// Error handling interceptor
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Handle unauthorized access
-      window.location.href = '/login';
-    }
-    return Promise.reject(error.response?.data || error);
-  }
-); 
+  return response.json();
+}
+
+// API object with common methods
+export const api = {
+  get: (endpoint: string, options: RequestInit = {}) => 
+    apiRequest(endpoint, { ...options, method: 'GET' }),
+  
+  post: (endpoint: string, data: any, options: RequestInit = {}) =>
+    apiRequest(endpoint, {
+      ...options,
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  
+  put: (endpoint: string, data: any, options: RequestInit = {}) =>
+    apiRequest(endpoint, {
+      ...options,
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  
+  delete: (endpoint: string, options: RequestInit = {}) =>
+    apiRequest(endpoint, { ...options, method: 'DELETE' }),
+
+  // Helper to add auth token to requests
+  withAuth: (token: string) => ({
+    get: (endpoint: string, options: RequestInit = {}) =>
+      apiRequest(endpoint, {
+        ...options,
+        headers: {
+          ...options.headers,
+          'Authorization': `Bearer ${token}`,
+        },
+      }),
+
+    post: (endpoint: string, data: any, options: RequestInit = {}) =>
+      apiRequest(endpoint, {
+        ...options,
+        method: 'POST',
+        headers: {
+          ...options.headers,
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      }),
+
+    put: (endpoint: string, data: any, options: RequestInit = {}) =>
+      apiRequest(endpoint, {
+        ...options,
+        method: 'PUT',
+        headers: {
+          ...options.headers,
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      }),
+
+    delete: (endpoint: string, options: RequestInit = {}) =>
+      apiRequest(endpoint, {
+        ...options,
+        method: 'DELETE',
+        headers: {
+          ...options.headers,
+          'Authorization': `Bearer ${token}`,
+        },
+      }),
+  }),
+}; 
