@@ -5,6 +5,10 @@ set -e
 
 echo "Starting development setup..."
 
+# Get server IP address
+SERVER_IP=$(hostname -I | awk '{print $1}')
+echo "Server IP: $SERVER_IP"
+
 # Update package list
 echo "Updating package list..."
 apt-get update
@@ -48,8 +52,8 @@ fi
 # Create environment files
 echo "Setting up environment files..."
 cat > .env << EOL
-VITE_API_URL=http://localhost:5000
-VITE_APP_URL=http://localhost:5173
+VITE_API_URL=http://${SERVER_IP}:5000
+VITE_APP_URL=http://${SERVER_IP}:5173
 NODE_ENV=development
 EOL
 
@@ -61,8 +65,8 @@ SMTP_SERVER=smtp.ionos.com
 SMTP_PORT=587
 SMTP_USERNAME=notifications@aurovillenetwork.us
 SMTP_PASSWORD=your_smtp_password
-FRONTEND_URL=http://localhost:5173
-VITE_API_URL=http://localhost:5000
+FRONTEND_URL=http://${SERVER_IP}:5173
+VITE_API_URL=http://${SERVER_IP}:5000
 EOL
 
 # Install frontend dependencies
@@ -92,8 +96,9 @@ cd .. && npm run dev &
 
 echo "Setup completed successfully!"
 echo "Your development servers are running:"
-echo "Frontend: http://localhost:5173"
-echo "Backend: http://localhost:5000"
+echo "Frontend: http://${SERVER_IP}:5173"
+echo "Backend: http://${SERVER_IP}:5000"
+echo "You can access these URLs from any machine on your network"
 echo "Press Ctrl+C to stop the servers"
 
 # Wait for both servers
