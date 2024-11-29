@@ -1,4 +1,3 @@
-import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { 
   format, 
@@ -9,7 +8,7 @@ import {
   isSameDay, 
   parseISO,
   getDay,
-  addDays
+  isValid
 } from 'date-fns';
 import { useCalendar, type CalendarEvent } from '../../../lib/calendar';
 
@@ -29,14 +28,17 @@ export default function Calendar({ onSelectDate }: CalendarProps) {
   
   // Calculate blank spaces for start of month
   const startDay = getDay(monthStart);
-  const blankSpaces = Array.from({ length: startDay }, (_, i) => null);
+  const blankSpaces = Array.from({ length: startDay }, () => null);
   
   // Combine all days
   const calendarDays = [...blankSpaces, ...currentMonthDays];
 
   const getEventsForDate = (date: Date | null): CalendarEvent[] => {
-    if (!date) return [];
-    return events.filter(event => isSameDay(parseISO(event.date), date));
+    if (!date || !isValid(date)) return [];
+    return events.filter(event => {
+      const eventDate = parseISO(event.date);
+      return isValid(eventDate) && isSameDay(eventDate, date);
+    });
   };
 
   const previousMonth = () => {
@@ -52,7 +54,7 @@ export default function Calendar({ onSelectDate }: CalendarProps) {
   };
 
   const handleDateClick = (day: Date | null) => {
-    if (!day) return;
+    if (!day || !isValid(day)) return;
     setSelectedDate(day);
     onSelectDate(day);
   };

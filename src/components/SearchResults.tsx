@@ -1,7 +1,6 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Building2, MessageSquare, FileText, ShoppingBag, X } from 'lucide-react';
-import { SearchResult } from '../lib/search';
+import type { SearchResult } from '../lib/search';
 
 interface SearchResultsProps {
   results: SearchResult[];
@@ -9,7 +8,7 @@ interface SearchResultsProps {
   onClose: () => void;
 }
 
-const typeIcons = {
+const typeIcons: Record<SearchResult['type'], React.ComponentType<any>> = {
   event: Calendar,
   service: Building2,
   forum: MessageSquare,

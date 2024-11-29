@@ -31,8 +31,12 @@ import PrivacySettings from './pages/Settings/PrivacySettings';
 import SecuritySettings from './pages/Settings/SecuritySettings';
 import SignupForm from './components/SignupForm';
 
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
 // Protected Route wrapper
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
   

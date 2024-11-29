@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react';
 
-interface SearchResult {
+export interface SearchResult {
   id: string;
-  type: 'event' | 'bazaar' | 'decision';
+  type: 'event' | 'service' | 'forum' | 'resource' | 'bazaar';
   title: string;
   description: string;
-  link: string;
+  url: string;
 }
 
 export function useSearch() {

@@ -1,108 +1,111 @@
 import { create } from 'zustand';
-import axios from './axios';
+import { persist } from 'zustand/middleware';
 
 export interface ForumPost {
   id: string;
   title: string;
   content: string;
-  category: string;
   author: {
     id: string;
     name: string;
     avatar?: string;
   };
+  category: string;
   createdAt: string;
-  replies: number;
-  views: number;
-  lastActivity: string;
+  updatedAt: string;
+  likes: number;
+  comments: number;
 }
 
-interface ForumState {
+export interface ForumState {
   posts: ForumPost[];
   categories: string[];
   isLoading: boolean;
-  error: ErrorState | null;
+  error: string | null;
   selectedCategory: string;
   currentPage: number;
   postsPerPage: number;
   totalPosts: number;
-  sortBy: SortOption;
+  sortBy: 'newest' | 'popular' | 'active';
+  searchQuery: string;
+  filters: {
+    timeRange: 'all' | 'today' | 'week' | 'month';
+    status: 'all' | 'open' | 'closed';
+  };
   fetchPosts: (page: number) => Promise<void>;
   createPost: (data: Partial<ForumPost>) => Promise<void>;
   setSelectedCategory: (category: string) => void;
-  setSortOption: (option: SortOption) => void;
-  editPost: (id: string, data: Partial<ForumPost>) => Promise<void>;
-  deletePost: (id: string) => Promise<void>;
-  pinPost: (id: string) => Promise<void>;
+  setSortBy: (sort: ForumState['sortBy']) => void;
+  setSearchQuery: (query: string) => void;
+  setFilters: (filters: ForumState['filters']) => void;
 }
 
-type SortOption = 'latest' | 'mostViewed' | 'mostCommented';
-type ErrorState = string;
+export const useForumStore = create<ForumState>()(
+  persist(
+    (set, get) => ({
+      posts: [],
+      categories: ['General', 'Announcements', 'Events', 'Projects', 'Questions'],
+      isLoading: false,
+      error: null,
+      selectedCategory: 'all',
+      currentPage: 1,
+      postsPerPage: 10,
+      totalPosts: 0,
+      sortBy: 'newest',
+      searchQuery: '',
+      filters: {
+        timeRange: 'all',
+        status: 'all'
+      },
 
-export const useForumStore = create<ForumState>((set, get) => ({
-  posts: [],
-  categories: ['General', 'Announcements', 'Events', 'Projects', 'Questions', 'Ideas'],
-  isLoading: false,
-  error: null,
-  selectedCategory: 'All',
+      fetchPosts: async (page: number) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await fetch(`/api/forum/posts?page=${page}&category=${get().selectedCategory}`);
+          if (!response.ok) throw new Error('Failed to fetch posts');
+          const data = await response.json();
+          set({ 
+            posts: data.posts,
+            totalPosts: data.total,
+            currentPage: page,
+            isLoading: false 
+          });
+        } catch (error) {
+          set({ error: (error as Error).message, isLoading: false });
+        }
+      },
 
-  fetchPosts: async () => {
-    try {
-      set({ isLoading: true, error: null });
-      const { selectedCategory } = get();
-      const response = await axios.get('/api/forums/posts' + 
-        (selectedCategory !== 'All' ? `?category=${selectedCategory}` : '')
-      );
-      
-      const formattedPosts = response.data.map((post: any) => ({
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        category: post.category,
-        author: post.author,
-        createdAt: new Date(post.createdAt).toLocaleDateString(),
-        replies: post.replies || 0,
-        views: post.views || 0,
-        lastActivity: new Date(post.lastActivity).toLocaleDateString()
-      }));
-      
-      set({ posts: formattedPosts, isLoading: false });
-    } catch (error: any) {
-      console.error('Error fetching posts:', error);
-      set({ 
-        error: error.response?.data?.message || 'Failed to load posts', 
-        isLoading: false 
-      });
+      createPost: async (data) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await fetch('/api/forum/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+          if (!response.ok) throw new Error('Failed to create post');
+          await get().fetchPosts(1);
+        } catch (error) {
+          set({ error: (error as Error).message, isLoading: false });
+        }
+      },
+
+      setSelectedCategory: (category) => {
+        set({ selectedCategory: category });
+        get().fetchPosts(1);
+      },
+
+      setSortBy: (sortBy) => set({ sortBy }),
+      setSearchQuery: (query) => set({ searchQuery: query }),
+      setFilters: (filters) => set({ filters })
+    }),
+    {
+      name: 'forum-store',
+      partialize: (state) => ({
+        selectedCategory: state.selectedCategory,
+        sortBy: state.sortBy,
+        filters: state.filters
+      })
     }
-  },
-
-  createPost: async (data) => {
-    try {
-      set({ isLoading: true, error: null });
-      await axios.post('/api/forums/posts', data);
-      await get().fetchPosts();
-    } catch (error: any) {
-      console.error('Error creating post:', error);
-      set({ 
-        error: error.response?.data?.message || 'Failed to create post', 
-        isLoading: false 
-      });
-    }
-  },
-
-  setSelectedCategory: (category) => {
-    set({ selectedCategory: category });
-    get().fetchPosts();
-  }
-}));
-
-interface PostAnalytics {
-  viewCount: number;
-  uniqueViewers: string[];
-  engagementRate: number;
-}
-
-// Add useEffect in your forum page component to trigger the fetch
-useEffect(() => {
-  forumStore.fetchPosts();
-}, []);
+  )
+);

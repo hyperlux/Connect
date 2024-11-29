@@ -1,6 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, Search, Users } from 'lucide-react';
+import { Search, Users } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
 import ThemeToggle from './ThemeToggle';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../lib/auth';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +8,7 @@ interface LoginFormData {
 }
 
 export default function LoginForm() {
-  const { login, error, clearError } = useAuth();
+  const { login, error } = useAuth();
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormData>();
 
