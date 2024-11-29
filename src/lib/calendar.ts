@@ -111,6 +111,15 @@ interface CalendarState {
   addComment: (eventId: string, comment: string) => Promise<void>;
 }
 
+interface PersistedCalendarState {
+  events: CalendarEvent[];
+  selectedDate: string;
+  viewMode: 'day' | 'week' | 'month';
+  searchQuery: string;
+  sidebarSearchQuery: string;
+  selectedCategory: string;
+}
+
 export const useCalendar = create(
   persist<CalendarState>(
     (set, get) => ({
@@ -312,10 +321,19 @@ export const useCalendar = create(
     }),
     {
       name: 'calendar-storage',
-      partialize: (state) => ({
-        ...state,
-        selectedDate: state.selectedDate.toISOString()
-      })
+      partialize: (state): PersistedCalendarState => ({
+        events: state.events,
+        selectedDate: state.selectedDate.toISOString(),
+        viewMode: state.viewMode,
+        searchQuery: state.searchQuery,
+        sidebarSearchQuery: state.sidebarSearchQuery,
+        selectedCategory: state.selectedCategory
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (state && state.selectedDate) {
+          state.selectedDate = new Date(state.selectedDate);
+        }
+      }
     }
   )
 );

@@ -32,7 +32,7 @@ const timeline = [
   }
 ];
 
-const statusColors: { [key: string]: string } = {
+const statusColors: Record<string, string> = {
   approved: 'text-green-500',
   pending: 'text-yellow-500',
   rejected: 'text-red-500',

@@ -9,12 +9,18 @@ interface Service {
   name: string;
   description: string;
   category: string;
-  // Add other service properties as needed
+  hours?: string;
+  contact?: {
+    phone: string;
+    email: string;
+    website: string;
+  };
+  image?: string;
 }
 
-const initialServices = [
+const initialServices: Service[] = [
   {
-    id: 1,
+    id: '1',
     name: 'City Health Center',
     category: 'Healthcare',
     description: 'Primary healthcare services for residents',
@@ -27,7 +33,7 @@ const initialServices = [
     image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
   },
   {
-    id: 2,
+    id: '2',
     name: 'Public Library',
     category: 'Education',
     description: 'Books, digital resources, and community programs',
@@ -40,7 +46,7 @@ const initialServices = [
     image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
   },
   {
-    id: 3,
+    id: '3',
     name: 'Auroville Financial Service',
     category: 'Financial',
     description: 'Community banking and financial services',
