@@ -32,11 +32,11 @@ const timeline = [
   }
 ];
 
-const statusColors = {
-  approved: 'text-green-500 dark:text-green-400',
-  pending: 'text-yellow-500 dark:text-yellow-400',
-  rejected: 'text-red-500 dark:text-red-400',
-  review: 'text-blue-500 dark:text-blue-400'
+const statusColors: { [key: string]: string } = {
+  approved: 'text-green-500',
+  pending: 'text-yellow-500',
+  rejected: 'text-red-500',
+  review: 'text-blue-500'
 };
 
 export default function DecisionTimeline() {

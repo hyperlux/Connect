@@ -328,3 +328,17 @@ export const useCalendar = create(
     }
   )
 );
+
+export const selectCalendarState = (state: CalendarState): CalendarState => ({
+  ...state,
+  events: state.events,
+  selectedDate: state.selectedDate,
+  viewMode: state.viewMode,
+  searchQuery: state.searchQuery,
+  sidebarSearchQuery: state.sidebarSearchQuery,
+  selectedCategory: state.selectedCategory,
+  isLoading: state.isLoading,
+  error: state.error,
+  fetchEvents: state.fetchEvents,
+  createEvent: state.createEvent
+});

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bike, Bus, Clock } from 'lucide-react';
+import { Bike, Bus, Clock, MapPin } from 'lucide-react';
 
 const transportOptions = [
   {

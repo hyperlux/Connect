@@ -5,10 +5,10 @@ import CriticalAnnouncements from './components/CriticalAnnouncements';
 import DecisionHub from './components/DecisionHub';
 import SustainabilityUpdates from './components/SustainabilityUpdates';
 import VolunteerSpotlight from './components/VolunteerSpotlight';
-import CulturalHighlights from './components/CulturalHighlights';
-import CommunityStories from './components/CommunityStories';
-import MarketUpdates from './components/MarketUpdates';
-import PersonalizedContent from './components/PersonalizedContent';
+import CulturalHighlights from '../components/CulturalHighlights';
+import CommunityStories from '../components/CommunityStories';
+import MarketUpdates from '../components/MarketUpdates';
+import PersonalizedContent from '../components/PersonalizedContent';
 
 export default function Feed() {
   return (
