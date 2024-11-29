@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../lib/auth';
 import { useNavigate } from 'react-router-dom';
@@ -10,18 +9,25 @@ interface SignupFormData {
   confirmPassword: string;
 }
 
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+}
+
 export default function SignupForm() {
-  const { register: registerUser, error, clearError } = useAuth();
+  const { register: registerUser, error } = useAuth();
   const navigate = useNavigate();
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<SignupFormData>();
 
   const onSubmit = async (data: SignupFormData) => {
     try {
-      await registerUser({
+      const registerData: RegisterData = {
         name: data.name,
         email: data.email,
         password: data.password
-      });
+      };
+      await registerUser(registerData);
       navigate('/verify-email');
     } catch (error) {
       console.error('Signup failed:', error);

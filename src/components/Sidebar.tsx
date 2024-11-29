@@ -1,23 +1,31 @@
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Building2, 
   Calendar, 
-  Users, 
   MessageSquare, 
   FileText, 
-  MapPin,
   LayoutDashboard,
   Vote,
   ShoppingBag,
   Settings,
-  ExternalLink,
-  BookOpen
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { useTheme } from '../lib/theme';
 
-const menuItems = [
+interface MenuItem {
+  icon: React.ComponentType<any>;
+  label: string;
+  href: string;
+}
+
+interface ExternalLink {
+  label: string;
+  href: string;
+  description: string;
+}
+
+const menuItems: MenuItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
   { icon: Vote, label: 'Decision Hub', href: '/decisions' },
   { icon: MessageSquare, label: 'Forums', href: '/forums' },
@@ -28,7 +36,7 @@ const menuItems = [
   { icon: Settings, label: 'Settings', href: '/settings' }
 ];
 
-const externalLinks = [
+const externalLinks: ExternalLink[] = [
   { 
     label: 'Auroville Foundation', 
     href: 'http://www.aurovillefoundation.org.in/',
@@ -76,6 +84,7 @@ export default function Sidebar() {
           {menuItems.map((item) => {
             const isActive = location.pathname === item.href || 
               (item.href !== '/' && location.pathname.startsWith(item.href));
+            const Icon = item.icon;
 
             return (
               <li key={item.label}>
@@ -89,7 +98,7 @@ export default function Sidebar() {
                         : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
-                  <item.icon className={`w-5 h-5 ${
+                  <Icon className={`w-5 h-5 ${
                     isActive 
                       ? 'text-[#E27B58]' 
                       : isDark 

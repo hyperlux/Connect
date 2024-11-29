@@ -1,33 +1,4 @@
-import nodemailer from 'nodemailer';
-
-// Create reusable transporter
-const createTransporter = () => {
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_SERVER,
-    port: parseInt(process.env.SMTP_PORT || '465'),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: process.env.SMTP_USERNAME,
-      pass: process.env.SMTP_PASSWORD
-    },
-    tls: {
-      rejectUnauthorized: false // For development only
-    }
-  });
-
-  // Verify connection
-  transporter.verify((error) => {
-    if (error) {
-      console.error('SMTP connection error:', error);
-    } else {
-      console.log('SMTP server is ready to send emails');
-    }
-  });
-
-  return transporter;
-};
-
-const transporter = createTransporter();
+import axios from './axios';
 
 interface EmailOptions {
   to: string;
@@ -36,18 +7,25 @@ interface EmailOptions {
   html?: string;
 }
 
+interface Event {
+  title: string;
+  date: string;
+  location: string;
+}
+
+interface Notification {
+  title: string;
+  message: string;
+}
+
 export const sendEmail = async ({ to, subject, text, html }: EmailOptions): Promise<boolean> => {
   try {
-    const mailOptions = {
-      from: process.env.SMTP_FROM,
+    await axios.post('/api/email/send', {
       to,
       subject,
       text,
       html: html || text
-    };
-
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', info.messageId);
+    });
     return true;
   } catch (error) {
     console.error('Failed to send email:', error);
@@ -56,7 +34,7 @@ export const sendEmail = async ({ to, subject, text, html }: EmailOptions): Prom
 };
 
 // Helper function to send welcome email
-export const sendWelcomeEmail = async (to: string, name: string) => {
+export const sendWelcomeEmail = async (to: string, name: string): Promise<boolean> => {
   const subject = 'Welcome to Auroville Community Platform';
   const text = `
     Dear ${name},
@@ -96,7 +74,7 @@ export const sendWelcomeEmail = async (to: string, name: string) => {
 };
 
 // Helper function to send notification email
-export const sendNotificationEmail = async (to: string, notification: { title: string; message: string }) => {
+export const sendNotificationEmail = async (to: string, notification: Notification): Promise<boolean> => {
   const subject = notification.title;
   const text = notification.message;
   const html = `
@@ -111,7 +89,7 @@ export const sendNotificationEmail = async (to: string, notification: { title: s
 };
 
 // Helper function to send event reminder email
-export const sendEventReminderEmail = async (to: string, event: { title: string; date: string; location: string }) => {
+export const sendEventReminderEmail = async (to: string, event: Event): Promise<boolean> => {
   const subject = `Reminder: ${event.title}`;
   const text = `
     Don't forget about the upcoming event: ${event.title}

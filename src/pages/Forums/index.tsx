@@ -1,7 +1,7 @@
 import { MessageSquare, Users, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useForumStore, type ForumState } from '../../lib/forum';
+import { useForumStore, type ForumState, type ForumPost } from '../../lib/forum';
 import NewPostModal from './components/NewPostModal';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 export default function Forums() {
   const [showNewPost, setShowNewPost] = useState(false);
@@ -20,9 +20,49 @@ export default function Forums() {
     setSortBy
   } = useForumStore();
 
+  const handlePageChange = useCallback((page: number) => {
+    const totalPages = Math.ceil(totalPosts / postsPerPage);
+    if (page >= 1 && page <= totalPages) {
+      fetchPosts(page);
+    }
+  }, [totalPosts, postsPerPage, fetchPosts]);
+
   useEffect(() => {
     fetchPosts(1);
   }, [fetchPosts]);
+
+  const renderPost = (post: ForumPost) => (
+    <div key={post.id} className="p-6">
+      <div className="flex items-center gap-4 mb-4">
+        <img
+          src={post.author.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}`}
+          alt={post.author.name}
+          className="w-10 h-10 rounded-full"
+        />
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-dark-primary">{post.title}</h3>
+          <p className="text-sm text-gray-500 dark:text-dark-secondary">
+            Posted by {post.author.name} in {post.category}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-dark-secondary">
+        <div className="flex items-center gap-2">
+          <MessageSquare className="h-4 w-4" />
+          <span>{post.comments} comments</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4" />
+          <span>{post.likes} likes</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4" />
+          <span>Updated {new Date(post.updatedAt).toLocaleDateString()}</span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -91,44 +131,13 @@ export default function Forums() {
           ) : (
             <>
               <div className="bg-white dark:bg-dark-card rounded-xl shadow-sm divide-y divide-gray-200 dark:divide-dark-hover">
-                {posts.map((post) => (
-                  <div key={post.id} className="p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <img
-                        src={post.author.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}`}
-                        alt={post.author.name}
-                        className="w-10 h-10 rounded-full"
-                      />
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-dark-primary">{post.title}</h3>
-                        <p className="text-sm text-gray-500 dark:text-dark-secondary">
-                          Posted by {post.author.name} in {post.category}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-dark-secondary">
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4" />
-                        <span>{post.comments} comments</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        <span>{post.likes} likes</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4" />
-                        <span>Updated {new Date(post.updatedAt).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                {posts.map(renderPost)}
               </div>
 
               {totalPosts > postsPerPage && (
                 <div className="mt-6 flex justify-center gap-2">
                   <button
-                    onClick={() => fetchPosts(currentPage - 1)}
+                    onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className="p-2 rounded-lg bg-white dark:bg-dark-card shadow-sm disabled:opacity-50"
                   >
@@ -140,7 +149,7 @@ export default function Forums() {
                   </span>
 
                   <button
-                    onClick={() => fetchPosts(currentPage + 1)}
+                    onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === Math.ceil(totalPosts / postsPerPage)}
                     className="p-2 rounded-lg bg-white dark:bg-dark-card shadow-sm disabled:opacity-50"
                   >

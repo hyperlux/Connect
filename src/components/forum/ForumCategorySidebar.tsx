@@ -1,5 +1,4 @@
 import React from 'react';
-import { MessageSquare } from 'lucide-react';
 
 interface ForumCategorySidebarProps {
   categories: string[];

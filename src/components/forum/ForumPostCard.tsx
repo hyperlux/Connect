@@ -1,23 +1,24 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { MessageSquare, ThumbsUp, Eye } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
-interface ForumPostCardProps {
-  post: {
-    id: string;
-    title: string;
-    content: string;
-    category: string;
-    author: {
-      name: string;
-      avatar?: string;
-    };
-    createdAt: string;
-    commentsCount: number;
-    likesCount: number;
-    views: number;
+interface ForumPost {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  author: {
+    name: string;
+    avatar?: string;
   };
+  createdAt: string;
+  commentsCount: number;
+  likesCount: number;
+  views: number;
+}
+
+interface ForumPostCardProps {
+  post: ForumPost;
 }
 
 export default function ForumPostCard({ post }: ForumPostCardProps) {

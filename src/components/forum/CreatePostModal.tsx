@@ -1,4 +1,3 @@
-import React from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -10,12 +9,18 @@ interface CreatePostModalProps {
   categories: string[];
 }
 
+interface CreatePostFormData {
+  title: string;
+  category: string;
+  content: string;
+}
+
 export default function CreatePostModal({ isOpen, onClose, categories }: CreatePostModalProps) {
   const queryClient = useQueryClient();
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<CreatePostFormData>();
 
   const createPost = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: CreatePostFormData) => {
       const response = await api.post('/forums', data);
       return response.data;
     },
@@ -56,7 +61,7 @@ export default function CreatePostModal({ isOpen, onClose, categories }: CreateP
               />
               {errors.title && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.title.message as string}
+                  {errors.title.message}
                 </p>
               )}
             </div>
@@ -78,7 +83,7 @@ export default function CreatePostModal({ isOpen, onClose, categories }: CreateP
               </select>
               {errors.category && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.category.message as string}
+                  {errors.category.message}
                 </p>
               )}
             </div>
@@ -94,7 +99,7 @@ export default function CreatePostModal({ isOpen, onClose, categories }: CreateP
               />
               {errors.content && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.content.message as string}
+                  {errors.content.message}
                 </p>
               )}
             </div>
