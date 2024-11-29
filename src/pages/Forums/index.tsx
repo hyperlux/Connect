@@ -1,5 +1,5 @@
 import { MessageSquare, Users, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useForumStore } from '../../lib/forum';
+import { useForumStore, type ForumState } from '../../lib/forum';
 import NewPostModal from './components/NewPostModal';
 import { useEffect, useState } from 'react';
 

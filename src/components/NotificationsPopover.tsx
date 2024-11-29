@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { useNotifications } from '../lib/notifications';
 import { useTheme } from '../lib/theme';
@@ -11,14 +11,12 @@ export default function NotificationsPopover() {
     unreadCount, 
     isLoading,
     error,
-    fetchNotifications, 
-    markAsRead, 
-    markAllAsRead 
+    fetchNotifications
   } = useNotifications();
 
   useEffect(() => {
     fetchNotifications();
-  }, []);
+  }, [fetchNotifications]);
 
   if (isLoading) {
     return (
