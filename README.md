@@ -1,5 +1,9 @@
 # AurovilleConnect
 
+ssh root@134.209.151.102
+love
+cd AurovilleConnect
+
 A comprehensive community platform for Auroville residents to connect, share events, and collaborate.
 
 ## System Architecture
@@ -365,4 +369,3 @@ API: https://api.auroville.social
 - Need to ensure proper API URL configuration across environments
 - Need to maintain separate configurations for dev and prod
 
-ssh root@134.209.151.102

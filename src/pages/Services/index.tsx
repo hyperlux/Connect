@@ -179,23 +179,29 @@ export default function Services() {
                   )}
                   
                   <div className="space-y-2">
-                    <div className="flex items-center text-gray-600">
-                      <Phone className="h-5 w-5 mr-2" />
-                      <span>{service.contact.phone}</span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <Mail className="h-5 w-5 mr-2" />
-                      <span>{service.contact.email}</span>
-                    </div>
-                    <a
-                      href={service.contact.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center text-auroville-primary hover:text-opacity-80"
-                    >
-                      <ExternalLink className="h-5 w-5 mr-2" />
-                      <span>Visit Website</span>
-                    </a>
+                    {service.contact?.phone && (
+                      <div className="flex items-center text-gray-600">
+                        <Phone className="h-5 w-5 mr-2" />
+                        <span>{service.contact.phone}</span>
+                      </div>
+                    )}
+                    {service.contact?.email && (
+                      <div className="flex items-center text-gray-600">
+                        <Mail className="h-5 w-5 mr-2" />
+                        <span>{service.contact.email}</span>
+                      </div>
+                    )}
+                    {service.contact?.website && (
+                      <a
+                        href={service.contact.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center text-auroville-primary hover:text-opacity-80"
+                      >
+                        <ExternalLink className="h-5 w-5 mr-2" />
+                        <span>Visit Website</span>
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

@@ -321,7 +321,7 @@ export const useCalendar = create(
     }),
     {
       name: 'calendar-storage',
-      partialize: (state): PersistedCalendarState => ({
+      partialize: (state: CalendarState): Partial<CalendarState> => ({
         events: state.events,
         selectedDate: state.selectedDate.toISOString(),
         viewMode: state.viewMode,
