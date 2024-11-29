@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - VITE_API_URL=https://api.auroville.social
+      - VITE_APP_URL=https://auroville.social
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - auroville-network
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/auroville
+      - NODE_ENV=production
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - auroville-network
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=auroville
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - auroville-network
+
+networks:
+  auroville-network:
+    driver: bridge
+
+volumes:
+  postgres_data: 
