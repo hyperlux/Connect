@@ -313,18 +313,9 @@ export const useCalendar = create(
     {
       name: 'calendar-storage',
       partialize: (state) => ({
-        events: state.events,
-        selectedDate: state.selectedDate.toISOString(),
-        viewMode: state.viewMode,
-        searchQuery: state.searchQuery,
-        sidebarSearchQuery: state.sidebarSearchQuery,
-        selectedCategory: state.selectedCategory
-      }),
-      onRehydrateStorage: () => (state) => {
-        if (state && state.selectedDate) {
-          state.selectedDate = new Date(state.selectedDate);
-        }
-      }
+        ...state,
+        selectedDate: state.selectedDate.toISOString()
+      })
     }
   )
 );

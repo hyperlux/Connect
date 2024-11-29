@@ -4,6 +4,14 @@ import ServiceForm from './components/ServiceForm';
 
 const categories = ['Healthcare', 'Education', 'Transportation', 'Utilities', 'Recreation', 'Financial'];
 
+interface Service {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  // Add other service properties as needed
+}
+
 const initialServices = [
   {
     id: 1,
@@ -48,9 +56,9 @@ const initialServices = [
 
 export default function Services() {
   const [selectedCategory, setSelectedCategory] = React.useState('All');
-  const [services, setServices] = React.useState(initialServices);
+  const [services, setServices] = React.useState<Service[]>(initialServices);
   const [showForm, setShowForm] = React.useState(false);
-  const [editingService, setEditingService] = React.useState(null);
+  const [editingService, setEditingService] = React.useState<Service | null>(null);
 
   const filteredServices = selectedCategory === 'All' 
     ? services 
@@ -65,11 +73,13 @@ export default function Services() {
     setShowForm(false);
   };
 
-  const handleEditService = (data: any) => {
-    setServices(services.map(service => 
-      service.id === editingService.id ? { ...service, ...data } : service
-    ));
-    setEditingService(null);
+  const handleEditService = (data: Partial<Service>) => {
+    if (editingService) {
+      setServices(services.map(service => 
+        service.id === editingService.id ? { ...service, ...data } : service
+      ));
+      setEditingService(null);
+    }
   };
 
   const handleEdit = (service: any) => {

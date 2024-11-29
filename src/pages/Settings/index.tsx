@@ -38,7 +38,7 @@ export default function Settings() {
       <div className="space-y-6">
         <NotificationSettings />
         <PrivacySettings />
-        <PreferenceSettings />
+        <PreferenceSettings onSave={handleSave} />
         <AccessibilitySettings />
       </div>
     </div>
