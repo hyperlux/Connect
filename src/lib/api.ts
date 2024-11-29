@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL;
 
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const url = `${API_URL}${endpoint}`;
@@ -8,18 +8,38 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
     ...options.headers,
   };
 
-  const response = await fetch(url, {
-    ...options,
+  console.log('Making API request:', {
+    url,
+    method: options.method,
     headers,
-    mode: 'cors'
+    body: options.body
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
-    throw new Error(errorData.message || 'Request failed');
-  }
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+      credentials: 'include',
+      mode: 'cors'
+    });
 
-  return response.json();
+    console.log('API response:', {
+      status: response.status,
+      statusText: response.statusText
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+      throw new Error(errorData.message || 'Request failed');
+    }
+
+    const data = await response.json();
+    console.log('API response data:', data);
+    return data;
+  } catch (error) {
+    console.error('API request failed:', error);
+    throw error;
+  }
 }
 
 // API object with common methods

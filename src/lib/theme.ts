@@ -12,11 +12,11 @@ interface ThemeState {
 export const useTheme = create<ThemeState>()(
   persist(
     (set) => ({
-      theme: (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') as Theme,
+      theme: 'light',
       setTheme: (theme) => {
-        set({ theme });
         document.documentElement.classList.remove('light', 'dark');
         document.documentElement.classList.add(theme);
+        set({ theme });
       },
       toggleTheme: () => {
         set((state) => {

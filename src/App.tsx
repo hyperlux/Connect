@@ -24,6 +24,12 @@ import { useTheme } from './lib/theme';
 import { useAuth } from './lib/auth';
 import LoginForm from './components/LoginForm';
 import VerifyEmail from './pages/VerifyEmail';
+import SettingsLayout from './pages/Settings/Layout';
+import ProfileSettings from './pages/Settings/Profile';
+import NotificationSettings from './pages/Settings/NotificationSettings';
+import PrivacySettings from './pages/Settings/PrivacySettings';
+import SecuritySettings from './pages/Settings/SecuritySettings';
+import SignupForm from './components/SignupForm';
 
 // Protected Route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -84,6 +90,7 @@ function App() {
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupForm />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
 
         {/* Protected routes */}
@@ -102,7 +109,12 @@ function App() {
           <Route path="services" element={<Services />} />
           <Route path="community" element={<Community />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="settings" element={<SettingsLayout />}>
+            <Route path="profile" element={<ProfileSettings />} />
+            <Route path="notifications" element={<NotificationSettings />} />
+            <Route path="privacy" element={<PrivacySettings />} />
+            <Route path="security" element={<SecuritySettings />} />
+          </Route>
           <Route path="resources" element={<Resources />} />
           <Route path="map" element={<LocalMap />} />
           <Route path="decisions" element={<Decisions />} />

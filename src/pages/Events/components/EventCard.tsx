@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MapPin, Users, Clock, Tag, Edit2, Share2 } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, Tag, Edit2, Share2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { CalendarEvent } from '../../../lib/calendar';
@@ -8,12 +8,18 @@ interface EventCardProps {
   event: CalendarEvent;
   isDark: boolean;
   onEdit?: (event: CalendarEvent) => void;
+  onDelete?: (event: CalendarEvent) => void;
   onJoin?: (event: CalendarEvent) => void;
   isOrganizer?: boolean;
 }
 
-export default function EventCard({ event, isDark, onEdit, onJoin, isOrganizer }: EventCardProps) {
+export default function EventCard({ event, isDark, onEdit, onDelete, onJoin, isOrganizer }: EventCardProps) {
   const navigate = useNavigate();
+
+  console.log({
+    isOrganizer,
+    eventOrganizerId: event.organizerId,
+  });
 
   const handleClick = () => {
     navigate(`/events/${event.id}`);
@@ -27,6 +33,13 @@ export default function EventCard({ event, isDark, onEdit, onJoin, isOrganizer }
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     onEdit?.(event);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this event?')) {
+      onDelete?.(event);
+    }
   };
 
   return (
@@ -43,16 +56,26 @@ export default function EventCard({ event, isDark, onEdit, onJoin, isOrganizer }
           className="w-full h-48 object-cover"
         />
         {isOrganizer && (
-          <button
-            onClick={handleEdit}
-            className={`absolute top-4 right-4 p-2 rounded-full ${
-              isDark ? 'bg-dark-card' : 'bg-white'
-            } shadow-md hover:bg-opacity-90 transition-colors`}
-          >
-            <Edit2 className={`h-4 w-4 ${
-              isDark ? 'text-dark-primary' : 'text-gray-700'
-            }`} />
-          </button>
+          <div className="absolute top-4 right-4 flex gap-2">
+            <button
+              onClick={handleEdit}
+              className={`p-2 rounded-full ${
+                isDark ? 'bg-dark-card' : 'bg-white'
+              } shadow-md hover:bg-opacity-90 transition-colors`}
+            >
+              <Edit2 className={`h-4 w-4 ${
+                isDark ? 'text-dark-primary' : 'text-gray-700'
+              }`} />
+            </button>
+            <button
+              onClick={handleDelete}
+              className={`p-2 rounded-full ${
+                isDark ? 'bg-dark-card' : 'bg-white'
+              } shadow-md hover:bg-opacity-90 transition-colors`}
+            >
+              <Trash2 className="h-4 w-4 text-red-500" />
+            </button>
+          </div>
         )}
       </div>
       <div className="p-6">

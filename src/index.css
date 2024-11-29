@@ -2,4 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    @apply light;
+  }
+
+  .light {
+    --color-primary: #FF6B6B;
+    --color-background: #f9fafb;
+    --color-card: #ffffff;
+    --color-text: #111827;
+    --color-text-secondary: #4b5563;
+  }
+
+  .dark {
+    --color-primary: #FF6B6B;
+    --color-background: #18191A;
+    --color-card: #242526;
+    --color-text: #E4E6EB;
+    --color-text-secondary: #B0B3B8;
+  }
+
+  body {
+    @apply bg-[var(--color-background)] text-[var(--color-text)];
+  }
+}
+
 /* Add any custom styles below */

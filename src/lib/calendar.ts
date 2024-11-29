@@ -215,7 +215,10 @@ export const useCalendar = create(
           set({ isLoading: true, error: null });
           try {
             await axios.delete(`/events/${id}`);
-            await get().fetchEvents();
+            set(state => ({
+              events: state.events.filter(e => e.id !== id),
+              isLoading: false
+            }));
           } catch (apiError) {
             console.log('Deleting event locally:', apiError);
             set(state => ({

@@ -1,35 +1,16 @@
 #!/bin/bash
 
-# Exit on error
-set -e
+# Build the application
+npm run build:prod
 
-echo "Starting deployment..."
+# Copy the build files to the nginx directory
+sudo cp -r dist/* /var/www/html/
 
-# Pull latest changes
-echo "Pulling latest changes..."
-git pull origin main
+# Set correct permissions
+sudo chown -R www-data:www-data /var/www/html/
+sudo chmod -R 755 /var/www/html/
 
-# Install dependencies for frontend
-echo "Installing frontend dependencies..."
-npm install
+# Restart nginx
+sudo systemctl restart nginx
 
-# Build frontend
-echo "Building frontend..."
-npm run build
-
-# Install dependencies for backend
-echo "Installing backend dependencies..."
-cd server
-npm install
-
-# Run database migrations
-echo "Running database migrations..."
-npx prisma migrate deploy
-
-# Restart PM2 processes
-echo "Restarting PM2 processes..."
-pm2 restart auroville-server || pm2 start index.js --name auroville-server
-cd ..
-pm2 restart auroville-client || pm2 serve dist 5173 --name auroville-client --spa
-
-echo "Deployment completed successfully!" 
+echo "Deployment complete!" 

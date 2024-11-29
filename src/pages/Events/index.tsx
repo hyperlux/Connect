@@ -26,7 +26,8 @@ export default function Events() {
     leaveEvent,
     setViewMode,
     createEvent,
-    updateEvent 
+    updateEvent,
+    deleteEvent
   } = useCalendar();
   const { theme } = useTheme();
   const { user } = useAuth();
@@ -103,6 +104,22 @@ export default function Events() {
   const handleCloseForm = () => {
     setShowEventForm(false);
     setEditingEvent(null);
+  };
+
+  const handleDelete = async (event: any) => {
+    try {
+      if (user?.id === event.organizerId) {
+        await deleteEvent(event.id);
+        // Refresh events list after deletion
+        await fetchEvents();
+      } else {
+        console.log('You can only delete your own events');
+        alert('You can only delete events that you have created');
+      }
+    } catch (error) {
+      console.error('Failed to delete event:', error);
+      alert('Failed to delete event. Please try again.');
+    }
   };
 
   // Filter events based on view mode and search
@@ -246,6 +263,7 @@ export default function Events() {
                   event={event}
                   isDark={isDark}
                   onEdit={handleEdit}
+                  onDelete={handleDelete}
                   onJoin={handleJoin}
                   isOrganizer={user?.id === event.organizerId}
                 />

@@ -1,45 +1,51 @@
 import express from 'express';
+import { authenticate } from '../middleware/authenticate.js';
 import { prisma } from '../lib/prisma.js';
 
 const router = express.Router();
 
-router.get('/me', async (req, res) => {
+// Update user profile
+router.put('/profile', authenticate, async (req, res, next) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        createdAt: true
-      }
+    console.log('Received profile update request:', {
+      body: req.body,
+      userId: req.user?.id
     });
-    res.json(user);
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ message: 'Failed to fetch user data' });
-  }
-});
 
-router.put('/me', async (req, res) => {
-  try {
-    const { name } = req.body;
-    const user = await prisma.user.update({
-      where: { id: req.user.id },
-      data: { name },
+    const { name, email, bio, avatar } = req.body;
+    const userId = req.user.id;
+
+    console.log('Updating user with data:', {
+      userId,
+      name,
+      email,
+      bio,
+      avatar
+    });
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name,
+        email,
+        bio,
+        avatar
+      },
       select: {
         id: true,
-        email: true,
         name: true,
-        role: true,
+        email: true,
+        bio: true,
+        avatar: true,
         createdAt: true
       }
     });
-    res.json(user);
+
+    console.log('User updated successfully:', updatedUser);
+    res.json(updatedUser);
   } catch (error) {
-    console.error('Error updating user:', error);
-    res.status(500).json({ message: 'Failed to update user data' });
+    console.error('Error updating user profile:', error);
+    next(error);
   }
 });
 

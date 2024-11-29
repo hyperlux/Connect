@@ -21,22 +21,24 @@ interface ForumState {
   posts: ForumPost[];
   categories: string[];
   isLoading: boolean;
-
   error: ErrorState | null;
   selectedCategory: string;
   currentPage: number;
   postsPerPage: number;
   totalPosts: number;
+  sortBy: SortOption;
   fetchPosts: (page: number) => Promise<void>;
   createPost: (data: Partial<ForumPost>) => Promise<void>;
   setSelectedCategory: (category: string) => void;
-  sortBy: SortOption;
   setSortOption: (option: SortOption) => void;
   editPost: (id: string, data: Partial<ForumPost>) => Promise<void>;
   deletePost: (id: string) => Promise<void>;
   pinPost: (id: string) => Promise<void>;
-}}
+}
+
 type SortOption = 'latest' | 'mostViewed' | 'mostCommented';
+type ErrorState = string;
+
 export const useForumStore = create<ForumState>((set, get) => ({
   posts: [],
   categories: ['General', 'Announcements', 'Events', 'Projects', 'Questions', 'Ideas'],

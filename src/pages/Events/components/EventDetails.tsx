@@ -21,4 +21,5 @@ import { Clock, MapPin, Tag, Users, Edit } from 'lucide-react';
                   </span>
                 )}
               </div>
+            </div>
 // ... existing code ... 

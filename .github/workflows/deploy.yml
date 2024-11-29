@@ -27,15 +27,13 @@ jobs:
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" >> .env
-          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}" >> .env
-          echo "VITE_SITE_URL=https://aurovillenetwork.org" >> .env
-          echo "FRONTEND_URL=https://aurovillenetwork.org" >> .env
           echo "SMTP_SERVER=${{ secrets.SMTP_SERVER }}" >> .env
           echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> .env
           echo "SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}" >> .env
           echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> .env
-          echo "VITE_API_URL=https://api.aurovillenetwork.org" >> .env
+          echo "FRONTEND_URL=https://auroville.social" >> .env
+          echo "API_URL=https://api.auroville.social" >> .env
+          echo "NODE_ENV=production" >> .env
           
       - name: Build
         run: npm run build
@@ -48,4 +46,4 @@ jobs:
           
       - name: Deploy to Server
         run: |
-          rsync -avz --delete dist/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/aurovillenetwork.org/
+          rsync -avz --delete dist/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/auroville.social/

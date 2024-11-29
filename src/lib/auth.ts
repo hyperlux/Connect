@@ -4,9 +4,17 @@ import { api } from './api';
 
 interface User {
   id: string;
-  email: string;
   name: string;
-  role: string;
+  email: string;
+  bio?: string;
+  avatar?: string;
+  createdAt: string;
+}
+
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
 }
 
 interface AuthState {
@@ -16,9 +24,10 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (data: { email: string; password: string; name: string }) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
+  updateProfile: (data: Partial<User>) => Promise<void>;
 }
 
 export const useAuth = create<AuthState>()(
@@ -46,12 +55,20 @@ export const useAuth = create<AuthState>()(
         }
       },
 
-      register: async ({ email, password, name }) => {
+      register: async ({ name, email, password }) => {
         try {
           set({ isLoading: true, error: null });
-          const data = await api.post('/auth/register', { email, password, name });
-          set({ isLoading: false });
-          return data;
+          const data = await api.post('/auth/register', { 
+            name, 
+            email, 
+            password 
+          });
+          set({
+            user: data.user,
+            token: data.token,
+            isAuthenticated: true,
+            isLoading: false
+          });
         } catch (error: any) {
           set({ error: error.message, isLoading: false });
           throw error;
@@ -77,7 +94,27 @@ export const useAuth = create<AuthState>()(
         }
       },
 
-      clearError: () => set({ error: null })
+      clearError: () => set({ error: null }),
+
+      updateProfile: async (data: Partial<User>) => {
+        try {
+          set({ isLoading: true, error: null });
+          const token = get().token;
+          if (!token) {
+            throw new Error('No authentication token');
+          }
+
+          const updatedUser = await api.withAuth(token).put('/api/users/profile', data);
+          set({ 
+            user: { ...get().user, ...updatedUser },
+            isLoading: false 
+          });
+        } catch (error: any) {
+          console.error('Profile update error:', error);
+          set({ error: error.message, isLoading: false });
+          throw error;
+        }
+      }
     }),
     {
       name: 'auth-storage',
