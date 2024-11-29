@@ -39,3 +39,4 @@ prisma/*.db
 
 # Vite
 .vite
+*.backup

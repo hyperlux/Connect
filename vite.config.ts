@@ -4,37 +4,84 @@ import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const apiUrl = env.VITE_API_URL || 'https://api.auroville.social';
   
   return {
     plugins: [react()],
-    define: {
-      'import.meta.env.VITE_API_URL': JSON.stringify(apiUrl),
-      'import.meta.env.VITE_APP_URL': JSON.stringify(env.VITE_APP_URL)
-    },
     server: {
       proxy: {
         '/api': {
-          target: apiUrl,
+          target: 'http://localhost:5000',
           changeOrigin: true,
-          secure: false,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        },
-        '/auth': {
-          target: apiUrl,
-          changeOrigin: true,
-          secure: false
+          rewrite: (path) => path.replace(/^\/api/, ''),
+          configure: (proxy, _options) => {
+            proxy.on('error', (err, _req, _res) => {
+              console.log('proxy error', err);
+            });
+            proxy.on('proxyReq', (proxyReq, req, _res) => {
+              console.log('Sending Request to the Target:', req.method, req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req, _res) => {
+              console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+            });
+          }
         }
       }
-    },
-    build: {
-      outDir: 'dist',
-      sourcemap: false
     },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
       },
+    },
+    build: {
+      chunkSizeWarningLimit: 500,
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true
+        }
+      },
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            // Core React dependencies
+            if (id.includes('node_modules/react/') || 
+                id.includes('node_modules/react-dom/') ||
+                id.includes('node_modules/react-router-dom/')) {
+              return 'react-core';
+            }
+            
+            // UI Components and utilities
+            if (id.includes('node_modules/@radix-ui/') ||
+                id.includes('node_modules/@headlessui/') ||
+                id.includes('node_modules/lucide-react/')) {
+              return 'ui-components';
+            }
+            
+            // Data management and utilities
+            if (id.includes('node_modules/@tanstack/') ||
+                id.includes('node_modules/zustand/') ||
+                id.includes('node_modules/date-fns/')) {
+              return 'data-utils';
+            }
+
+            // Forms and validation
+            if (id.includes('node_modules/react-hook-form/') ||
+                id.includes('node_modules/zod/')) {
+              return 'forms';
+            }
+
+            // Split source code by feature
+            if (id.includes('/src/pages/')) {
+              const feature = id.split('/src/pages/')[1].split('/')[0].toLowerCase();
+              return `feature-${feature}`;
+            }
+          }
+        }
+      }
+    },
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(mode)
     }
   };
 });
