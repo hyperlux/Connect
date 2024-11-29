@@ -9,7 +9,6 @@ import Bazaar from './components/Bazaar';
 import StatsGrid from './components/StatsGrid';
 import CommunityHighlights from './components/CommunityHighlights';
 import LatestPosts from './components/LatestPosts';
-import WeatherWidget from './components/WeatherWidget';
 
 const stats = [
   { label: 'Residents', value: '3,246', icon: Users, trend: '+12%' },
@@ -27,15 +26,15 @@ export default function Dashboard() {
       isDark ? 'bg-dark-lighter' : 'bg-gray-50'
     }`}>
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Priority 1: Welcome Banner */}
+        {/* Priority 1: Critical Announcements */}
+        <CriticalAnnouncements />
+
+        {/* Priority 2: Welcome Banner */}
         <WelcomeBanner />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Spans 2 columns */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Priority 2: Critical Announcements */}
-            <CriticalAnnouncements />
-            
+          <div className="lg:col-span-2 space-y-6">            
             {/* Priority 3: Today's Events */}
             <TodayEvents />
             
@@ -50,10 +49,7 @@ export default function Dashboard() {
           </div>
 
           {/* Right Column */}
-          <div className="space-y-6">
-            {/* Weather Widget */}
-            <WeatherWidget />
-            
+          <div className="space-y-6">            
             {/* Priority 7: Marketplace */}
             <Bazaar />
             

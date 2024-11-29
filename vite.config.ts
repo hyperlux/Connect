@@ -5,38 +5,21 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5173,
     proxy: {
       '/api': {
         target: 'https://api.auroville.social',
         changeOrigin: true,
-        secure: false,
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('Proxy error, falling back to localhost:', err);
-            return 'http://localhost:5000';
-          });
-        }
+        secure: false
       },
       '/auth': {
         target: 'https://api.auroville.social',
         changeOrigin: true,
-        secure: false,
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('Proxy error, falling back to localhost:', err);
-            return 'http://localhost:5000';
-          });
-        }
+        secure: false
       }
     }
   },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-  optimizeDeps: {
-    exclude: ['lucide-react']
+  build: {
+    outDir: 'dist',
+    sourcemap: false
   }
 });

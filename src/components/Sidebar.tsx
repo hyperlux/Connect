@@ -20,14 +20,11 @@ import { useTheme } from '../lib/theme';
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
   { icon: Vote, label: 'Decision Hub', href: '/decisions' },
-  { icon: ShoppingBag, label: 'Bazaar', href: '/bazaar' },
-  { icon: Calendar, label: 'Events', href: '/events' },
   { icon: MessageSquare, label: 'Forums', href: '/forums' },
+  { icon: Calendar, label: 'Events', href: '/events' },
+  { icon: ShoppingBag, label: 'Bazaar', href: '/bazaar' },
   { icon: Building2, label: 'Services', href: '/services' },
-  { icon: Users, label: 'Community', href: '/community' },
   { icon: FileText, label: 'Resources', href: '/resources' },
-  { icon: MapPin, label: 'Local Map', href: '/map' },
-  { icon: BookOpen, label: 'Studies', href: '/studies' },
   { icon: Settings, label: 'Settings', href: '/settings' }
 ];
 
