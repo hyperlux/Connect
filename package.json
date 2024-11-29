@@ -7,8 +7,8 @@
     "dev": "vite",
     "dev:local": "cross-env VITE_API_URL=http://localhost:5000 VITE_APP_URL=http://localhost:5173 vite",
     "dev:prod": "cross-env VITE_API_URL=https://api.auroville.social VITE_APP_URL=https://auroville.social vite",
-    "build": "tsc && vite build",
-    "build:prod": "cross-env NODE_ENV=production vite build",
+    "build": "vite build",
+    "build:prod": "vite build",
     "preview": "vite preview",
     "start:server": "cd server && npm run dev",
     "start:all": "concurrently \"npm run dev\" \"npm run start:server\""
@@ -33,13 +33,13 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
-    "@types/node": "^22.10.1",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
+    "@types/node": "^20.10.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.2.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
-    "typescript": "^5.5.3",
-    "vite": "^5.4.11"
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
   }
 }
