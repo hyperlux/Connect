@@ -12,7 +12,15 @@ services:
       - VITE_API_URL=https://api.auroville.social
       - VITE_APP_URL=https://auroville.social
       - NODE_ENV=production
+    volumes:
+      - ./ssl:/etc/nginx/ssl
+      - ./logs/nginx:/var/log/nginx
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - auroville-network
 
@@ -23,23 +31,35 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/auroville
+      - DATABASE_URL=postgresql://postgres:${DB_USER}@db:5432/${DB_NAME}
       - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET}
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - auroville-network
 
   db:
     image: postgres:14-alpine
     environment:
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=auroville
+      - POSTGRES_DB=${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - auroville-network
 
