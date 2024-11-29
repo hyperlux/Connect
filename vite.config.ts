@@ -4,12 +4,28 @@ import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const apiUrl = env.VITE_API_URL || 'https://api.auroville.social';
   
   return {
     plugins: [react()],
     define: {
-      'process.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL),
-      'process.env.VITE_APP_URL': JSON.stringify(env.VITE_APP_URL)
+      'import.meta.env.VITE_API_URL': JSON.stringify(apiUrl),
+      'import.meta.env.VITE_APP_URL': JSON.stringify(env.VITE_APP_URL)
+    },
+    server: {
+      proxy: {
+        '/api': {
+          target: apiUrl,
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/api/, '')
+        },
+        '/auth': {
+          target: apiUrl,
+          changeOrigin: true,
+          secure: false
+        }
+      }
     },
     build: {
       outDir: 'dist',
