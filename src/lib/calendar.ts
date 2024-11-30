@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, PersistOptions } from 'zustand/middleware';
 import axios from './axios';
 import { format, addDays } from 'date-fns';
 
@@ -120,8 +120,13 @@ interface PersistedCalendarState {
   selectedCategory: string;
 }
 
-export const useCalendar = create(
-  persist<CalendarState>(
+type CalendarStorePersist = (
+  config: StateCreator<CalendarState>,
+  options: PersistOptions<CalendarState>
+) => StateCreator<CalendarState>;
+
+const useCalendarStore = create<CalendarState>(
+  (persist as CalendarStorePersist)(
     (set, get) => ({
       events: mockEvents,
       selectedDate: new Date(),
@@ -321,7 +326,7 @@ export const useCalendar = create(
     }),
     {
       name: 'calendar-storage',
-      partialize: (state: CalendarState): Partial<CalendarState> => ({
+      partialize: (state) => ({
         events: state.events,
         selectedDate: state.selectedDate.toISOString(),
         viewMode: state.viewMode,
@@ -337,6 +342,8 @@ export const useCalendar = create(
     }
   )
 );
+
+export default useCalendarStore;
 
 export const selectCalendarState = (state: CalendarState): CalendarState => ({
   ...state,

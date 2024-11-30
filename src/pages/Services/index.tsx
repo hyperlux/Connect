@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, Phone, Mail, ExternalLink, Clock } from 'lucide-react';
+import { Building2, Phone, Mail, ExternalLink, Clock, Globe } from 'lucide-react';
 import ServiceForm from './components/ServiceForm';
 
 const categories = ['Healthcare', 'Education', 'Transportation', 'Utilities', 'Recreation', 'Financial'];
@@ -11,9 +11,9 @@ interface Service {
   category: string;
   hours?: string;
   contact?: {
-    phone: string;
-    email: string;
-    website: string;
+    phone?: string;
+    email?: string;
+    website?: string;
   };
   image?: string;
 }
@@ -182,23 +182,23 @@ export default function Services() {
                     {service.contact?.phone && (
                       <div className="flex items-center text-gray-600">
                         <Phone className="h-5 w-5 mr-2" />
-                        <span>{service.contact.phone}</span>
+                        <span>{(service.contact as NonNullable<typeof service.contact>).phone}</span>
                       </div>
                     )}
                     {service.contact?.email && (
                       <div className="flex items-center text-gray-600">
                         <Mail className="h-5 w-5 mr-2" />
-                        <span>{service.contact.email}</span>
+                        <span>{(service.contact as NonNullable<typeof service.contact>).email}</span>
                       </div>
                     )}
                     {service.contact?.website && (
                       <a
-                        href={service.contact.website}
+                        href={(service.contact as NonNullable<typeof service.contact>).website}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center text-auroville-primary hover:text-opacity-80"
                       >
-                        <ExternalLink className="h-5 w-5 mr-2" />
+                        <Globe className="h-5 w-5 mr-2" />
                         <span>Visit Website</span>
                       </a>
                     )}
