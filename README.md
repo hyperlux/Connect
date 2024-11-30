@@ -1,8 +1,10 @@
 # AurovilleConnect
 
+SSH into server:
 ssh root@134.209.151.102
-love
-cd AurovilleConnect
+password: love
+Root app folder: cd AurovilleConnect
+
 
 A comprehensive community platform for Auroville residents to connect, share events, and collaborate.
 
