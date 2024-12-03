@@ -346,7 +346,6 @@ const useCalendarStore = create<CalendarState>(
 export default useCalendarStore;
 
 export const selectCalendarState = (state: CalendarState): CalendarState => ({
-  ...state,
   events: state.events,
   selectedDate: state.selectedDate,
   viewMode: state.viewMode,
@@ -356,5 +355,15 @@ export const selectCalendarState = (state: CalendarState): CalendarState => ({
   isLoading: state.isLoading,
   error: state.error,
   fetchEvents: state.fetchEvents,
-  createEvent: state.createEvent
+  createEvent: state.createEvent,
+  updateEvent: state.updateEvent,
+  deleteEvent: state.deleteEvent,
+  setSelectedDate: state.setSelectedDate,
+  setViewMode: state.setViewMode,
+  setSearchQuery: state.setSearchQuery,
+  setSidebarSearchQuery: state.setSidebarSearchQuery,
+  setSelectedCategory: state.setSelectedCategory,
+  joinEvent: state.joinEvent,
+  leaveEvent: state.leaveEvent,
+  addComment: state.addComment
 });
