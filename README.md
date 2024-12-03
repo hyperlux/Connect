@@ -1,8 +1,5 @@
 # AurovilleConnect
 
-SSH into server:
-ssh root@134.209.151.102
-password: love
 Root app folder: cd AurovilleConnect
 
 
