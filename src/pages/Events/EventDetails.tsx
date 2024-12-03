@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useCalendar } from '../../lib/calendar';
+import useCalendarStore from '../../lib/calendar';
 import { useTheme } from '../../lib/theme';
 import { useAuth } from '../../lib/auth';
 import { Calendar, MapPin, Users, Clock, Tag, ArrowLeft, MessageSquare, Edit2 } from 'lucide-react';
@@ -49,7 +49,7 @@ class ErrorBoundary extends React.Component<
 export default function EventDetails() {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  const { events, joinEvent, leaveEvent, addComment } = useCalendar();
+  const { events, joinEvent, leaveEvent, addComment } = useCalendarStore();
   const { theme } = useTheme();
   const { user } = useAuth();
   const isDark = theme === 'dark';
@@ -105,7 +105,7 @@ export default function EventDetails() {
 
   const handleEditSubmit = async (data: any) => {
     try {
-      await useCalendar.getState().updateEvent(event.id, data);
+      await useCalendarStore.getState().updateEvent(event.id, data);
       setShowEventForm(false);
     } catch (error) {
       console.error('Failed to update event:', error);

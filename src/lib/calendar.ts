@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, PersistOptions } from 'zustand/middleware';
+import { StateCreator } from 'zustand';
 import axios from './axios';
 import { format, addDays } from 'date-fns';
 
@@ -127,22 +128,22 @@ type CalendarStorePersist = (
 
 const useCalendarStore = create<CalendarState>(
   (persist as CalendarStorePersist)(
-    (set, get) => ({
+    (set: (state: Partial<CalendarState>) => void, get: () => CalendarState) => ({
       events: mockEvents,
       selectedDate: new Date(),
-      viewMode: 'day',
+      viewMode: 'day' as const,
       searchQuery: '',
       sidebarSearchQuery: '',
       selectedCategory: 'all',
       isLoading: false,
       error: null,
 
-      setViewMode: (mode) => set({ viewMode: mode }),
-      setSearchQuery: (query) => set({ searchQuery: query }),
-      setSidebarSearchQuery: (query) => set({ sidebarSearchQuery: query }),
-      setSelectedCategory: (category) => set({ selectedCategory: category }),
+      setViewMode: (mode: 'day' | 'week' | 'month') => set({ viewMode: mode }),
+      setSearchQuery: (query: string) => set({ searchQuery: query }),
+      setSidebarSearchQuery: (query: string) => set({ sidebarSearchQuery: query }),
+      setSelectedCategory: (category: string) => set({ selectedCategory: category }),
 
-      setSelectedDate: (date) => {
+      setSelectedDate: (date: Date) => {
         set({ selectedDate: date });
         get().fetchEvents(date.getMonth() + 1, date.getFullYear());
       },
@@ -323,23 +324,30 @@ const useCalendarStore = create<CalendarState>(
           throw error;
         }
       },
-    }),
-    {
-      name: 'calendar-storage',
-      partialize: (state) => ({
+
+      partialize: (state: CalendarState) => ({
         events: state.events,
         selectedDate: state.selectedDate.toISOString(),
         viewMode: state.viewMode,
         searchQuery: state.searchQuery,
         sidebarSearchQuery: state.sidebarSearchQuery,
-        selectedCategory: state.selectedCategory
-      }),
-      onRehydrateStorage: () => (state) => {
-        if (state && state.selectedDate) {
-          state.selectedDate = new Date(state.selectedDate);
-        }
-      }
-    }
+        selectedCategory: state.selectedCategory,
+        isLoading: state.isLoading,
+        error: state.error,
+        fetchEvents: state.fetchEvents,
+        createEvent: state.createEvent,
+        updateEvent: state.updateEvent,
+        deleteEvent: state.deleteEvent,
+        setSelectedDate: state.setSelectedDate,
+        setViewMode: state.setViewMode,
+        setSearchQuery: state.setSearchQuery,
+        setSidebarSearchQuery: state.setSidebarSearchQuery,
+        setSelectedCategory: state.setSelectedCategory,
+        joinEvent: state.joinEvent,
+        leaveEvent: state.leaveEvent,
+        addComment: state.addComment
+      })
+    })
   )
 );
 

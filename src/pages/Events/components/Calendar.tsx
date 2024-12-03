@@ -10,14 +10,14 @@ import {
   getDay,
   isValid
 } from 'date-fns';
-import { useCalendar, type CalendarEvent } from '../../../lib/calendar';
+import useCalendarStore from '../../../lib/calendar';
 
 interface CalendarProps {
   onSelectDate: (date: Date) => void;
 }
 
 export default function Calendar({ onSelectDate }: CalendarProps) {
-  const { selectedDate, events, setSelectedDate } = useCalendar();
+  const { selectedDate, events, setSelectedDate } = useCalendarStore();
 
   // Get the first day of the current month
   const monthStart = startOfMonth(selectedDate);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useCalendar } from '../../lib/calendar';
+import useCalendarStore from '../../lib/calendar';
 import Calendar from './components/Calendar';
 import EventCard from './components/EventCard';
 import EventForm from './components/EventForm';
@@ -28,7 +28,7 @@ export default function Events() {
     createEvent,
     updateEvent,
     deleteEvent
-  } = useCalendar();
+  } = useCalendarStore();
   const { theme } = useTheme();
   const { user } = useAuth();
   const isDark = theme === 'dark';
