@@ -10,7 +10,7 @@ import {
   getDay,
   isValid
 } from 'date-fns';
-import useCalendarStore from '../../../lib/calendar';
+import useCalendarStore, { type CalendarEvent } from '../../../lib/calendar';
 
 interface CalendarProps {
   onSelectDate: (date: Date) => void;

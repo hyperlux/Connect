@@ -112,26 +112,17 @@ interface CalendarState {
   addComment: (eventId: string, comment: string) => Promise<void>;
 }
 
-interface PersistedCalendarState {
-  events: CalendarEvent[];
-  selectedDate: string;
-  viewMode: 'day' | 'week' | 'month';
-  searchQuery: string;
-  sidebarSearchQuery: string;
-  selectedCategory: string;
-}
-
 type CalendarStorePersist = (
   config: StateCreator<CalendarState>,
   options: PersistOptions<CalendarState>
 ) => StateCreator<CalendarState>;
 
-const useCalendarStore = create<CalendarState>(
-  (persist as CalendarStorePersist)(
-    (set: (state: Partial<CalendarState>) => void, get: () => CalendarState) => ({
+const useCalendarStore = create<CalendarState>()(
+  persist(
+    (set, get) => ({
       events: mockEvents,
       selectedDate: new Date(),
-      viewMode: 'day' as const,
+      viewMode: 'day',
       searchQuery: '',
       sidebarSearchQuery: '',
       selectedCategory: 'all',
@@ -151,7 +142,7 @@ const useCalendarStore = create<CalendarState>(
       fetchEvents: async (month?: number, year?: number) => {
         try {
           set({ isLoading: true, error: null });
-          const currentDate = new Date(get().selectedDate);
+          const currentDate = get().selectedDate;
           
           try {
             const response = await axios.get('/events', {
@@ -165,7 +156,7 @@ const useCalendarStore = create<CalendarState>(
             console.log('Using stored data:', apiError);
             const storedEvents = get().events;
             if (month || year) {
-              const filteredEvents = storedEvents.filter(event => {
+              const filteredEvents = storedEvents.filter((event: CalendarEvent) => {
                 const eventDate = new Date(event.date);
                 return eventDate.getMonth() + 1 === (month ?? currentDate.getMonth() + 1) &&
                        eventDate.getFullYear() === (year ?? currentDate.getFullYear());
@@ -180,7 +171,7 @@ const useCalendarStore = create<CalendarState>(
         }
       },
 
-      createEvent: async (event) => {
+      createEvent: async (event: Partial<CalendarEvent>) => {
         try {
           set({ isLoading: true, error: null });
           try {
@@ -195,7 +186,7 @@ const useCalendarStore = create<CalendarState>(
               isJoined: false,
               attendees: 0
             };
-            set(state => ({ 
+            set((state) => ({ 
               events: [...state.events, newEvent],
               isLoading: false
             }));
@@ -206,7 +197,7 @@ const useCalendarStore = create<CalendarState>(
         }
       },
 
-      updateEvent: async (id, event) => {
+      updateEvent: async (id: string, event: Partial<CalendarEvent>) => {
         try {
           set({ isLoading: true, error: null });
           try {
@@ -214,8 +205,8 @@ const useCalendarStore = create<CalendarState>(
             await get().fetchEvents();
           } catch (apiError) {
             console.log('Updating event locally:', apiError);
-            set(state => ({
-              events: state.events.map(e => e.id === id ? { ...e, ...event } : e),
+            set((state) => ({
+              events: state.events.map((e) => e.id === id ? { ...e, ...event } : e),
               isLoading: false
             }));
           }
@@ -225,19 +216,19 @@ const useCalendarStore = create<CalendarState>(
         }
       },
 
-      deleteEvent: async (id) => {
+      deleteEvent: async (id: string) => {
         try {
           set({ isLoading: true, error: null });
           try {
             await axios.delete(`/events/${id}`);
-            set(state => ({
-              events: state.events.filter(e => e.id !== id),
+            set((state) => ({
+              events: state.events.filter((e) => e.id !== id),
               isLoading: false
             }));
           } catch (apiError) {
             console.log('Deleting event locally:', apiError);
-            set(state => ({
-              events: state.events.filter(e => e.id !== id),
+            set((state) => ({
+              events: state.events.filter((e) => e.id !== id),
               isLoading: false
             }));
           }
@@ -247,7 +238,7 @@ const useCalendarStore = create<CalendarState>(
         }
       },
 
-      joinEvent: async (eventId) => {
+      joinEvent: async (eventId: string) => {
         try {
           set({ isLoading: true, error: null });
           try {
@@ -255,8 +246,8 @@ const useCalendarStore = create<CalendarState>(
             await get().fetchEvents();
           } catch (apiError) {
             console.log('Updating join status locally:', apiError);
-            set(state => ({
-              events: state.events.map(e => 
+            set((state) => ({
+              events: state.events.map((e) => 
                 e.id === eventId 
                   ? { ...e, attendees: e.attendees + 1, isJoined: true }
                   : e
@@ -270,7 +261,7 @@ const useCalendarStore = create<CalendarState>(
         }
       },
 
-      leaveEvent: async (eventId) => {
+      leaveEvent: async (eventId: string) => {
         try {
           set({ isLoading: true, error: null });
           try {
@@ -278,8 +269,8 @@ const useCalendarStore = create<CalendarState>(
             await get().fetchEvents();
           } catch (apiError) {
             console.log('Updating leave status locally:', apiError);
-            set(state => ({
-              events: state.events.map(e => 
+            set((state) => ({
+              events: state.events.map((e) => 
                 e.id === eventId 
                   ? { ...e, attendees: Math.max(0, e.attendees - 1), isJoined: false }
                   : e
@@ -293,7 +284,7 @@ const useCalendarStore = create<CalendarState>(
         }
       },
 
-      addComment: async (eventId, content) => {
+      addComment: async (eventId: string, content: string) => {
         try {
           set({ isLoading: true, error: null });
           try {
@@ -311,7 +302,7 @@ const useCalendarStore = create<CalendarState>(
               }
             };
             set((state) => ({
-              events: state.events.map(e => 
+              events: state.events.map((e) => 
                 e.id === eventId 
                   ? { ...e, comments: [...e.comments, newComment] }
                   : e
@@ -324,54 +315,19 @@ const useCalendarStore = create<CalendarState>(
           throw error;
         }
       },
-
-      partialize: (state: CalendarState) => ({
+    }),
+    {
+      name: 'calendar-storage',
+      partialize: (state) => ({
         events: state.events,
         selectedDate: state.selectedDate.toISOString(),
         viewMode: state.viewMode,
         searchQuery: state.searchQuery,
         sidebarSearchQuery: state.sidebarSearchQuery,
-        selectedCategory: state.selectedCategory,
-        isLoading: state.isLoading,
-        error: state.error,
-        fetchEvents: state.fetchEvents,
-        createEvent: state.createEvent,
-        updateEvent: state.updateEvent,
-        deleteEvent: state.deleteEvent,
-        setSelectedDate: state.setSelectedDate,
-        setViewMode: state.setViewMode,
-        setSearchQuery: state.setSearchQuery,
-        setSidebarSearchQuery: state.setSidebarSearchQuery,
-        setSelectedCategory: state.setSelectedCategory,
-        joinEvent: state.joinEvent,
-        leaveEvent: state.leaveEvent,
-        addComment: state.addComment
+        selectedCategory: state.selectedCategory
       })
-    })
+    }
   )
 );
 
 export default useCalendarStore;
-
-export const selectCalendarState = (state: CalendarState): CalendarState => ({
-  events: state.events,
-  selectedDate: state.selectedDate,
-  viewMode: state.viewMode,
-  searchQuery: state.searchQuery,
-  sidebarSearchQuery: state.sidebarSearchQuery,
-  selectedCategory: state.selectedCategory,
-  isLoading: state.isLoading,
-  error: state.error,
-  fetchEvents: state.fetchEvents,
-  createEvent: state.createEvent,
-  updateEvent: state.updateEvent,
-  deleteEvent: state.deleteEvent,
-  setSelectedDate: state.setSelectedDate,
-  setViewMode: state.setViewMode,
-  setSearchQuery: state.setSearchQuery,
-  setSidebarSearchQuery: state.setSidebarSearchQuery,
-  setSelectedCategory: state.setSelectedCategory,
-  joinEvent: state.joinEvent,
-  leaveEvent: state.leaveEvent,
-  addComment: state.addComment
-});
