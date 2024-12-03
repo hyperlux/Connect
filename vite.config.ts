@@ -4,13 +4,14 @@ import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const isDev = mode === 'development';
   
   return {
     plugins: [react()],
     server: {
-      proxy: {
+      proxy: isDev ? {
         '/api': {
-          target: 'http://localhost:5000',
+          target: env.VITE_API_URL || 'http://localhost:5000',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
           configure: (proxy, _options) => {
@@ -25,7 +26,7 @@ export default defineConfig(({ mode }) => {
             });
           }
         }
-      }
+      } : undefined
     },
     resolve: {
       alias: {

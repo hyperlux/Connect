@@ -1,7 +1,7 @@
-const API_URL = '/api';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
-  const url = `${API_URL}/${endpoint}`;
+  const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

@@ -29,21 +29,22 @@ const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://auroville.social',
   'http://localhost:5000',
-  'https://api.auroville.social'
-];
+  'https://auroville.social',
+  'http://frontend',  // Docker service name
+  process.env.CORS_ORIGIN
+].filter(Boolean);
 
 app.use(cors({
   origin: function(origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
       callback(null, true);
     } else {
       console.log('Origin not allowed:', origin);
-      callback(null, true); // Allow all origins in development
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
@@ -79,7 +80,7 @@ app.use(errorHandler);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.status(200).json({ status: 'ok' });
 });
 
 const server = app.listen(PORT, HOST, () => {
