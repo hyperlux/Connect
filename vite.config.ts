@@ -6,6 +6,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const isDev = mode === 'development';
   
+  process.env.NODE_ENV = process.env.NODE_ENV || mode;
+  
   return {
     plugins: [react()],
     server: {
@@ -38,8 +40,8 @@ export default defineConfig(({ mode }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: true,
-          drop_debugger: true
+          drop_console: !isDev,
+          drop_debugger: !isDev
         }
       },
       rollupOptions: {
@@ -82,7 +84,9 @@ export default defineConfig(({ mode }) => {
       }
     },
     define: {
-      'process.env.NODE_ENV': JSON.stringify(mode)
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL),
+      'process.env.VITE_APP_URL': JSON.stringify(env.VITE_APP_URL)
     }
   };
 });
