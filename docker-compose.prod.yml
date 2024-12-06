@@ -5,6 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NODE_OPTIONS=--max-old-space-size=4096
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
     ports:
       - "80:80"
       - "443:443"
@@ -12,6 +20,7 @@ services:
       - VITE_API_URL=https://auroville.social/api
       - VITE_APP_URL=https://auroville.social
       - NODE_ENV=production
+      - NODE_OPTIONS=--max-old-space-size=4096
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./logs/nginx:/var/log/nginx
