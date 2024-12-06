@@ -33,9 +33,9 @@ services:
     expose:
       - "5000"
     environment:
-      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD}@db:5432/${DB_NAME}
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/auroville
       - NODE_ENV=production
-      - JWT_SECRET=${JWT_SECRET}
+      - JWT_SECRET=72jmcBa8LYTi7szZp1Lw9+GmKuEXp76og8B1FyySqOg8f3a5d2e1c4b7
       - PORT=5000
       - HOST=0.0.0.0
       - CORS_ORIGIN=https://auroville.social
@@ -54,14 +54,14 @@ services:
   db:
     image: postgres:14-alpine
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=auroville
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auroville"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -73,4 +73,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data: 
+  postgres_data:
