@@ -11,6 +11,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
+import { useTheme } from '../lib/theme';
 
 interface MenuItem {
   icon: React.ComponentType<any>;
@@ -61,14 +62,15 @@ const externalLinks: ExternalLink[] = [
 export default function Sidebar() {
   const location = useLocation();
   const { isAuthenticated, user } = useAuth();
+  const { theme } = useTheme();
 
   return (
     <div className="h-screen w-64 flex flex-col bg-white dark:bg-[#1a1a1a] border-r border-gray-200 dark:border-[#2a2a2a]">
       <div className="p-5 border-b border-gray-200 dark:border-[#2a2a2a]">
         <img 
-          src="/logolight.png"
+          src={theme === 'dark' ? "/logodark.png" : "/logolight.png"}
           alt="Auroville Community" 
-          className="h-12 object-contain dark:filter-none"
+          className="h-12 object-contain"
         />
       </div>
       
