@@ -8,6 +8,9 @@ export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
+  // Debug log auth state
+  console.log('Auth state:', { user, isAuthenticated });
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -43,7 +46,7 @@ export default function Header() {
 
           <ThemeToggle />
 
-          {isAuthenticated ? (
+          {isAuthenticated && user ? (
             <div className="flex items-center gap-4">
               <NotificationsPopover />
               <Link to="/profile" className="flex items-center gap-3">
