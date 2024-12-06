@@ -9,10 +9,27 @@ interface ThemeState {
   toggleTheme: () => void;
 }
 
+// Get initial theme from system preference
+const getInitialTheme = (): Theme => {
+  // Check if theme was previously stored
+  const storedTheme = localStorage.getItem('theme-storage');
+  if (storedTheme) {
+    const { state } = JSON.parse(storedTheme);
+    return state.theme;
+  }
+  
+  // If no stored theme, check system preference
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+  
+  return 'light';
+};
+
 export const useTheme = create<ThemeState>()(
   persist(
     (set) => ({
-      theme: 'light',
+      theme: getInitialTheme(),
       setTheme: (theme) => {
         document.documentElement.classList.remove('light', 'dark');
         document.documentElement.classList.add(theme);
