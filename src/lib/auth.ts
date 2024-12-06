@@ -30,12 +30,33 @@ interface AuthState {
   updateProfile: (data: Partial<User>) => Promise<void>;
 }
 
+// Helper to get initial state from localStorage
+const getInitialState = () => {
+  try {
+    const token = localStorage.getItem('auth-token');
+    const storedAuth = localStorage.getItem('auth-storage');
+    if (storedAuth && token) {
+      const { state } = JSON.parse(storedAuth);
+      return {
+        user: state.user,
+        token: token,
+        isAuthenticated: true
+      };
+    }
+  } catch (error) {
+    console.error('Error reading auth state:', error);
+  }
+  return { user: null, token: null, isAuthenticated: false };
+};
+
+const initialState = getInitialState();
+
 export const useAuth = create<AuthState>()(
   persist(
     (set, get) => ({
-      user: null,
-      token: null,
-      isAuthenticated: false,
+      user: initialState.user,
+      token: initialState.token,
+      isAuthenticated: initialState.isAuthenticated,
       isLoading: false,
       error: null,
 
@@ -90,8 +111,9 @@ export const useAuth = create<AuthState>()(
           if (token) {
             await api.withAuth(token).post('/auth/logout', {});
           }
-          // Clear token from localStorage
+          // Clear all auth data
           localStorage.removeItem('auth-token');
+          localStorage.removeItem('auth-storage');
           set({
             user: null,
             token: null,
