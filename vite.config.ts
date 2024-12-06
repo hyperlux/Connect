@@ -10,11 +10,17 @@ export default defineConfig(({ mode }) => {
     server: {
       host: '0.0.0.0',
       port: 5173,
+      strictPort: true,
+      hmr: {
+        clientPort: 443,
+        host: 'auroville.social'
+      },
       proxy: {
         '/api': {
-          target: env.VITE_API_URL || 'http://localhost:5000',
+          target: 'http://localhost:5000',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
+          secure: false
         }
       }
     },
@@ -22,23 +28,6 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': path.resolve(__dirname, './src'),
       },
-    },
-    build: {
-      chunkSizeWarningLimit: 500,
-      rollupOptions: {
-        output: {
-          manualChunks: (id) => {
-            if (id.includes('node_modules/react/') || 
-                id.includes('node_modules/react-dom/') ||
-                id.includes('node_modules/react-router-dom/')) {
-              return 'react-core';
-            }
-          }
-        }
-      }
-    },
-    define: {
-      'process.env.NODE_ENV': JSON.stringify(mode)
     }
   };
 });
