@@ -9,11 +9,11 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - VITE_API_URL=http://localhost:5000
-      - VITE_APP_URL=http://localhost
+      - VITE_API_URL=https://api.auroville.social
+      - VITE_APP_URL=https://auroville.social
       - NODE_ENV=production
     volumes:
-      - ./ssl:/etc/nginx/ssl
+      - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./logs/nginx:/var/log/nginx
     depends_on:
       - api
