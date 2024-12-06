@@ -9,8 +9,8 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - VITE_API_URL=https://api.auroville.social
-      - VITE_APP_URL=https://auroville.social
+      - VITE_API_URL=http://134.209.151.102:5000
+      - VITE_APP_URL=http://134.209.151.102
       - NODE_ENV=production
     volumes:
       - ./ssl:/etc/nginx/ssl
@@ -30,15 +30,15 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    expose:
-      - "5000"
+    ports:
+      - "5000:5000"
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/auroville
       - NODE_ENV=production
       - JWT_SECRET=72jmcBa8LYTi7szZp1Lw9+GmKuEXp76og8B1FyySqOg8f3a5d2e1c4b7
       - PORT=5000
       - HOST=0.0.0.0
-      - CORS_ORIGIN=https://auroville.social
+      - CORS_ORIGIN=http://134.209.151.102
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
