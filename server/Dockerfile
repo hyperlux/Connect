@@ -12,6 +12,9 @@ RUN npm install
 # Copy source code
 COPY . .
 
+# Generate Prisma client
+RUN npx prisma generate
+
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s \
     CMD curl -f http://localhost:5000/health || exit 1

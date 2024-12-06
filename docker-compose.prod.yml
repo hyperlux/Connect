@@ -9,7 +9,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - VITE_API_URL=http://134.209.151.102:5000
+      - VITE_API_URL=http://134.209.151.102:5001
       - VITE_APP_URL=http://134.209.151.102
       - NODE_ENV=production
     volumes:
@@ -31,7 +31,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "5001:5000"
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/auroville
       - NODE_ENV=production
