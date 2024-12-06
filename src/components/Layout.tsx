@@ -2,17 +2,23 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import { useTheme } from '../lib/theme';
+import { useEffect } from 'react';
 
 export default function Layout() {
   const { theme } = useTheme();
-  const isDark = theme === 'dark';
+
+  useEffect(() => {
+    // Apply theme to root element
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(theme);
+  }, [theme]);
 
   return (
-    <div className={`min-h-screen flex ${isDark ? 'bg-dark' : 'bg-gray-50'}`}>
+    <div className="min-h-screen flex bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 p-8 overflow-auto">
+        <main className="flex-1 p-8 overflow-auto bg-gray-50 dark:bg-gray-800">
           <Outlet />
         </main>
       </div>

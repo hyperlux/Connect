@@ -8,11 +8,8 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className={`p-2 rounded-lg transition-colors ${
-        isDark 
-          ? 'hover:bg-dark-lighter text-dark-secondary hover:text-dark-primary' 
-          : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-      }`}
+      className="p-2 rounded-lg transition-colors text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {isDark ? (
         <Sun className="h-5 w-5" />

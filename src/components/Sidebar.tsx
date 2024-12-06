@@ -11,7 +11,6 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
-import { useTheme } from '../lib/theme';
 
 interface MenuItem {
   icon: React.ComponentType<any>;
@@ -62,20 +61,14 @@ const externalLinks: ExternalLink[] = [
 export default function Sidebar() {
   const location = useLocation();
   const { isAuthenticated, user } = useAuth();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
 
   return (
-    <div className={`h-screen w-64 flex flex-col ${
-      isDark 
-        ? 'bg-dark-card border-dark' 
-        : 'bg-white border-gray-200'
-    } border-r`}>
-      <div className={`p-5 border-b ${isDark ? 'border-dark' : 'border-gray-200'}`}>
+    <div className="h-screen w-64 flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
+      <div className="p-5 border-b border-gray-200 dark:border-gray-700">
         <img 
-          src={isDark ? "/logodark.png" : "/logolight.png"}
+          src="/logolight.png"
           alt="Auroville Community" 
-          className="h-12 object-contain"
+          className="h-12 object-contain dark:invert"
         />
       </div>
       
@@ -92,18 +85,14 @@ export default function Sidebar() {
                   to={item.href}
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-[#FDF1EC] text-[#E27B58]'
-                      : isDark
-                        ? 'text-dark-primary hover:bg-dark-lighter'
-                        : 'text-gray-700 hover:bg-gray-100'
+                      ? 'bg-[#FDF1EC] dark:bg-[#E27B58]/20 text-[#E27B58]'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
                   <Icon className={`w-5 h-5 ${
                     isActive 
                       ? 'text-[#E27B58]' 
-                      : isDark 
-                        ? 'text-dark-primary' 
-                        : 'text-gray-600'
+                      : 'text-gray-600 dark:text-gray-400'
                   }`} />
                   <span>{item.label}</span>
                 </Link>
@@ -112,10 +101,8 @@ export default function Sidebar() {
           })}
         </ul>
 
-        <div className={`pt-4 border-t mt-4 ${isDark ? 'border-dark' : 'border-gray-200'}`}>
-          <h3 className={`px-4 text-xs font-semibold uppercase tracking-wider mb-2 ${
-            isDark ? 'text-dark-secondary' : 'text-gray-500'
-          }`}>
+        <div className="pt-4 border-t mt-4 border-gray-200 dark:border-gray-700">
+          <h3 className="px-4 text-xs font-semibold uppercase tracking-wider mb-2 text-gray-500 dark:text-gray-400">
             External Resources
           </h3>
           {externalLinks.map((link) => (
@@ -124,20 +111,12 @@ export default function Sidebar() {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
-                isDark
-                  ? 'text-dark-primary hover:bg-dark-lighter'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
+              className="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
-              <ExternalLink className={`w-5 h-5 ${
-                isDark ? 'text-dark-primary' : 'text-gray-600'
-              }`} />
+              <ExternalLink className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               <div>
                 <span className="block text-sm">{link.label}</span>
-                <span className={`text-xs ${
-                  isDark ? 'text-dark-secondary' : 'text-gray-500'
-                }`}>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
                   {link.description}
                 </span>
               </div>
@@ -147,14 +126,10 @@ export default function Sidebar() {
       </nav>
 
       {isAuthenticated && user && (
-        <div className={`p-4 border-t ${isDark ? 'border-dark' : 'border-gray-200'}`}>
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
           <Link
             to="/profile"
-            className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
-              isDark
-                ? 'hover:bg-dark-lighter'
-                : 'hover:bg-gray-100'
-            }`}
+            className="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <img
               src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=E27B58&color=fff`}
@@ -162,14 +137,10 @@ export default function Sidebar() {
               className="w-8 h-8 rounded-full"
             />
             <div className="flex-1">
-              <p className={`text-sm font-medium ${
-                isDark ? 'text-dark-primary' : 'text-gray-700'
-              }`}>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 {user.name}
               </p>
-              <p className={`text-xs ${
-                isDark ? 'text-dark-secondary' : 'text-gray-500'
-              }`}>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 Community Member
               </p>
             </div>

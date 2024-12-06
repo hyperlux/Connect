@@ -1,6 +1,5 @@
 import React from 'react';
 import { Users, Leaf, Heart, Globe } from 'lucide-react';
-import { useTheme } from '../../lib/theme';
 import WelcomeBanner from './components/WelcomeBanner';
 import TodayEvents from './components/TodayEvents';
 import CriticalAnnouncements from './components/CriticalAnnouncements';
@@ -18,13 +17,8 @@ const stats = [
 ];
 
 export default function Dashboard() {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
-
   return (
-    <div className={`flex-1 p-6 overflow-auto ${
-      isDark ? 'bg-dark-lighter' : 'bg-gray-50'
-    }`}>
+    <div className="flex-1 p-6 overflow-auto bg-gray-50 dark:bg-gray-800">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Priority 1: Critical Announcements */}
         <CriticalAnnouncements />

@@ -1,14 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Search, Users } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { useTheme } from '../hooks/useTheme';
 import ThemeToggle from './ThemeToggle';
 import NotificationsPopover from './NotificationsPopover';
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
 
   const handleLogout = async () => {
     try {
@@ -19,40 +16,26 @@ export default function Header() {
   };
 
   return (
-    <header className={`px-6 py-4 ${
-      isDark 
-        ? 'bg-dark-card border-dark' 
-        : 'bg-white border-gray-200'
-    } border-b`}>
+    <header className="px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between">
         <div className="flex items-center flex-1">
           <div className="relative w-96">
             <input
               type="text"
               placeholder="Search..."
-              className={`w-full pl-10 pr-4 py-2 rounded-lg ${
-                isDark
-                  ? 'bg-dark-lighter border-dark text-dark-primary placeholder-dark-secondary'
-                  : 'bg-white border-gray-300 text-gray-900'
-              } border focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent`}
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
             />
-            <Search className={`absolute left-3 top-2.5 h-5 w-5 ${
-              isDark ? 'text-dark-secondary' : 'text-gray-400'
-            }`} />
+            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-500" />
           </div>
         </div>
 
         <div className="flex items-center gap-6">
           {/* Visitor Counter */}
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
-            isDark ? 'bg-dark-lighter' : 'bg-auroville-light'
-          }`}>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-auroville-light dark:bg-gray-800">
             <Users className="h-5 w-5 text-auroville-primary" />
             <div className="text-sm">
               <span className="font-medium text-auroville-primary">1,247</span>
-              <span className={`ml-1 ${
-                isDark ? 'text-dark-secondary' : 'text-gray-600'
-              }`}>visitors today</span>
+              <span className="ml-1 text-gray-600 dark:text-gray-400">visitors today</span>
             </div>
           </div>
 
@@ -68,23 +51,17 @@ export default function Header() {
                   className="w-8 h-8 rounded-full"
                 />
                 <div>
-                  <p className={`text-sm font-medium ${
-                    isDark ? 'text-dark-primary' : 'text-gray-700'
-                  }`}>
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                     {user?.name}
                   </p>
-                  <p className={`text-xs ${
-                    isDark ? 'text-dark-secondary' : 'text-gray-500'
-                  }`}>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     Community Member
                   </p>
                 </div>
               </Link>
               <button
                 onClick={handleLogout}
-                className={`text-sm hover:text-gray-900 ${
-                  isDark ? 'text-dark-secondary hover:text-dark-primary' : 'text-gray-600'
-                }`}
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
               >
                 Sign Out
               </button>
