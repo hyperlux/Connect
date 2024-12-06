@@ -72,11 +72,18 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#1a1a1a] flex items-center justify-center">
-      <div className="w-full max-w-lg px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-          Welcome to Auroville
-        </h1>
+    <div className="min-h-screen bg-gray-100 dark:bg-black flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-8">
+        <div>
+          <img
+            className="mx-auto h-16 w-auto"
+            src="/logolight.png"
+            alt="Auroville"
+          />
+          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Welcome to Auroville
+          </h2>
+        </div>
         <LoginForm />
       </div>
     </div>
@@ -85,16 +92,11 @@ function LoginPage() {
 
 function App() {
   const { theme } = useTheme();
-  const { initialize } = useAuth();
 
   useEffect(() => {
     document.documentElement.classList.remove('light', 'dark');
     document.documentElement.classList.add(theme);
   }, [theme]);
-
-  useEffect(() => {
-    initialize().catch(console.error);
-  }, [initialize]);
 
   return (
     <BrowserRouter>
