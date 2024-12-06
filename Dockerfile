@@ -1,17 +1,22 @@
 # Build stage
 FROM node:18-alpine as build
 
+# Set environment variable to skip installing optional dependencies
+ENV NODE_ENV=production
+
 WORKDIR /app
 
-# Copy package files
+# Copy package files and install production dependencies first
 COPY package*.json ./
-RUN npm install
+RUN npm ci --only=production
 
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Install dev dependencies and build
+RUN npm install --only=development && \
+    npm run build && \
+    npm prune --production
 
 # Production stage
 FROM nginx:alpine
