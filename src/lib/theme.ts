@@ -12,10 +12,9 @@ interface ThemeState {
 // Get initial theme from system preference
 const getInitialTheme = (): Theme => {
   // Check if theme was previously stored
-  const storedTheme = localStorage.getItem('theme-storage');
+  const storedTheme = localStorage.getItem('app-theme');
   if (storedTheme) {
-    const { state } = JSON.parse(storedTheme);
-    return state.theme;
+    return storedTheme as Theme;
   }
   
   // If no stored theme, check system preference
@@ -33,6 +32,7 @@ export const useTheme = create<ThemeState>()(
       setTheme: (theme) => {
         document.documentElement.classList.remove('light', 'dark');
         document.documentElement.classList.add(theme);
+        localStorage.setItem('app-theme', theme);
         set({ theme });
       },
       toggleTheme: () => {
@@ -40,12 +40,14 @@ export const useTheme = create<ThemeState>()(
           const newTheme = state.theme === 'light' ? 'dark' : 'light';
           document.documentElement.classList.remove('light', 'dark');
           document.documentElement.classList.add(newTheme);
+          localStorage.setItem('app-theme', newTheme);
           return { theme: newTheme };
         });
       },
     }),
     {
-      name: 'theme-storage',
+      name: 'app-theme',
+      skipHydration: true // This ensures theme persists independently
     }
   )
 );
