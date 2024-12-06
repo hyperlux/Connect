@@ -3,17 +3,26 @@ FROM node:18-alpine as build
 
 WORKDIR /app
 
+# Add build utilities
+RUN apk add --no-cache python3 make g++
+
 # Copy package files
 COPY package*.json ./
 
-# Install ALL dependencies (including devDependencies)
-RUN npm install
+# Install dependencies with verbose logging
+RUN npm install --verbose
 
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build:prod
+# Show directory contents for debugging
+RUN ls -la && \
+    echo "Node version:" && node -v && \
+    echo "NPM version:" && npm -v
+
+# Build with verbose output
+RUN echo "Starting build..." && \
+    npm run build:prod --verbose
 
 # Production stage
 FROM nginx:alpine
