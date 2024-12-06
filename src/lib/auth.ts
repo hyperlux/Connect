@@ -28,16 +28,51 @@ interface AuthState {
   logout: () => Promise<void>;
   clearError: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
+  initialize: () => Promise<void>;
 }
+
+// Helper to get initial state from localStorage
+const getInitialState = () => {
+  try {
+    const stored = localStorage.getItem('auth-storage');
+    if (stored) {
+      const { state } = JSON.parse(stored);
+      return {
+        user: state.user,
+        token: state.token,
+        isAuthenticated: Boolean(state.token && state.user),
+      };
+    }
+  } catch (error) {
+    console.error('Error reading auth state:', error);
+  }
+  return { user: null, token: null, isAuthenticated: false };
+};
+
+const initialState = getInitialState();
 
 export const useAuth = create<AuthState>()(
   persist(
     (set, get) => ({
-      user: null,
-      token: null,
-      isAuthenticated: false,
+      user: initialState.user,
+      token: initialState.token,
+      isAuthenticated: initialState.isAuthenticated,
       isLoading: false,
       error: null,
+
+      initialize: async () => {
+        try {
+          const token = get().token;
+          if (token) {
+            const user = await api.withAuth(token).get('/api/users/me');
+            set({ user, isAuthenticated: true });
+          }
+        } catch (error) {
+          console.error('Auth initialization error:', error);
+          // If token is invalid, clear the auth state
+          set({ user: null, token: null, isAuthenticated: false });
+        }
+      },
 
       login: async (email: string, password: string) => {
         try {
@@ -82,6 +117,7 @@ export const useAuth = create<AuthState>()(
           if (token) {
             await api.withAuth(token).post('/auth/logout', {});
           }
+          localStorage.removeItem('auth-storage');
           set({
             user: null,
             token: null,

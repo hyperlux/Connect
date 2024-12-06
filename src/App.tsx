@@ -83,11 +83,16 @@ function LoginPage() {
 
 function App() {
   const { theme } = useTheme();
+  const { initialize } = useAuth();
 
   useEffect(() => {
     document.documentElement.classList.remove('light', 'dark');
     document.documentElement.classList.add(theme);
   }, [theme]);
+
+  useEffect(() => {
+    initialize().catch(console.error);
+  }, [initialize]);
 
   return (
     <BrowserRouter>
