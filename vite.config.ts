@@ -4,12 +4,11 @@ import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const isDev = mode === 'development';
   
   return {
     plugins: [react()],
     server: {
-      host: true,
+      host: '0.0.0.0',
       port: 5173,
       proxy: {
         '/api': {
@@ -37,6 +36,9 @@ export default defineConfig(({ mode }) => {
           }
         }
       }
+    },
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(mode)
     }
   };
 });
