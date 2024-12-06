@@ -9,7 +9,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - VITE_API_URL=/api
+      - VITE_API_URL=https://auroville.social/api
       - VITE_APP_URL=https://auroville.social
       - NODE_ENV=production
     volumes:
