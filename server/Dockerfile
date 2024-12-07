@@ -5,15 +5,18 @@ RUN apk add --no-cache curl
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files first for better caching
 COPY package*.json ./
-RUN npm install
+RUN npm install --production
 
-# Copy source code
-COPY . .
+# Copy prisma schema
+COPY prisma ./prisma/
 
 # Generate Prisma client
 RUN npx prisma generate
+
+# Copy rest of the source code
+COPY . .
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s \
@@ -21,8 +24,5 @@ HEALTHCHECK --interval=30s --timeout=3s \
 
 EXPOSE 5000
 
-# Use proper process manager for Node.js
-RUN npm install -g pm2
-
-# Start with PM2
-CMD ["pm2-runtime", "index.js"] 
+# Start the application
+CMD ["node", "index.js"] 

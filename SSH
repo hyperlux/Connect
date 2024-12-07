@@ -7,6 +7,7 @@ cd AurovilleConnect
 
 Always do after updating a file:
 git pull origin main
+
 docker-compose down
 docker-compose build
 docker-compose up -d
