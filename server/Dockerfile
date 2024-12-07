@@ -29,7 +29,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/index.js ./
-COPY --from=builder /app/src ./src
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s \
