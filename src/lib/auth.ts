@@ -63,6 +63,11 @@ export const useAuth = create<AuthState>()(
             };
           });
           
+          // Force a re-render by updating state again
+          setTimeout(() => {
+            set((state) => ({ ...state }));
+          }, 0);
+          
           console.log('Auth state after update:', get());
         } catch (error: any) {
           console.error('Login failed:', error);
@@ -104,6 +109,11 @@ export const useAuth = create<AuthState>()(
                 error: null
               };
             });
+            
+            // Force a re-render by updating state again
+            setTimeout(() => {
+              set((state) => ({ ...state }));
+            }, 0);
           } else {
             // Handle registration that requires email verification
             set({
@@ -147,6 +157,12 @@ export const useAuth = create<AuthState>()(
               error: null
             };
           });
+          
+          // Force a re-render by updating state again
+          setTimeout(() => {
+            set((state) => ({ ...state }));
+          }, 0);
+          
           console.log('Auth state after logout:', get());
         } catch (error: any) {
           console.error('Logout failed:', error);
