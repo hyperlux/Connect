@@ -31,6 +31,14 @@ interface AuthState {
   updateProfile: (data: Partial<User>) => Promise<void>;
 }
 
+const clearAuthState = {
+  user: null,
+  token: null,
+  isAuthenticated: false,
+  isLoading: false,
+  error: null
+};
+
 export const useAuth = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -43,36 +51,27 @@ export const useAuth = create<AuthState>()(
       login: async (email: string, password: string) => {
         console.log('Starting login process...');
         try {
-          set({ isLoading: true, error: null });
+          set({ ...clearAuthState, isLoading: true });
           const data = await api.post('/auth/login', { email, password });
           console.log('Login successful, received data:', data);
           
+          if (!data.token || !data.user) {
+            throw new Error('Invalid response from server');
+          }
+
           // Update state atomically
-          set((state) => {
-            console.log('Updating auth state:', {
-              currentState: state,
-              newUser: data.user,
-              newToken: data.token
-            });
-            return {
-              user: data.user,
-              token: data.token,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null
-            };
+          set({
+            user: data.user,
+            token: data.token,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null
           });
           
-          console.log('Auth state after update:', get());
+          console.log('Auth state after login:', get());
         } catch (error: any) {
           console.error('Login failed:', error);
-          set({ 
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: false,
-            error: error.message 
-          });
+          set(clearAuthState);
           throw error;
         }
       },
@@ -80,7 +79,7 @@ export const useAuth = create<AuthState>()(
       register: async ({ name, email, password }) => {
         console.log('Starting registration process...');
         try {
-          set({ isLoading: true, error: null });
+          set({ ...clearAuthState, isLoading: true });
           const data = await api.post('/auth/register', { 
             name, 
             email, 
@@ -88,42 +87,23 @@ export const useAuth = create<AuthState>()(
           });
           console.log('Registration response:', data);
           
-          if (data.token) {
+          if (data.token && data.user) {
             // Update state atomically
-            set((state) => {
-              console.log('Updating auth state after registration:', {
-                currentState: state,
-                newUser: data.user,
-                newToken: data.token
-              });
-              return {
-                user: data.user,
-                token: data.token,
-                isAuthenticated: true,
-                isLoading: false,
-                error: null
-              };
-            });
-          } else {
-            // Handle registration that requires email verification
             set({
-              user: null,
-              token: null,
-              isAuthenticated: false,
+              user: data.user,
+              token: data.token,
+              isAuthenticated: true,
               isLoading: false,
               error: null
             });
+          } else {
+            // Handle registration that requires email verification
+            set(clearAuthState);
           }
           console.log('Auth state after registration:', get());
         } catch (error: any) {
           console.error('Registration failed:', error);
-          set({ 
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: false,
-            error: error.message 
-          });
+          set(clearAuthState);
           throw error;
         }
       },
@@ -131,17 +111,10 @@ export const useAuth = create<AuthState>()(
       logout: async () => {
         console.log('Starting logout process...');
         try {
-          set({ isLoading: true });
           const token = get().token;
           
           // First clear the auth state
-          set({
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: true,
-            error: null
-          });
+          set({ ...clearAuthState, isLoading: true });
           
           // Then try to call the logout endpoint
           if (token) {
@@ -153,23 +126,17 @@ export const useAuth = create<AuthState>()(
             }
           }
           
-          // Ensure loading is set to false
-          set((state) => ({ ...state, isLoading: false }));
-          
           // Clear persisted state
           localStorage.removeItem('auth-storage');
+          
+          // Final state update
+          set(clearAuthState);
           
           console.log('Logout complete, auth state:', get());
         } catch (error: any) {
           console.error('Logout process error:', error);
           // Ensure state is cleared even if there's an error
-          set({
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: false,
-            error: error.message
-          });
+          set(clearAuthState);
           throw error;
         }
       },
@@ -178,7 +145,7 @@ export const useAuth = create<AuthState>()(
 
       updateProfile: async (data: Partial<User>) => {
         try {
-          set({ isLoading: true, error: null });
+          set((state) => ({ ...state, isLoading: true, error: null }));
           const token = get().token;
           if (!token) {
             throw new Error('No authentication token');
@@ -192,7 +159,7 @@ export const useAuth = create<AuthState>()(
           }));
         } catch (error: any) {
           console.error('Profile update error:', error);
-          set({ error: error.message, isLoading: false });
+          set((state) => ({ ...state, error: error.message, isLoading: false }));
           throw error;
         }
       }

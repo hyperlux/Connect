@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../lib/auth';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTheme } from '../lib/theme';
 
 interface LoginFormData {
   email: string;
@@ -10,20 +11,41 @@ interface LoginFormData {
 
 export default function LoginForm() {
   const { login, error, isAuthenticated, user } = useAuth();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [needsVerification, setNeedsVerification] = useState(false);
   const { register, handleSubmit, formState: { errors, isSubmitting }, getValues } = useForm<LoginFormData>();
 
+  // Check system dark mode preference on mount
+  useEffect(() => {
+    const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      setTheme(e.matches ? 'dark' : 'light');
+    };
+
+    // Set initial theme based on system preference
+    if (darkModePreference.matches && theme !== 'dark') {
+      setTheme('dark');
+    }
+
+    // Listen for system theme changes
+    darkModePreference.addEventListener('change', handleChange);
+    return () => darkModePreference.removeEventListener('change', handleChange);
+  }, [setTheme, theme]);
+
+  // Watch for auth state changes
   useEffect(() => {
     console.log('LoginForm auth state:', { isAuthenticated, user });
-  }, [isAuthenticated, user]);
+    if (isAuthenticated && user) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const onSubmit = async (data: LoginFormData) => {
     console.log('Attempting login...');
     try {
       await login(data.email, data.password);
-      console.log('Login successful, navigating...');
-      navigate('/', { replace: true });
+      console.log('Login successful, waiting for state update...');
     } catch (error: any) {
       console.error('Login failed:', error);
       if (error.response?.data?.needsVerification) {
