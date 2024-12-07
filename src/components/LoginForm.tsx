@@ -14,17 +14,16 @@ export default function LoginForm() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const { register, handleSubmit, formState: { errors, isSubmitting }, getValues } = useForm<LoginFormData>();
 
-  // Watch for auth state changes
   useEffect(() => {
-    if (isAuthenticated && user) {
-      navigate('/', { replace: true });
-    }
-  }, [isAuthenticated, user, navigate]);
+    console.log('LoginForm auth state:', { isAuthenticated, user });
+  }, [isAuthenticated, user]);
 
   const onSubmit = async (data: LoginFormData) => {
+    console.log('Attempting login...');
     try {
       await login(data.email, data.password);
-      // Navigation is now handled by the useEffect above
+      console.log('Login successful, navigating...');
+      navigate('/', { replace: true });
     } catch (error: any) {
       console.error('Login failed:', error);
       if (error.response?.data?.needsVerification) {

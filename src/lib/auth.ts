@@ -23,14 +23,12 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  isHydrated: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
-  setHydrated: (state: boolean) => void;
 }
 
 export const useAuth = create<AuthState>()(
@@ -40,24 +38,34 @@ export const useAuth = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       isLoading: false,
-      isHydrated: false,
       error: null,
 
-      setHydrated: (state: boolean) => set({ isHydrated: state }),
-
       login: async (email: string, password: string) => {
+        console.log('Starting login process...');
         try {
           set({ isLoading: true, error: null });
           const data = await api.post('/auth/login', { email, password });
+          console.log('Login successful, received data:', data);
           
-          // Update state with user data and token
-          set({
-            user: data.user,
-            token: data.token,
-            isAuthenticated: true,
-            isLoading: false
+          // Update state atomically
+          set((state) => {
+            console.log('Updating auth state:', {
+              currentState: state,
+              newUser: data.user,
+              newToken: data.token
+            });
+            return {
+              user: data.user,
+              token: data.token,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null
+            };
           });
+          
+          console.log('Auth state after update:', get());
         } catch (error: any) {
+          console.error('Login failed:', error);
           set({ 
             user: null,
             token: null,
@@ -70,6 +78,7 @@ export const useAuth = create<AuthState>()(
       },
 
       register: async ({ name, email, password }) => {
+        console.log('Starting registration process...');
         try {
           set({ isLoading: true, error: null });
           const data = await api.post('/auth/register', { 
@@ -77,14 +86,23 @@ export const useAuth = create<AuthState>()(
             email, 
             password 
           });
+          console.log('Registration response:', data);
           
           if (data.token) {
-            // Update state with user data and token
-            set({
-              user: data.user,
-              token: data.token,
-              isAuthenticated: true,
-              isLoading: false
+            // Update state atomically
+            set((state) => {
+              console.log('Updating auth state after registration:', {
+                currentState: state,
+                newUser: data.user,
+                newToken: data.token
+              });
+              return {
+                user: data.user,
+                token: data.token,
+                isAuthenticated: true,
+                isLoading: false,
+                error: null
+              };
             });
           } else {
             // Handle registration that requires email verification
@@ -92,10 +110,13 @@ export const useAuth = create<AuthState>()(
               user: null,
               token: null,
               isAuthenticated: false,
-              isLoading: false
+              isLoading: false,
+              error: null
             });
           }
+          console.log('Auth state after registration:', get());
         } catch (error: any) {
+          console.error('Registration failed:', error);
           set({ 
             user: null,
             token: null,
@@ -108,6 +129,7 @@ export const useAuth = create<AuthState>()(
       },
 
       logout: async () => {
+        console.log('Starting logout process...');
         try {
           set({ isLoading: true });
           const token = get().token;
@@ -115,13 +137,19 @@ export const useAuth = create<AuthState>()(
             await api.withAuth(token).post('/auth/logout', {});
           }
           // Clear auth state
-          set({
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: false
+          set((state) => {
+            console.log('Clearing auth state:', state);
+            return {
+              user: null,
+              token: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: null
+            };
           });
+          console.log('Auth state after logout:', get());
         } catch (error: any) {
+          console.error('Logout failed:', error);
           // Still clear state even if logout request fails
           set({
             user: null,
@@ -145,10 +173,11 @@ export const useAuth = create<AuthState>()(
           }
 
           const updatedUser = await api.withAuth(token).put('/api/users/profile', data);
-          set({ 
-            user: { ...get().user, ...updatedUser },
+          set((state) => ({ 
+            ...state,
+            user: { ...state.user, ...updatedUser },
             isLoading: false 
-          });
+          }));
         } catch (error: any) {
           console.error('Profile update error:', error);
           set({ error: error.message, isLoading: false });
@@ -163,13 +192,7 @@ export const useAuth = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated
-      }),
-      onRehydrateStorage: () => (state) => {
-        // When state is rehydrated from storage, set hydrated flag
-        if (state) {
-          state.setHydrated(true);
-        }
-      }
+      })
     }
   )
 );
