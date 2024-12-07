@@ -5,8 +5,11 @@
 1. Make changes locally using Cursor
 2. Test changes locally:
    ```bash
-   # In the server directory
-   npm start
+   # Start all services
+   docker-compose up -d
+   
+   # View logs
+   docker-compose logs -f
    ```
 
 3. Commit and push changes:
@@ -27,25 +30,25 @@
    # Pull latest changes
    git pull origin main
 
-   # Restart the server
-   cd server
-   pm2 restart auroville-api
+   # Rebuild and restart containers
+   docker-compose down
+   docker-compose build
+   docker-compose up -d
+
+   # View logs if needed
+   docker-compose logs -f
    ```
 
 5. View changes at https://auroville.social
 
-## Server Setup
+## Docker Services
 
-The server runs using PM2 with a single configuration:
-
-```bash
-# Initial PM2 setup (only needed once)
-cd ~/AurovilleConnect/server
-pm2 start npm --name "auroville-api" -- start
-pm2 save
-```
+The application runs three services:
+- Frontend (nginx) - Serves the web application
+- API (Node.js) - Runs on port 5000
+- Database (PostgreSQL) - Runs on port 5432
 
 ## Environment Variables
 
-All configuration is done through a single `.env` file in both server and frontend directories.
-No distinction between development and production environments to keep things simple. 
+All configuration is done through environment variables in docker-compose.yml and .env files.
+No distinction between development and production environments to keep things simple.

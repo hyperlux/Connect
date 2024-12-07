@@ -7,5 +7,9 @@ cd AurovilleConnect
 
 Always do after updating a file:
 git pull origin main
-cd server
-pm2 restart auroville-api 
+docker-compose down
+docker-compose build
+docker-compose up -d
+
+# View logs if needed:
+docker-compose logs -f 
