@@ -14,7 +14,7 @@ model User {
   password          String
   name              String
   role              Role        @default(USER)
-  verified          Boolean     @default(false)
+  emailVerified     Boolean     @default(false)
   verificationToken String?
   resetToken        String?     @unique
   resetTokenExpiry  DateTime?

@@ -27,6 +27,14 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    // Check if email is verified
+    if (!user.emailVerified) {
+      return res.status(403).json({ 
+        message: 'Please verify your email before logging in',
+        needsVerification: true 
+      });
+    }
+
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
@@ -96,13 +104,22 @@ router.post('/register', async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Generate verification token
+    const verificationToken = jwt.sign(
+      { email },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
     // Create user
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role: 'USER'
+        role: 'USER',
+        emailVerified: false,
+        verificationToken
       },
       select: {
         id: true,
@@ -113,22 +130,13 @@ router.post('/register', async (req, res) => {
       }
     });
 
-    // Create JWT token
-    const token = jwt.sign(
-      { 
-        userId: user.id,
-        email: user.email,
-        role: user.role
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
+    // Send verification email
+    await sendVerificationEmail(email, verificationToken);
 
-    // Return user data and token
+    // Return user data (but no token yet - require email verification)
     res.status(201).json({
       user,
-      token,
-      message: 'Registration successful'
+      message: 'Registration successful. Please check your email to verify your account.'
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -142,6 +150,44 @@ router.post('/register', async (req, res) => {
       });
     }
     res.status(500).json({ message: 'Registration failed. Please try again.' });
+  }
+});
+
+// Email verification route
+router.get('/verify-email/:token', async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { email } = decoded;
+
+    // Find user with matching email and verification token
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+        verificationToken: token,
+        emailVerified: false
+      }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired verification link' });
+    }
+
+    // Update user as verified
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+        verificationToken: null
+      }
+    });
+
+    res.json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(400).json({ message: 'Invalid or expired verification link' });
   }
 });
 
@@ -227,5 +273,3 @@ router.post('/reset-password', async (req, res) => {
 });
 
 export const authRouter = router;
-
-</```rewritten_file>
