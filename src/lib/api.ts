@@ -106,5 +106,5 @@ export const api = {
           'Authorization': `Bearer ${token}`,
         },
       }),
-  }),
+  })
 }; 

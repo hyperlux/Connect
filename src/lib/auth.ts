@@ -33,33 +33,12 @@ interface AuthState {
   setHydrated: (state: boolean) => void;
 }
 
-// Helper to get initial state from localStorage
-const getInitialState = () => {
-  try {
-    const token = localStorage.getItem('auth-token');
-    const storedAuth = localStorage.getItem('auth-storage');
-    if (storedAuth && token) {
-      const { state } = JSON.parse(storedAuth);
-      return {
-        user: state.user,
-        token: token,
-        isAuthenticated: true
-      };
-    }
-  } catch (error) {
-    console.error('Error reading auth state:', error);
-  }
-  return { user: null, token: null, isAuthenticated: false };
-};
-
-const initialState = getInitialState();
-
 export const useAuth = create<AuthState>()(
   persist(
     (set, get) => ({
-      user: initialState.user,
-      token: initialState.token,
-      isAuthenticated: initialState.isAuthenticated,
+      user: null,
+      token: null,
+      isAuthenticated: false,
       isLoading: false,
       isHydrated: false,
       error: null,
@@ -71,9 +50,7 @@ export const useAuth = create<AuthState>()(
           set({ isLoading: true, error: null });
           const data = await api.post('/auth/login', { email, password });
           
-          // Store token in localStorage for API calls
-          localStorage.setItem('auth-token', data.token);
-          
+          // Update state with user data and token
           set({
             user: data.user,
             token: data.token,
@@ -81,7 +58,13 @@ export const useAuth = create<AuthState>()(
             isLoading: false
           });
         } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+          set({ 
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: error.message 
+          });
           throw error;
         }
       },
@@ -96,9 +79,7 @@ export const useAuth = create<AuthState>()(
           });
           
           if (data.token) {
-            // Store token in localStorage for API calls
-            localStorage.setItem('auth-token', data.token);
-            
+            // Update state with user data and token
             set({
               user: data.user,
               token: data.token,
@@ -115,7 +96,13 @@ export const useAuth = create<AuthState>()(
             });
           }
         } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+          set({ 
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: error.message 
+          });
           throw error;
         }
       },
@@ -127,9 +114,7 @@ export const useAuth = create<AuthState>()(
           if (token) {
             await api.withAuth(token).post('/auth/logout', {});
           }
-          // Clear all auth data
-          localStorage.removeItem('auth-token');
-          localStorage.removeItem('auth-storage');
+          // Clear auth state
           set({
             user: null,
             token: null,
@@ -137,7 +122,14 @@ export const useAuth = create<AuthState>()(
             isLoading: false
           });
         } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+          // Still clear state even if logout request fails
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: error.message
+          });
           throw error;
         }
       },
@@ -173,6 +165,7 @@ export const useAuth = create<AuthState>()(
         isAuthenticated: state.isAuthenticated
       }),
       onRehydrateStorage: () => (state) => {
+        // When state is rehydrated from storage, set hydrated flag
         if (state) {
           state.setHydrated(true);
         }
