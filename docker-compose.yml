@@ -12,6 +12,8 @@ services:
       - VITE_API_URL=https://api.auroville.social
       - VITE_APP_URL=https://auroville.social
       - NODE_ENV=production
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - api
     networks:
