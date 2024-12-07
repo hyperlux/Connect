@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../lib/auth';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface LoginFormData {
   email: string;
@@ -9,15 +9,22 @@ interface LoginFormData {
 }
 
 export default function LoginForm() {
-  const { login, error } = useAuth();
+  const { login, error, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [needsVerification, setNeedsVerification] = useState(false);
   const { register, handleSubmit, formState: { errors, isSubmitting }, getValues } = useForm<LoginFormData>();
 
+  // Watch for auth state changes
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
+
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data.email, data.password);
-      navigate('/');
+      // Navigation is now handled by the useEffect above
     } catch (error: any) {
       console.error('Login failed:', error);
       if (error.response?.data?.needsVerification) {
