@@ -1,5 +1,6 @@
 import express from 'express';
 import { prisma } from '../lib/prisma.js';
+import { sendNotificationEmail } from '../lib/email.js';
 
 const router = express.Router();
 
@@ -61,5 +62,20 @@ export async function createNotification(userId, type, title, message, link) {
     throw error;
   }
 }
+
+// Test email route
+router.post('/test-email', async (req, res) => {
+  try {
+    const testEmail = req.body.email || 'test@example.com';
+    await sendNotificationEmail(testEmail, {
+      title: 'Test Notification',
+      message: 'This is a test notification email from Auroville Community platform.'
+    });
+    res.json({ success: true, message: 'Test email sent successfully' });
+  } catch (error) {
+    console.error('Error sending test email:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 export const notificationsRouter = router; 

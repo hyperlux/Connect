@@ -45,9 +45,18 @@ export default function LoginForm() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-900 dark:text-white">
-              Password
-            </label>
+            <div className="flex items-center justify-between">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-900 dark:text-white">
+                Password
+              </label>
+              <button
+                type="button"
+                onClick={() => navigate('/forgot-password')}
+                className="text-sm text-auroville-primary hover:text-opacity-90"
+              >
+                Forgot password?
+              </button>
+            </div>
             <div className="mt-1">
               <input
                 id="password"

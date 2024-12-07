@@ -24,6 +24,7 @@ import { useTheme } from './lib/theme';
 import { useAuth } from './lib/auth';
 import LoginForm from './components/LoginForm';
 import VerifyEmail from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
 import SettingsLayout from './pages/Settings/Layout';
 import ProfileSettings from './pages/Settings/Profile';
 import NotificationSettings from './pages/Settings/NotificationSettings';
@@ -105,6 +106,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Protected routes */}
         <Route 
@@ -143,3 +145,5 @@ function App() {
 }
 
 export default App;
+
+</```rewritten_file>

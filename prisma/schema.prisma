@@ -9,22 +9,25 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      String   @default("USER")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String      @id @default(uuid())
+  email             String      @unique
+  password          String
+  name              String
+  role              Role        @default(USER)
+  verified          Boolean     @default(false)
+  verificationToken String?
+  resetToken        String?     @unique
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  notifications     Notification[]
+  // Add other relations as needed
+}
 
-  // Relations
-  posts         ForumPost[]
-  comments      ForumComment[]
-  events        Event[]        @relation("OrganizedEvents")
-  attending     EventAttendee[]
-  cityServices  CityService[]
-
-  @@index([email])
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
 }
 
 model Event {
