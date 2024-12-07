@@ -36,25 +36,13 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
-      callback(null, true);
-    } else {
-      console.log('Origin not allowed:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-  exposedHeaders: ['Authorization']
+  origin: ['http://localhost:5173', 'https://auroville.social'],
+  credentials: true
 }));
 
 // Parse JSON bodies
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Log all requests
 app.use((req, res, next) => {
@@ -99,4 +87,18 @@ process.on('SIGTERM', () => {
     console.log('Server closed');
     process.exit(0);
   });
+});
+
+// Ensure the login route has proper error handling
+app.post('/api/login', async (req, res) => {
+    try {
+        // existing login logic...
+        
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ 
+            error: 'Login failed', 
+            details: error.message 
+        });
+    }
 });
