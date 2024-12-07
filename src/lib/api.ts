@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://api.auroville.social';
 
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
@@ -25,11 +25,12 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
 
     console.log('API response:', {
       status: response.status,
-      statusText: response.statusText
+      statusText: response.statusText,
+      url: response.url
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
+      const errorData = await response.json().catch(() => ({ message: response.statusText || 'Request failed' }));
       throw new Error(errorData.message || 'Request failed');
     }
 
