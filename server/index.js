@@ -23,8 +23,8 @@ process.on('unhandledRejection', (error) => {
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+const PORT = process.env.PORT || 5000;
+const HOST = '0.0.0.0';
 
 // CORS configuration
 const allowedOrigins = [
