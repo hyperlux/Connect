@@ -56,4 +56,4 @@ export default function Dashboard() {
   );
 }
 
-</```rewritten_file>
+</rewritten_file>
