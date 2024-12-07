@@ -24,11 +24,16 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
 # Copy only necessary files from builder
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/index.js ./
+COPY --from=builder /app/routes ./routes
+COPY --from=builder /app/middleware ./middleware
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s \
