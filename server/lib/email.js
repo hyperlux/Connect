@@ -128,3 +128,57 @@ export async function sendVerificationEmail(email, token) {
     throw error;
   }
 }
+
+export async function sendNotificationEmail(email, notification) {
+  const mailOptions = {
+    from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
+    to: email,
+    subject: notification.title,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #E27B58; text-align: center;">${notification.title}</h1>
+        <div style="font-size: 16px; line-height: 1.5;">
+          ${notification.message}
+        </div>
+        ${notification.link ? `
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${notification.link}" 
+             style="background-color: #E27B58; 
+                    color: white; 
+                    padding: 12px 24px; 
+                    text-decoration: none; 
+                    border-radius: 4px;
+                    display: inline-block;">
+            View Details
+          </a>
+        </div>
+        ` : ''}
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="font-size: 12px; color: #999; text-align: center;">
+          This is an automated message from Auroville Community platform.
+        </p>
+      </div>
+    `,
+    text: `
+      ${notification.title}
+      
+      ${notification.message}
+      
+      ${notification.link ? `View details at: ${notification.link}` : ''}
+      
+      This is an automated message from Auroville Community platform.
+    `
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Notification email sent successfully:', {
+      messageId: info.messageId,
+      response: info.response
+    });
+    return info;
+  } catch (error) {
+    console.error('Failed to send notification email:', error);
+    throw error;
+  }
+}
