@@ -63,11 +63,6 @@ export const useAuth = create<AuthState>()(
             };
           });
           
-          // Force a re-render by updating state again
-          setTimeout(() => {
-            set((state) => ({ ...state }));
-          }, 0);
-          
           console.log('Auth state after update:', get());
         } catch (error: any) {
           console.error('Login failed:', error);
@@ -109,11 +104,6 @@ export const useAuth = create<AuthState>()(
                 error: null
               };
             });
-            
-            // Force a re-render by updating state again
-            setTimeout(() => {
-              set((state) => ({ ...state }));
-            }, 0);
           } else {
             // Handle registration that requires email verification
             set({
@@ -143,30 +133,36 @@ export const useAuth = create<AuthState>()(
         try {
           set({ isLoading: true });
           const token = get().token;
-          if (token) {
-            await api.withAuth(token).post('/auth/logout', {});
-          }
-          // Clear auth state
-          set((state) => {
-            console.log('Clearing auth state:', state);
-            return {
-              user: null,
-              token: null,
-              isAuthenticated: false,
-              isLoading: false,
-              error: null
-            };
+          
+          // First clear the auth state
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: true,
+            error: null
           });
           
-          // Force a re-render by updating state again
-          setTimeout(() => {
-            set((state) => ({ ...state }));
-          }, 0);
+          // Then try to call the logout endpoint
+          if (token) {
+            try {
+              await api.withAuth(token).post('/auth/logout', {});
+              console.log('Logout API call successful');
+            } catch (error) {
+              console.warn('Logout API call failed, but state is already cleared:', error);
+            }
+          }
           
-          console.log('Auth state after logout:', get());
+          // Ensure loading is set to false
+          set((state) => ({ ...state, isLoading: false }));
+          
+          // Clear persisted state
+          localStorage.removeItem('auth-storage');
+          
+          console.log('Logout complete, auth state:', get());
         } catch (error: any) {
-          console.error('Logout failed:', error);
-          // Still clear state even if logout request fails
+          console.error('Logout process error:', error);
+          // Ensure state is cleared even if there's an error
           set({
             user: null,
             token: null,

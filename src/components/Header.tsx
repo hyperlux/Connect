@@ -14,13 +14,26 @@ export default function Header() {
   }, [user, isAuthenticated]);
 
   const handleLogout = async () => {
+    console.log('Starting logout...');
     try {
+      // First clear the auth state
       await logout();
-      navigate('/login', { replace: true });
+      console.log('Logout successful, navigating to login...');
+      // Then navigate
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 0);
     } catch (error) {
       console.error('Logout error:', error);
+      // If there's an error, still try to navigate to login
+      navigate('/login', { replace: true });
     }
   };
+
+  // Early return if auth state is not yet determined
+  if (typeof isAuthenticated === 'undefined') {
+    return null;
+  }
 
   return (
     <header className="px-6 py-4 bg-white dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
