@@ -272,4 +272,45 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
+// Resend verification email route
+router.post('/resend-verification', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Find user
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.emailVerified) {
+      return res.status(400).json({ message: 'Email is already verified' });
+    }
+
+    // Generate new verification token
+    const verificationToken = jwt.sign(
+      { email },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // Update user with new verification token
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { verificationToken }
+    });
+
+    // Send new verification email
+    await sendVerificationEmail(email, verificationToken);
+
+    res.json({ message: 'Verification email has been resent' });
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    res.status(500).json({ message: 'Failed to resend verification email' });
+  }
+});
+
 export const authRouter = router;

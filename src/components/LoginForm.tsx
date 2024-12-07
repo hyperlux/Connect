@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../lib/auth';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 interface LoginFormData {
   email: string;
@@ -10,14 +11,33 @@ interface LoginFormData {
 export default function LoginForm() {
   const { login, error } = useAuth();
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormData>();
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const { register, handleSubmit, formState: { errors, isSubmitting }, getValues } = useForm<LoginFormData>();
 
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data.email, data.password);
       navigate('/');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
+      if (error.response?.data?.needsVerification) {
+        setNeedsVerification(true);
+      }
+    }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      const email = getValues('email');
+      await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      alert('Verification email has been resent. Please check your inbox.');
+    } catch (error) {
+      console.error('Failed to resend verification:', error);
+      alert('Failed to resend verification email. Please try again.');
     }
   };
 
@@ -72,10 +92,27 @@ export default function LoginForm() {
             </div>
           </div>
 
-          {error && (
+          {error && !needsVerification && (
             <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
               <div className="flex">
                 <div className="text-sm text-red-700 dark:text-red-400">{error}</div>
+              </div>
+            </div>
+          )}
+
+          {needsVerification && (
+            <div className="rounded-md bg-yellow-50 dark:bg-yellow-900/20 p-4">
+              <div className="flex flex-col space-y-2">
+                <div className="text-sm text-yellow-700 dark:text-yellow-400">
+                  Please verify your email before logging in.
+                </div>
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  className="text-sm text-yellow-700 dark:text-yellow-400 underline hover:text-yellow-600"
+                >
+                  Resend verification email
+                </button>
               </div>
             </div>
           )}

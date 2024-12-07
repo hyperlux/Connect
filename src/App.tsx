@@ -31,6 +31,7 @@ import NotificationSettings from './pages/Settings/NotificationSettings';
 import PrivacySettings from './pages/Settings/PrivacySettings';
 import SecuritySettings from './pages/Settings/SecuritySettings';
 import SignupForm from './components/SignupForm';
+import ResetPassword from './pages/ResetPassword';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -107,6 +108,7 @@ function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Protected routes */}
         <Route 
@@ -145,5 +147,3 @@ function App() {
 }
 
 export default App;
-
-</```rewritten_file>
