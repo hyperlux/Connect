@@ -9,6 +9,7 @@ interface User {
   bio?: string;
   avatar?: string;
   createdAt: string;
+  role?: string;
 }
 
 interface RegisterData {
@@ -22,12 +23,14 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isHydrated: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
+  setHydrated: (state: boolean) => void;
 }
 
 // Helper to get initial state from localStorage
@@ -58,7 +61,10 @@ export const useAuth = create<AuthState>()(
       token: initialState.token,
       isAuthenticated: initialState.isAuthenticated,
       isLoading: false,
+      isHydrated: false,
       error: null,
+
+      setHydrated: (state: boolean) => set({ isHydrated: state }),
 
       login: async (email: string, password: string) => {
         try {
@@ -89,15 +95,25 @@ export const useAuth = create<AuthState>()(
             password 
           });
           
-          // Store token in localStorage for API calls
-          localStorage.setItem('auth-token', data.token);
-          
-          set({
-            user: data.user,
-            token: data.token,
-            isAuthenticated: true,
-            isLoading: false
-          });
+          if (data.token) {
+            // Store token in localStorage for API calls
+            localStorage.setItem('auth-token', data.token);
+            
+            set({
+              user: data.user,
+              token: data.token,
+              isAuthenticated: true,
+              isLoading: false
+            });
+          } else {
+            // Handle registration that requires email verification
+            set({
+              user: null,
+              token: null,
+              isAuthenticated: false,
+              isLoading: false
+            });
+          }
         } catch (error: any) {
           set({ error: error.message, isLoading: false });
           throw error;
@@ -155,7 +171,12 @@ export const useAuth = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated
-      })
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.setHydrated(true);
+        }
+      }
     }
   )
 );

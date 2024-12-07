@@ -39,13 +39,14 @@ interface ProtectedRouteProps {
 
 // Protected Route wrapper
 function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, isHydrated } = useAuth();
   const location = useLocation();
   
-  console.log('ProtectedRoute state:', { isAuthenticated, isLoading, pathname: location.pathname });
+  console.log('ProtectedRoute state:', { isAuthenticated, isLoading, isHydrated, pathname: location.pathname });
 
-  if (isLoading) {
-    console.log('Auth is loading');
+  // Show loading state while auth is being hydrated from storage
+  if (!isHydrated || isLoading) {
+    console.log('Auth is loading or not hydrated');
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
