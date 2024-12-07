@@ -1,14 +1,19 @@
 import styled from 'styled-components';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
+import { DefaultTheme } from 'styled-components';
 
-const ContentWrapper = styled.div`
+interface ThemeProps {
+  theme: DefaultTheme;
+}
+
+const ContentWrapper = styled.div<ThemeProps>`
   flex: 1;
   padding: 20px;
   background-color: ${({ theme }) => theme.colors.background.primary};
   color: ${({ theme }) => theme.colors.text};
 `;
 
-const MainContent: React.FC = ({ children }) => {
+const MainContent: React.FC<PropsWithChildren> = ({ children }) => {
   return <ContentWrapper>{children}</ContentWrapper>;
 };
 
