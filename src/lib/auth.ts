@@ -51,7 +51,10 @@ export const useAuth = create<AuthState>()(
       login: async (email: string, password: string) => {
         console.log('Starting login process...');
         try {
+          // Clear previous state and set loading
           set({ ...clearAuthState, isLoading: true });
+          
+          // Make API request
           const data = await api.post('/auth/login', { email, password });
           console.log('Login successful, received data:', data);
           
@@ -60,15 +63,25 @@ export const useAuth = create<AuthState>()(
           }
 
           // Update state atomically
-          set({
+          const newState = {
             user: data.user,
             token: data.token,
             isAuthenticated: true,
             isLoading: false,
             error: null
-          });
+          };
           
-          console.log('Auth state after login:', get());
+          // Set new state
+          set(newState);
+          
+          // Double-check state was updated correctly
+          const currentState = get();
+          console.log('Auth state after login:', currentState);
+          
+          if (!currentState.isAuthenticated || !currentState.user) {
+            console.error('State not updated correctly:', currentState);
+            throw new Error('Failed to update auth state');
+          }
         } catch (error: any) {
           console.error('Login failed:', error);
           set(clearAuthState);
@@ -88,16 +101,20 @@ export const useAuth = create<AuthState>()(
           console.log('Registration response:', data);
           
           if (data.token && data.user) {
-            // Update state atomically
-            set({
+            const newState = {
               user: data.user,
               token: data.token,
               isAuthenticated: true,
               isLoading: false,
               error: null
-            });
+            };
+            set(newState);
+            
+            const currentState = get();
+            if (!currentState.isAuthenticated || !currentState.user) {
+              throw new Error('Failed to update auth state after registration');
+            }
           } else {
-            // Handle registration that requires email verification
             set(clearAuthState);
           }
           console.log('Auth state after registration:', get());
@@ -132,7 +149,13 @@ export const useAuth = create<AuthState>()(
           // Final state update
           set(clearAuthState);
           
-          console.log('Logout complete, auth state:', get());
+          // Verify state is cleared
+          const currentState = get();
+          if (currentState.isAuthenticated || currentState.user || currentState.token) {
+            throw new Error('Failed to clear auth state');
+          }
+          
+          console.log('Logout complete, auth state:', currentState);
         } catch (error: any) {
           console.error('Logout process error:', error);
           // Ensure state is cleared even if there's an error

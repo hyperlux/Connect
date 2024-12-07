@@ -37,7 +37,11 @@ export default function LoginForm() {
   useEffect(() => {
     console.log('LoginForm auth state:', { isAuthenticated, user });
     if (isAuthenticated && user) {
-      navigate('/', { replace: true });
+      console.log('Auth state confirmed, navigating to dashboard...');
+      // Use a timeout to ensure state is fully updated
+      setTimeout(() => {
+        navigate('/', { replace: true });
+      }, 0);
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -68,6 +72,13 @@ export default function LoginForm() {
       alert('Failed to resend verification email. Please try again.');
     }
   };
+
+  // If already authenticated, redirect immediately
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate('/', { replace: true });
+    }
+  }, []);
 
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
