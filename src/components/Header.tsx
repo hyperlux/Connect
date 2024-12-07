@@ -68,7 +68,22 @@ export default function Header() {
                 Sign Out
               </button>
             </div>
-          ) : null}
+          ) : (
+            <div className="flex items-center gap-4">
+              <Link
+                to="/login"
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-[#2a2a2a] transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/signup"
+                className="text-sm text-white bg-auroville-primary hover:bg-opacity-90 px-4 py-1.5 rounded transition-colors"
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>
