@@ -136,7 +136,8 @@ router.post('/register', async (req, res) => {
     // Return user data (but no token yet - require email verification)
     res.status(201).json({
       user,
-      message: 'Registration successful. Please check your email to verify your account.'
+      message: 'Registration successful. Please check your email to verify your account.',
+      requiresVerification: true
     });
   } catch (error) {
     console.error('Registration error:', error);
