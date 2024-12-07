@@ -1,0 +1,12 @@
+SSH into server:
+
+ssh root@134.209.151.102
+password: love
+
+cd AurovilleConnect
+
+Always do after updating a file 
+git pull origin main
+
+cd server
+npm start 
