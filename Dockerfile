@@ -1,13 +1,13 @@
 # Build stage
-FROM node:18-alpine as build
+FROM node:18-alpine as builder
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies using npm ci for faster, more reliable installs
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -16,10 +16,10 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM nginx:alpine
+FROM nginx:alpine-slim
 
 # Copy built assets
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Create directory for SSL certificates
