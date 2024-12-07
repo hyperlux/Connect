@@ -1,13 +1,17 @@
 # Build stage
 FROM node:18-alpine AS builder
 
+# Set Node options for reduced memory usage
+ENV NODE_OPTIONS="--max-old-space-size=512"
+ENV NODE_ENV=production
+
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
 # Install dependencies using npm ci for faster, more reliable installs
-RUN npm ci
+RUN npm ci --production=false
 
 # Copy source code
 COPY . .
