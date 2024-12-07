@@ -55,7 +55,7 @@ docker-compose down
 ### Production Deployment Steps:
 ```bash
 # SSH into server
-ssh user@auroville.social
+ssh root@134
 
 # Navigate to project directory
 cd /path/to/AurovilleConnect

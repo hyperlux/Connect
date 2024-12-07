@@ -47,7 +47,9 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=auroville
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - type: volume
+        source: postgres_data
+        target: /var/lib/postgresql/data
     networks:
       - auroville-network
 
@@ -56,4 +58,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data: 
+  postgres_data:
+    name: auroville_postgres_data 
