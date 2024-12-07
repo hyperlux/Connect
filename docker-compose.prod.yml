@@ -5,6 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NODE_OPTIONS=--max-old-space-size=4096
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
     ports:
       - "80:80"
       - "443:443"
@@ -12,12 +20,19 @@ services:
       - VITE_API_URL=https://auroville.social/api
       - VITE_APP_URL=https://auroville.social
       - NODE_ENV=production
+      - NODE_OPTIONS=--max-old-space-size=4096
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./logs/nginx:/var/log/nginx
     depends_on:
       - api
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "--no-check-certificate", "https://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     networks:
       - auroville-network
 
@@ -35,6 +50,11 @@ services:
       - HOST=0.0.0.0
       - CORS_ORIGIN=https://auroville.social
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     depends_on:
       db:
         condition: service_healthy
