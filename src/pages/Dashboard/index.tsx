@@ -18,7 +18,7 @@ const stats = [
 
 export default function Dashboard() {
   return (
-    <div className="flex-1 p-6 overflow-auto bg-gray-50 dark:bg-gray-800">
+    <div className="flex-1 p-6 overflow-auto bg-gray-50 dark:bg-[#1E1E1E]">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Priority 1: Critical Announcements */}
         <CriticalAnnouncements />
@@ -55,3 +55,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+</```rewritten_file>
