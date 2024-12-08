@@ -1,11 +1,15 @@
 /// <reference types="vite/client" />
 
-// Environment variable types
-declare module 'vite/client' {
+// Type declarations for environment variables
+declare global {
   interface ImportMetaEnv {
     readonly VITE_API_URL: string
     readonly VITE_APP_URL: string
     // Add other env variables as needed
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv
   }
 }
 
