@@ -22,57 +22,70 @@ router.post('/login', async (req, res) => {
     console.log('✅ Input validation passed');
 
     // Find user
-    const user = await prisma.user.findUnique({
-      where: { email }
-    });
-    console.log('👤 User lookup result:', { found: !!user, userId: user?.id });
-
-    if (!user) {
-      console.log('❌ User not found');
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    // Check if email is verified
-    if (!user.emailVerified) {
-      console.log('❌ Email not verified');
-      return res.status(403).json({ 
-        message: 'Please verify your email before logging in',
-        needsVerification: true 
+    console.log('🔍 Attempting to find user in database...');
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email }
       });
+      console.log('👤 User lookup result:', { 
+        found: !!user, 
+        userId: user?.id,
+        emailVerified: user?.emailVerified,
+        role: user?.role
+      });
+
+      if (!user) {
+        console.log('❌ User not found in database');
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
+
+      // Check if email is verified
+      if (!user.emailVerified) {
+        console.log('❌ Email not verified');
+        return res.status(403).json({ 
+          message: 'Please verify your email before logging in',
+          needsVerification: true 
+        });
+      }
+
+      // Verify password
+      console.log('🔐 Attempting password comparison...');
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      console.log('🔐 Password check:', { isValid: isValidPassword });
+      
+      if (!isValidPassword) {
+        console.log('❌ Invalid password');
+        return res.status(401).json({ message: 'Invalid email or password' });
+      }
+
+      // Create JWT token
+      console.log('🎟️ Creating JWT token...');
+      const token = jwt.sign(
+        { 
+          userId: user.id, 
+          email: user.email, 
+          role: user.role 
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+      console.log('🎟️ JWT token created');
+
+      // Return user data and token
+      console.log('✅ Login successful');
+      res.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role
+        },
+        token
+      });
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      return res.status(500).json({ message: 'Database error occurred' });
     }
-
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    console.log('🔐 Password check:', { isValid: isValidPassword });
-    
-    if (!isValidPassword) {
-      console.log('❌ Invalid password');
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    // Create JWT token
-    const token = jwt.sign(
-      { 
-        userId: user.id, 
-        email: user.email, 
-        role: user.role 
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-    console.log('🎟️ JWT token created');
-
-    // Return user data and token
-    console.log('✅ Login successful');
-    res.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role
-      },
-      token
-    });
   } catch (error) {
     console.error('Login error:', error);
     if (error instanceof z.ZodError) {
