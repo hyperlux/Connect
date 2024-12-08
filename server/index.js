@@ -28,10 +28,15 @@ const HOST = '0.0.0.0';
 
 // CORS configuration
 app.use(cors({
-  origin: 'https://auroville.social',
+  origin: function(origin, callback) {
+    console.log('🌐 CORS Origin:', origin);
+    callback(null, origin);
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
+  preflightContinue: true,
+  optionsSuccessStatus: 200
 }));
 
 // Parse JSON bodies
@@ -48,6 +53,18 @@ app.use((req, res, next) => {
     body: req.body,
     ip: req.ip
   });
+  
+  // Log response
+  const oldSend = res.send;
+  res.send = function(data) {
+    console.log('📤 Outgoing Response:', {
+      timestamp: new Date().toISOString(),
+      statusCode: res.statusCode,
+      headers: res.getHeaders()
+    });
+    return oldSend.apply(res, arguments);
+  };
+  
   next();
 });
 
