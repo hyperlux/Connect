@@ -11,13 +11,6 @@ const bannerImages = [
   },
   {
     id: 2,
-    url: '/banyan.jpg',
-    title: 'The Sacred Banyan',
-    quote: 'The future of the Earth depends on a change of consciousness.',
-    author: 'Sri Aurobindo'
-  },
-  {
-    id: 3,
     url: '/matrimandirimg.png',
     title: 'Solar Kitchen',
     quote: 'There should be somewhere upon Earth a place that no nation could claim as its sole property...',
