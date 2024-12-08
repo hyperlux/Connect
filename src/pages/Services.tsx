@@ -50,23 +50,23 @@ export default function Services() {
     : services.filter(service => service.category === selectedCategory);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-primary">City Services</h1>
         <button className="bg-auroville-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors">
           Add Service
         </button>
       </div>
 
-      <div className="flex gap-6">
-        <aside className="w-64">
-          <div className="bg-white dark:bg-dark-card rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-primary mb-4">Categories</h2>
-            <ul className="space-y-2">
+      <div className="flex gap-8">
+        <aside className="w-56">
+          <div className="bg-white dark:bg-dark-card rounded-xl shadow-sm p-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-primary mb-3">Categories</h2>
+            <ul className="space-y-1">
               <li>
                 <button
                   onClick={() => setSelectedCategory('All')}
-                  className={`w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-lighter text-gray-700 dark:text-dark-secondary ${
+                  className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-lighter text-gray-700 dark:text-dark-secondary ${
                     selectedCategory === 'All' ? 'bg-gray-100 dark:bg-dark-lighter' : ''
                   }`}
                 >
@@ -77,7 +77,7 @@ export default function Services() {
                 <li key={category}>
                   <button
                     onClick={() => setSelectedCategory(category)}
-                    className={`w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-lighter text-gray-700 dark:text-dark-secondary ${
+                    className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-lighter text-gray-700 dark:text-dark-secondary ${
                       selectedCategory === category ? 'bg-gray-100 dark:bg-dark-lighter' : ''
                     }`}
                   >
@@ -90,7 +90,7 @@ export default function Services() {
         </aside>
 
         <div className="flex-1">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-8 md:grid-cols-2">
             {filteredServices.map((service) => (
               <div key={service.id} className="bg-white dark:bg-dark-card rounded-xl shadow-sm overflow-hidden">
                 <img
