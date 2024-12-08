@@ -16,29 +16,37 @@ export default function Header() {
   const handleLogout = async () => {
     console.log('Starting logout...');
     try {
-      // First clear the auth state
       await logout();
       console.log('Logout successful, navigating to login...');
-      // Then navigate
       setTimeout(() => {
         navigate('/login', { replace: true });
       }, 0);
     } catch (error) {
       console.error('Logout error:', error);
-      // If there's an error, still try to navigate to login
       navigate('/login', { replace: true });
     }
   };
 
-  // Early return if auth state is not yet determined
   if (typeof isAuthenticated === 'undefined') {
     return null;
   }
 
   return (
-    <header className="px-6 py-4 bg-white dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
+    <header className="px-6 py-3 bg-white dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
       <div className="flex items-center justify-between">
-        <div className="flex items-center flex-1">
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center gap-2">
+            <img 
+              src="/logo.png" 
+              alt="Auroville Community" 
+              className="h-12 w-auto"
+            />
+            <div className="hidden sm:block">
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Auroville</h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400">COMMUNITY</p>
+            </div>
+          </Link>
+
           <div className="relative w-96">
             <input
               type="text"
