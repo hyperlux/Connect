@@ -6,6 +6,7 @@ import Bazaar from './components/Bazaar';
 import StatsGrid from './components/StatsGrid';
 import CommunityHighlights from './components/CommunityHighlights';
 import LatestPosts from './components/LatestPosts';
+import ResourcesAndServices from './components/ResourcesAndServices';
 
 const stats = [
   { label: 'Residents', value: '3,246', icon: Users, trend: '+12%' },
@@ -27,6 +28,9 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-[calc(100vw-240px)]">
             {/* Left Column - Spans 2 columns */}
             <div className="lg:col-span-2 space-y-4">            
+              {/* Priority 2: Resources and Services */}
+              <ResourcesAndServices />
+              
               {/* Priority 3: Today's Events */}
               <TodayEvents />
 
