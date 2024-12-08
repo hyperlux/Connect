@@ -5,6 +5,7 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'Access-Control-Allow-Origin': 'https://auroville.social',
     ...options.headers,
   };
 
