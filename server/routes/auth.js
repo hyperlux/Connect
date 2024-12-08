@@ -15,20 +15,26 @@ const loginSchema = z.object({
 
 router.post('/login', async (req, res) => {
   try {
+    console.log('🔍 Login attempt:', { email: req.body.email });
+    
     // Validate input
     const { email, password } = loginSchema.parse(req.body);
+    console.log('✅ Input validation passed');
 
     // Find user
     const user = await prisma.user.findUnique({
       where: { email }
     });
+    console.log('👤 User lookup result:', { found: !!user, userId: user?.id });
 
     if (!user) {
+      console.log('❌ User not found');
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     // Check if email is verified
     if (!user.emailVerified) {
+      console.log('❌ Email not verified');
       return res.status(403).json({ 
         message: 'Please verify your email before logging in',
         needsVerification: true 
@@ -37,7 +43,10 @@ router.post('/login', async (req, res) => {
 
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password);
+    console.log('🔐 Password check:', { isValid: isValidPassword });
+    
     if (!isValidPassword) {
+      console.log('❌ Invalid password');
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
@@ -51,8 +60,10 @@ router.post('/login', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
+    console.log('🎟️ JWT token created');
 
     // Return user data and token
+    console.log('✅ Login successful');
     res.json({
       user: {
         id: user.id,
