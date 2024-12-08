@@ -40,9 +40,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Log all requests
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`, {
+  console.log('🔍 Incoming Request:', {
+    timestamp: new Date().toISOString(),
+    method: req.method,
+    url: req.url,
+    headers: req.headers,
     body: req.body,
-    headers: req.headers
+    ip: req.ip
   });
   next();
 });
