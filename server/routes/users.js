@@ -52,12 +52,20 @@ router.put('/profile', authenticate, async (req, res, next) => {
 // Upload profile picture
 router.post('/profile/picture', authenticate, upload.single('profilePicture'), async (req, res, next) => {
   try {
+    console.log('Received file upload request:', req.file);
+    
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
     const userId = req.user.id;
+    // Use relative path for storage in database
     const filePath = `/uploads/${path.basename(req.file.path)}`;
+
+    console.log('Updating user profile picture:', {
+      userId,
+      filePath
+    });
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
@@ -74,6 +82,7 @@ router.post('/profile/picture', authenticate, upload.single('profilePicture'), a
       }
     });
 
+    console.log('Profile picture updated successfully:', updatedUser);
     res.json(updatedUser);
   } catch (error) {
     console.error('Error uploading profile picture:', error);
@@ -82,6 +91,6 @@ router.post('/profile/picture', authenticate, upload.single('profilePicture'), a
 });
 
 // Serve uploaded files
-router.use('/uploads', express.static('uploads'));
+router.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 export const usersRouter = router;

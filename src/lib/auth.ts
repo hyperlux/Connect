@@ -201,7 +201,7 @@ export const useAuth = create<AuthState>()(
 
           const updatedUser = await api.withAuth(token).post('/api/users/profile/picture', formData, {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              'Content-Type': undefined,
             },
           });
 
