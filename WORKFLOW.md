@@ -20,7 +20,9 @@ ssh root@auroville.social
 # On production server
 cd ~/AurovilleConnect
 git pull
-docker-compose -f docker-compose.prod.yml up -d --build
+docker-compose down
+docker-compose build
+docker-compose up -d
 ```
 
 ## Important Notes
@@ -57,8 +59,8 @@ sudo rm /etc/nginx/sites-enabled/default  # Remove host nginx config
 docker system prune -f
 
 # Restart Docker containers
-docker-compose -f docker-compose.prod.yml down
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose down
+docker-compose up -d
 ```
 
 ### 3. Container Issues
@@ -73,7 +75,7 @@ docker logs aurovilleconnect_api_1       # Check API logs
 docker-compose down
 docker system prune -f  # Clean up unused resources
 docker volume prune -f  # Clean up unused volumes (careful with database volumes!)
-docker-compose -f docker-compose.prod.yml up -d --build  # Rebuild and start
+docker-compose up -d --build  # Rebuild and start
 ```
 
 ## SSL Certificates
@@ -86,7 +88,7 @@ Important environment variables in production:
 - `VITE_API_URL=https://api.auroville.social`
 - `VITE_APP_URL=https://auroville.social`
 - `NODE_ENV=production`
-- Database connection strings and secrets are managed in docker-compose.prod.yml
+- Database connection strings and secrets are managed in docker-compose.yml
 ```
 
 </rewritten_file>
