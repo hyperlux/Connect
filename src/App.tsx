@@ -32,6 +32,10 @@ import PrivacySettings from './pages/Settings/PrivacySettings';
 import SecuritySettings from './pages/Settings/SecuritySettings';
 import SignupForm from './components/SignupForm';
 import ResetPassword from './pages/ResetPassword';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import EmailVerification from './pages/EmailVerification';
+import PrivateRoute from './components/PrivateRoute';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

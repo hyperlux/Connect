@@ -177,34 +177,75 @@ router.post('/register', async (req, res) => {
 // Email verification route
 router.get('/verify-email', async (req, res) => {
   try {
+    console.log('📧 Email verification request received:', { 
+      token: req.query.token?.substring(0, 10) + '...' 
+    });
+    
     const { token } = req.query;
     
     if (!token) {
-      return res.status(400).json({ message: 'Token is required' });
+      console.log('❌ No token provided');
+      return res.status(400).json({ message: 'Verification token is required' });
     }
 
     // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { email } = decoded;
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('✅ Token verified successfully:', { email: decoded.email });
+    } catch (jwtError) {
+      console.log('❌ Token verification failed:', jwtError.message);
+      return res.status(400).json({ 
+        message: 'Invalid or expired verification link. Please request a new one.',
+        error: jwtError.message 
+      });
+    }
 
-    // Update user verification status
-    const user = await prisma.user.update({
-      where: { email },
-      data: { 
-        emailVerified: true,
-        verificationToken: null 
-      }
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email: decoded.email }
     });
 
     if (!user) {
+      console.log('❌ User not found:', { email: decoded.email });
       return res.status(404).json({ message: 'User not found' });
     }
 
-    return res.status(200).json({ message: 'Email verified successfully' });
+    if (user.emailVerified) {
+      console.log('ℹ️ Email already verified:', { email: decoded.email });
+      return res.status(200).json({ 
+        message: 'Email already verified. You can now log in.',
+        alreadyVerified: true 
+      });
+    }
+
+    // Update user verification status
+    const updatedUser = await prisma.user.update({
+      where: { email: decoded.email },
+      data: { 
+        emailVerified: true,
+        verificationToken: null 
+      },
+      select: {
+        id: true,
+        email: true,
+        emailVerified: true
+      }
+    });
+
+    console.log('✅ Email verification successful:', {
+      userId: updatedUser.id,
+      email: updatedUser.email
+    });
+
+    return res.status(200).json({ 
+      message: 'Email verified successfully! You can now log in.',
+      verified: true
+    });
   } catch (error) {
-    console.error('Verification error:', error);
-    return res.status(400).json({ 
-      message: 'Invalid or expired verification link',
+    console.error('❌ Verification error:', error);
+    return res.status(500).json({ 
+      message: 'An error occurred during verification. Please try again.',
       error: error.message 
     });
   }
