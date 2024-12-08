@@ -1,5 +1,22 @@
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.auroville.social';
 
+interface ApiError {
+  message: string;
+  status?: number;
+}
+
+async function handleResponse(response: Response) {
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const error: ApiError = {
+      message: errorData.message || 'An error occurred',
+      status: response.status
+    };
+    throw error;
+  }
+  return response.json();
+}
+
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
   const headers = {
@@ -40,20 +57,7 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
       }
     });
 
-    if (!response.ok) {
-      console.error('❌ Response not OK:', {
-        status: response.status,
-        statusText: response.statusText
-      });
-      const errorData = await response.json().catch(() => ({ 
-        message: response.statusText || 'Request failed' 
-      }));
-      throw new Error(errorData.message || 'Request failed');
-    }
-
-    const data = await response.json();
-    console.log('✅ API response data:', data);
-    return data;
+    return await handleResponse(response);
   } catch (error) {
     console.error('🔥 API request failed:', {
       error,
