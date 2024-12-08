@@ -1,4 +1,0 @@
-172.19.0.1 - - [04/Dec/2024:02:57:31 +0000] "GET / HTTP/1.1" 200 468 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" "-"
-172.19.0.1 - - [04/Dec/2024:02:57:31 +0000] "GET /favicon.png HTTP/1.1" 200 42019 "http://localhost/login" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" "-"
-172.19.0.1 - - [04/Dec/2024:03:02:45 +0000] "GET /signup HTTP/1.1" 200 468 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" "-"
-172.19.0.1 - - [04/Dec/2024:03:02:45 +0000] "GET /favicon.png HTTP/1.1" 304 0 "http://localhost/signup" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" "-"

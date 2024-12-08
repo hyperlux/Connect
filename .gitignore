@@ -1,5 +1,5 @@
 # Dependencies
-node_modules
+node_modules/
 .pnp
 .pnp.js
 
@@ -8,15 +8,12 @@ coverage
 
 # Production
 build
-dist
+dist/
 
 # Misc
 .DS_Store
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+*.swp
+*.swo
 
 # Debug logs
 npm-debug.log*
@@ -26,8 +23,6 @@ yarn-error.log*
 # IDE
 .idea
 .vscode
-*.swp
-*.swo
 
 # TypeScript
 *.tsbuildinfo
@@ -50,6 +45,19 @@ prisma/*.db
 ehthumbs.db
 Thumbs.db
 
-# Local development
-nginx.dev.conf
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dependency directories
+logs/
+
+# SSH and sensitive directories
+SSH/
 ssl/
+
+# Miscellaneous
+*.log
