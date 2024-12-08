@@ -15,12 +15,12 @@ FROM nginx:alpine
 # Copy built assets
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy logo files
+# Copy logo files (only the ones we know exist)
 COPY --from=build /app/public/logodark.png /usr/share/nginx/html/logodark.png
 COPY --from=build /app/public/logolight.png /usr/share/nginx/html/logolight.png
-COPY --from=build /app/public/logo192.png /usr/share/nginx/html/logo192.png
-COPY --from=build /app/public/logo512.png /usr/share/nginx/html/logo512.png
-COPY --from=build /app/public/favicon.ico /usr/share/nginx/html/favicon.ico
+COPY --from=build /app/public/banyan.jpg /usr/share/nginx/html/banyan.jpg
+COPY --from=build /app/public/firematri.png /usr/share/nginx/html/firematri.png
+COPY --from=build /app/public/matrimandirimg.png /usr/share/nginx/html/matrimandirimg.png
 
 # Copy PWA files
 COPY --from=build /app/public/manifest.json /usr/share/nginx/html/manifest.json
