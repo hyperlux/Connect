@@ -5,7 +5,6 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Access-Control-Allow-Origin': 'https://auroville.social',
     ...options.headers,
   };
 
@@ -21,9 +20,7 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
       ...options,
       headers,
       credentials: 'include',
-      mode: 'cors',
-      cache: 'no-cache',
-      referrerPolicy: 'no-referrer'
+      mode: 'cors'
     });
 
     console.log('API response:', {
