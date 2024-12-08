@@ -6,6 +6,9 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
+  createdAt: string;
+  profilePicture?: string;
+  bio?: string;
 }
 
 interface AuthResponse {
@@ -21,6 +24,10 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   signup: (data: { name: string; email: string; password: string }) => Promise<void>;
+  register: (data: { name: string; email: string; password: string }) => Promise<void>;
+  clearError: () => void;
+  updateProfile: (data: Partial<User>) => Promise<void>;
+  uploadProfilePicture: (file: File) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -80,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signup = async (data: { name: string; email: string; password: string }) => {
+  const register = async (data: { name: string; email: string; password: string }) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -88,10 +95,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('token', response.token);
       setUser(response.user);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to signup');
+      setError(error instanceof Error ? error.message : 'Failed to register');
       throw error;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const signup = register; // Alias for register
+
+  const clearError = () => {
+    setError(null);
+  };
+
+  const updateProfile = async (data: Partial<User>) => {
+    try {
+      const { data: updatedUser } = await api.put<User>('/auth/profile', data);
+      setUser(updatedUser);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to update profile');
+      throw error;
+    }
+  };
+
+  const uploadProfilePicture = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('profilePicture', file);
+      const { data: updatedUser } = await api.put<User>('/auth/profile-picture', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setUser(updatedUser);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to upload profile picture');
+      throw error;
     }
   };
 
@@ -104,7 +143,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         error,
         login,
         logout,
-        signup
+        signup,
+        register,
+        clearError,
+        updateProfile,
+        uploadProfilePicture
       }}
     >
       {children}
