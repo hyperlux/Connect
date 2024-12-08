@@ -37,11 +37,17 @@ COPY --from=builder /app/middleware ./middleware
 COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/.env ./.env
 
+# Create startup script
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'npx prisma migrate deploy' >> /app/start.sh && \
+    echo 'node index.js' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s \
     CMD curl -f http://localhost:5000/health || exit 1
 
 EXPOSE 5000
 
-# Start the application
-CMD ["node", "index.js"] 
+# Start the application using the startup script
+CMD ["/app/start.sh"] 
