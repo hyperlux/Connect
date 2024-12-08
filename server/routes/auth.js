@@ -164,40 +164,38 @@ router.post('/register', async (req, res) => {
 });
 
 // Email verification route
-router.get('/verify-email/:token', async (req, res) => {
+router.get('/verify-email', async (req, res) => {
   try {
-    const { token } = req.params;
+    const { token } = req.query;
+    
+    if (!token) {
+      return res.status(400).json({ message: 'Token is required' });
+    }
 
-    // Verify token
+    // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { email } = decoded;
 
-    // Find user with matching email and verification token
-    const user = await prisma.user.findFirst({
-      where: {
-        email,
-        verificationToken: token,
-        emailVerified: false
+    // Update user verification status
+    const user = await prisma.user.update({
+      where: { email },
+      data: { 
+        emailVerified: true,
+        verificationToken: null 
       }
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired verification link' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    // Update user as verified
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        emailVerified: true,
-        verificationToken: null
-      }
-    });
-
-    res.json({ message: 'Email verified successfully' });
+    return res.status(200).json({ message: 'Email verified successfully' });
   } catch (error) {
-    console.error('Email verification error:', error);
-    res.status(400).json({ message: 'Invalid or expired verification link' });
+    console.error('Verification error:', error);
+    return res.status(400).json({ 
+      message: 'Invalid or expired verification link',
+      error: error.message 
+    });
   }
 });
 
