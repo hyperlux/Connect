@@ -1,74 +1,34 @@
-import { useEffect } from 'react';
+import React, { useState } from 'react';
 import { Bell } from 'lucide-react';
-import { useNotifications } from '../lib/notifications';
-import { useTheme } from '../lib/theme';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
-export default function NotificationsPopover() {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
-  const { 
-    notifications, 
-    unreadCount, 
-    isLoading,
-    error,
-    fetchNotifications
-  } = useNotifications();
-
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
-
-  if (isLoading) {
-    return (
-      <div className="p-4 text-center">
-        <p className="text-gray-500">Loading notifications...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-4 text-center">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
+export function NotificationsPopover() {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className={`relative ${isDark ? 'text-dark-primary' : 'text-gray-700'}`}>
-      <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-hover">
-        <Bell className="h-6 w-6" />
-        {unreadCount > 0 && (
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-            {unreadCount}
-          </span>
-        )}
-      </button>
-
-      {/* Notifications dropdown content */}
-      <div className={`absolute right-0 mt-2 w-80 rounded-md shadow-lg ${
-        isDark ? 'bg-dark-card' : 'bg-white'
-      }`}>
-        <div className="py-1">
-          {notifications.length === 0 ? (
-            <div className="px-4 py-2 text-sm text-gray-500">
-              No notifications
-            </div>
-          ) : (
-            notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={`px-4 py-2 hover:bg-gray-50 dark:hover:bg-dark-hover ${
-                  !notification.read ? 'bg-blue-50 dark:bg-dark-lighter' : ''
-                }`}
-              >
-                <div className="text-sm font-medium">{notification.title}</div>
-                <div className="text-sm text-gray-500">{notification.message}</div>
-              </div>
-            ))
-          )}
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <button className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+          <Bell className="h-5 w-5" />
+          {/* Add notification badge here if needed */}
+        </button>
+      </DropdownMenuTrigger>
+      
+      <DropdownMenuContent align="end" className="w-80">
+        <div className="flex flex-col max-h-[500px] overflow-y-auto">
+          <div className="px-4 py-3 border-b">
+            <h3 className="font-semibold">Notifications</h3>
+          </div>
+          {/* Notification items go here */}
+          <div className="p-4 text-center text-sm text-gray-500">
+            No new notifications
+          </div>
         </div>
-      </div>
-    </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
