@@ -3,7 +3,6 @@ import { useAuth } from '../lib/auth';
 import { useTheme } from '../lib/theme';
 import { 
   LayoutGrid, 
-  Vote, 
   MessageSquare, 
   Calendar, 
   ShoppingBag, 
@@ -47,18 +46,6 @@ export default function Sidebar() {
         >
           <LayoutGrid className="h-5 w-5" />
           <span>Dashboard</span>
-        </Link>
-
-        <Link
-          to="/decision-hub"
-          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-            isActive('/decision-hub')
-              ? 'bg-[#E27B58] text-white'
-              : 'hover:bg-[#2a2a2a] hover:text-white'
-          }`}
-        >
-          <Vote className="h-5 w-5" />
-          <span>Decision Hub</span>
         </Link>
 
         <Link

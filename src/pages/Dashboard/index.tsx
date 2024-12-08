@@ -1,9 +1,7 @@
 import React from 'react';
 import { Users, Leaf, Heart, Globe } from 'lucide-react';
-import WelcomeBanner from './components/WelcomeBanner';
 import TodayEvents from './components/TodayEvents';
 import CriticalAnnouncements from './components/CriticalAnnouncements';
-import DecisionHub from './components/DecisionHub';
 import Bazaar from './components/Bazaar';
 import StatsGrid from './components/StatsGrid';
 import CommunityHighlights from './components/CommunityHighlights';
@@ -31,23 +29,20 @@ export default function Dashboard() {
             <div className="lg:col-span-2 space-y-4">            
               {/* Priority 3: Today's Events */}
               <TodayEvents />
-              
-              {/* Priority 4: Decision Hub */}
-              <DecisionHub />
 
-              {/* Priority 5: Community Highlights */}
+              {/* Priority 4: Community Highlights */}
               <CommunityHighlights />
 
-              {/* Priority 6: Latest Posts */}
+              {/* Priority 5: Latest Posts */}
               <LatestPosts />
             </div>
 
             {/* Right Column */}
             <div className="space-y-4">            
-              {/* Priority 7: Marketplace */}
+              {/* Priority 6: Marketplace */}
               <Bazaar />
               
-              {/* Priority 8: Stats Grid */}
+              {/* Priority 7: Stats Grid */}
               <StatsGrid stats={stats} />
             </div>
           </div>
