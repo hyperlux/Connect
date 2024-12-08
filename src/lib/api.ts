@@ -8,14 +8,17 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
     ...options.headers,
   };
 
-  console.log('Making API request:', {
+  console.log('🚀 Making API request:', {
     url,
     method: options.method,
     headers,
-    body: options.body
+    body: options.body,
+    mode: 'cors',
+    credentials: 'include'
   });
 
   try {
+    console.log('⏳ Sending fetch request...');
     const response = await fetch(url, {
       ...options,
       headers,
@@ -23,22 +26,38 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
       mode: 'cors'
     });
 
-    console.log('API response:', {
+    console.log('📥 Response received:', {
       status: response.status,
       statusText: response.statusText,
-      url: response.url
+      url: response.url,
+      headers: {
+        'content-type': response.headers.get('content-type'),
+        'access-control-allow-origin': response.headers.get('access-control-allow-origin'),
+        'access-control-allow-credentials': response.headers.get('access-control-allow-credentials'),
+      }
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: response.statusText || 'Request failed' }));
+      console.error('❌ Response not OK:', {
+        status: response.status,
+        statusText: response.statusText
+      });
+      const errorData = await response.json().catch(() => ({ 
+        message: response.statusText || 'Request failed' 
+      }));
       throw new Error(errorData.message || 'Request failed');
     }
 
     const data = await response.json();
-    console.log('API response data:', data);
+    console.log('✅ API response data:', data);
     return data;
   } catch (error) {
-    console.error('API request failed:', error);
+    console.error('🔥 API request failed:', {
+      error,
+      type: error.constructor.name,
+      message: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }

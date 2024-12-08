@@ -36,14 +36,61 @@ const allowedOrigins = [
   process.env.CORS_ORIGIN
 ].filter(Boolean);
 
+// Debug middleware to log CORS details
+app.use((req, res, next) => {
+  console.log('🔍 Incoming request details:', {
+    method: req.method,
+    url: req.url,
+    origin: req.headers.origin,
+    host: req.headers.host,
+    'access-control-request-method': req.headers['access-control-request-method'],
+    'access-control-request-headers': req.headers['access-control-request-headers']
+  });
+  next();
+});
+
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function(origin, callback) {
+    console.log('🔒 CORS Origin Check:', {
+      requestOrigin: origin,
+      allowedOrigins: allowedOrigins
+    });
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      console.log('✅ No origin - allowing request');
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ Origin allowed:', origin);
+      callback(null, true);
+    } else {
+      console.error('❌ Origin not allowed:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   exposedHeaders: ['Authorization'],
   optionsSuccessStatus: 204
 }));
+
+// Add response header logging
+app.use((req, res, next) => {
+  const originalSend = res.send;
+  res.send = function(...args) {
+    console.log('📤 Response headers:', {
+      'access-control-allow-origin': res.getHeader('access-control-allow-origin'),
+      'access-control-allow-credentials': res.getHeader('access-control-allow-credentials'),
+      'access-control-allow-methods': res.getHeader('access-control-allow-methods'),
+      'access-control-allow-headers': res.getHeader('access-control-allow-headers')
+    });
+    return originalSend.apply(res, args);
+  };
+  next();
+});
 
 // Parse JSON bodies
 app.use(express.json());
