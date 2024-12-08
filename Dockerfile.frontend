@@ -32,13 +32,35 @@ COPY --from=build /app/public/ /usr/share/nginx/html/
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Debug: List contents of html directory
+# Create nginx main configuration
+RUN echo 'user nginx;\n\
+worker_processes auto;\n\
+error_log /var/log/nginx/error.log warn;\n\
+pid /var/run/nginx.pid;\n\
+\n\
+events {\n\
+    worker_connections 1024;\n\
+}\n\
+\n\
+http {\n\
+    include /etc/nginx/mime.types;\n\
+    default_type application/octet-stream;\n\
+    include /etc/nginx/conf.d/*.conf;\n\
+}' > /etc/nginx/nginx.conf
+
+# Debug: List contents and permissions
 RUN echo "Contents of nginx html directory:" && \
-    ls -la /usr/share/nginx/html/
+    ls -la /usr/share/nginx/html/ && \
+    echo "Nginx configuration:" && \
+    cat /etc/nginx/nginx.conf && \
+    cat /etc/nginx/conf.d/default.conf
 
 # Set proper permissions
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
-    chmod -R 755 /usr/share/nginx/html
+    chmod -R 755 /usr/share/nginx/html && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    chown -R nginx:nginx /etc/nginx/conf.d
 
 # Create a basic health check page
 RUN echo "OK" > /usr/share/nginx/html/health.html
