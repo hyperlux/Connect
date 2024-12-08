@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, Users } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import ThemeToggle from './ThemeToggle';
-import NotificationsPopover from './NotificationsPopover';
+import { NotificationsPopover } from './NotificationsPopover';
 import { useEffect } from 'react';
 
 export default function Header() {
