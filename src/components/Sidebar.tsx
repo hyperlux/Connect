@@ -41,7 +41,7 @@ export default function Sidebar() {
           to="/dashboard"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/dashboard')
-              ? 'bg-[#4A2618] text-auroville-primary'
+              ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
           }`}
         >
@@ -53,7 +53,7 @@ export default function Sidebar() {
           to="/decision-hub"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/decision-hub')
-              ? 'bg-[#4A2618] text-auroville-primary'
+              ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
           }`}
         >
@@ -65,7 +65,7 @@ export default function Sidebar() {
           to="/forums"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/forums')
-              ? 'bg-[#4A2618] text-auroville-primary'
+              ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
           }`}
         >
@@ -77,7 +77,7 @@ export default function Sidebar() {
           to="/events"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/events')
-              ? 'bg-[#4A2618] text-auroville-primary'
+              ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
           }`}
         >
@@ -89,7 +89,7 @@ export default function Sidebar() {
           to="/bazaar"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/bazaar')
-              ? 'bg-[#4A2618] text-auroville-primary'
+              ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
           }`}
         >
@@ -101,7 +101,7 @@ export default function Sidebar() {
           to="/services"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/services')
-              ? 'bg-[#4A2618] text-auroville-primary'
+              ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
           }`}
         >
@@ -113,7 +113,7 @@ export default function Sidebar() {
           to="/resources"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/resources')
-              ? 'bg-[#4A2618] text-auroville-primary'
+              ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
           }`}
         >
@@ -125,7 +125,7 @@ export default function Sidebar() {
           to="/settings"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/settings')
-              ? 'bg-[#4A2618] text-auroville-primary'
+              ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
           }`}
         >
