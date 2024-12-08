@@ -5,6 +5,7 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'Origin': 'https://auroville.social',
     ...options.headers,
   };
 
@@ -34,6 +35,8 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
         'content-type': response.headers.get('content-type'),
         'access-control-allow-origin': response.headers.get('access-control-allow-origin'),
         'access-control-allow-credentials': response.headers.get('access-control-allow-credentials'),
+        'access-control-allow-methods': response.headers.get('access-control-allow-methods'),
+        'access-control-allow-headers': response.headers.get('access-control-allow-headers')
       }
     });
 
@@ -54,9 +57,9 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
   } catch (error) {
     console.error('🔥 API request failed:', {
       error,
-      type: error.constructor.name,
-      message: error.message,
-      stack: error.stack
+      type: error instanceof Error ? error.constructor.name : typeof error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
     });
     throw error;
   }
