@@ -74,27 +74,10 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   exposedHeaders: ['Authorization'],
+  maxAge: 86400,
+  preflightContinue: false,
   optionsSuccessStatus: 204
 }));
-
-// Add response header logging
-app.use((req, res, next) => {
-  // Ensure CORS headers are set on every response
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
-  
-  const originalSend = res.send;
-  res.send = function(...args) {
-    console.log('📤 Response headers:', {
-      'access-control-allow-origin': res.getHeader('access-control-allow-origin'),
-      'access-control-allow-credentials': res.getHeader('access-control-allow-credentials'),
-      'access-control-allow-methods': res.getHeader('access-control-allow-methods'),
-      'access-control-allow-headers': res.getHeader('access-control-allow-headers')
-    });
-    return originalSend.apply(res, args);
-  };
-  next();
-});
 
 // Parse JSON bodies
 app.use(express.json());
