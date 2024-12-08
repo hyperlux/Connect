@@ -41,10 +41,6 @@ export default function Header() {
               alt="Auroville Community" 
               className="h-12 w-auto"
             />
-            <div className="hidden sm:block">
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Auroville</h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">COMMUNITY</p>
-            </div>
           </Link>
 
           <div className="relative w-96">
