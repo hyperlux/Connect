@@ -16,13 +16,15 @@ async function main() {
       where: { email }
     });
 
-    // Create new admin user
+    // Create new admin user with email verified
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         name,
-        role: 'ADMIN'
+        role: 'ADMIN',
+        emailVerified: true,  // Set email as verified
+        verificationToken: null  // Clear any verification token
       }
     });
 

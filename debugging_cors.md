@@ -1,44 +1,57 @@
 # CORS Debugging Log
 
-## Current Issues
-1. Frontend at `https://auroville.social` cannot make requests to `https://api.auroville.social`
-2. CORS preflight requests (OPTIONS) are failing
-3. Error message: "No 'Access-Control-Allow-Origin' header is present on the requested resource"
+## Current Status
+1. ✅ CORS is now working correctly:
+   - Preflight OPTIONS requests are successful
+   - Proper CORS headers are being returned
+   - Frontend can communicate with the API
 
-## Attempted Solutions
-1. Added CORS middleware to Express server:
-```javascript
-app.use(cors({
-  origin: 'https://auroville.social',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
-```
+2. ❌ Authentication failing with 401 Unauthorized:
+   - Request reaches the backend successfully
+   - Server responds with 401 "Invalid email or password"
+   - Full request/response cycle is logged
 
-2. Nginx configuration already has CORS headers:
-```nginx
-add_header Access-Control-Allow-Origin 'https://auroville.social' always;
-add_header Access-Control-Allow-Methods 'GET, POST, PUT, DELETE, OPTIONS' always;
-add_header Access-Control-Allow-Headers 'Content-Type, Authorization' always;
-add_header Access-Control-Allow-Credentials 'true' always;
-```
+## Latest Findings
+1. Backend logs show:
+   ```
+   🔍 Incoming Request:
+   - email: 'polletkiro@gmail.com'
+   - password: 'Admin123!'
+   Response: 401 Unauthorized
+   ```
 
-## Current Strategy
-1. The error persists despite both Express and Nginx CORS configurations. This suggests:
-   - The requests might not be reaching the Express server
-   - Nginx configuration might be overriding Express CORS headers
-   - The preflight request might be failing at the Nginx level
+2. CORS Configuration Working:
+   ```
+   access-control-allow-origin: https://auroville.social
+   access-control-allow-credentials: true
+   access-control-allow-methods: GET,POST,PUT,DELETE,OPTIONS
+   access-control-allow-headers: Content-Type,Authorization
+   ```
 
 ## Next Steps
-1. Verify Nginx is properly forwarding requests to the Express backend
-2. Check if the auth route ('/auth/login') is properly exposed and not blocked
-3. Review Docker networking setup to ensure proper communication between services
-4. Add request logging to track the full request path
-5. Consider consolidating CORS handling to either Nginx or Express, not both
+1. Investigate authentication failure:
+   - Verify user exists in database
+   - Check password hashing/comparison
+   - Review authentication logic in `/auth/login` route
+   - Check database connection and configuration
 
-## Questions to Answer
-1. Are requests reaching Nginx? (Based on error, yes)
-2. Are requests being forwarded to Express backend? (Need to verify)
-3. Is the Docker network properly configured?
-4. Which layer should handle CORS - Nginx or Express? 
+2. Add more detailed error logging:
+   - Log specific authentication failure reasons
+   - Add database query logging
+   - Monitor password comparison results
+
+## Infrastructure Status
+1. Nginx (Frontend):
+   - Running and properly configured
+   - Successfully proxying requests
+   - SSL/TLS working correctly
+
+2. Express (Backend):
+   - Running on port 5000
+   - CORS middleware configured correctly
+   - Request logging working
+   - Email service connected
+
+3. Database:
+   - Connection established
+   - Need to verify user records
