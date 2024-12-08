@@ -1,13 +1,23 @@
+import React from 'react';
 import { MessageSquare, Users, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useForumStore, type ForumState, type ForumPost } from '../../lib/forum';
+import { useForumStore } from '../../lib/forum';
 import NewPostModal from './components/NewPostModal';
-import { useEffect, useState, useCallback } from 'react';
+
+const categories = [
+  'General',
+  'Announcements',
+  'Events',
+  'Projects',
+  'Questions',
+  'Community',
+  'Working Groups',
+  'Marketplace'
+];
 
 export default function Forums() {
-  const [showNewPost, setShowNewPost] = useState(false);
+  const [showNewPost, setShowNewPost] = React.useState(false);
   const { 
     posts, 
-    categories, 
     selectedCategory,
     currentPage,
     totalPosts,
@@ -20,22 +30,22 @@ export default function Forums() {
     setSortBy
   } = useForumStore();
 
-  const handlePageChange = useCallback((page: number) => {
+  React.useEffect(() => {
+    fetchPosts(1);
+  }, [fetchPosts]);
+
+  const handlePageChange = React.useCallback((page: number) => {
     const totalPages = Math.ceil(totalPosts / postsPerPage);
     if (page >= 1 && page <= totalPages) {
       fetchPosts(page);
     }
   }, [totalPosts, postsPerPage, fetchPosts]);
 
-  useEffect(() => {
-    fetchPosts(1);
-  }, [fetchPosts]);
-
-  const renderPost = (post: ForumPost) => (
-    <div key={post.id} className="p-6">
+  const renderPost = (post: any) => (
+    <div key={post.id} className="p-6 hover:bg-gray-50 dark:hover:bg-dark-hover">
       <div className="flex items-center gap-4 mb-4">
         <img
-          src={post.author.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}`}
+          src={post.author.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}&background=E27B58&color=fff`}
           alt={post.author.name}
           className="w-10 h-10 rounded-full"
         />
@@ -50,11 +60,11 @@ export default function Forums() {
       <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-dark-secondary">
         <div className="flex items-center gap-2">
           <MessageSquare className="h-4 w-4" />
-          <span>{post.comments} comments</span>
+          <span>{post.comments || 0} comments</span>
         </div>
         <div className="flex items-center gap-2">
           <Users className="h-4 w-4" />
-          <span>{post.likes} likes</span>
+          <span>{post.likes || 0} likes</span>
         </div>
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4" />
@@ -67,7 +77,10 @@ export default function Forums() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-primary">Community Forums</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-primary">Community Forums</h1>
+          <p className="text-gray-600 dark:text-dark-secondary mt-1">Join discussions, share ideas, and connect with the community</p>
+        </div>
         <button
           onClick={() => setShowNewPost(true)}
           className="bg-auroville-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90"
@@ -104,8 +117,8 @@ export default function Forums() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-primary mb-4">Sort By</h2>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as ForumState['sortBy'])}
-                className="w-full p-2 border rounded-lg dark:bg-dark-card dark:border-dark-hover"
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="w-full p-2 border rounded-lg dark:bg-dark-card dark:border-dark-hover dark:text-dark-primary"
               >
                 <option value="newest">Latest</option>
                 <option value="popular">Most Popular</option>

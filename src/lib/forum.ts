@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { api } from './api';
 
 export interface ForumPost {
   id: string;
@@ -19,7 +20,6 @@ export interface ForumPost {
 
 export interface ForumState {
   posts: ForumPost[];
-  categories: string[];
   isLoading: boolean;
   error: string | null;
   selectedCategory: string;
@@ -44,10 +44,9 @@ export const useForumStore = create<ForumState>()(
   persist(
     (set, get) => ({
       posts: [],
-      categories: ['General', 'Announcements', 'Events', 'Projects', 'Questions'],
       isLoading: false,
       error: null,
-      selectedCategory: 'all',
+      selectedCategory: 'All',
       currentPage: 1,
       postsPerPage: 10,
       totalPosts: 0,
@@ -61,32 +60,38 @@ export const useForumStore = create<ForumState>()(
       fetchPosts: async (page: number) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await fetch(`/api/forum/posts?page=${page}&category=${get().selectedCategory}`);
-          if (!response.ok) throw new Error('Failed to fetch posts');
-          const data = await response.json();
+          const params = new URLSearchParams();
+          params.append('page', page.toString());
+          params.append('category', get().selectedCategory);
+          params.append('sort', get().sortBy);
+          
+          const response = await api.get(`/forums/posts?${params.toString()}`);
+          const { posts, total } = response.data;
+          
           set({ 
-            posts: data.posts,
-            totalPosts: data.total,
+            posts,
+            totalPosts: total,
             currentPage: page,
             isLoading: false 
           });
         } catch (error) {
-          set({ error: (error as Error).message, isLoading: false });
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to fetch posts',
+            isLoading: false 
+          });
         }
       },
 
       createPost: async (data) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await fetch('/api/forum/posts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-          });
-          if (!response.ok) throw new Error('Failed to create post');
+          await api.post('/forums/posts', data);
           await get().fetchPosts(1);
         } catch (error) {
-          set({ error: (error as Error).message, isLoading: false });
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to create post',
+            isLoading: false 
+          });
         }
       },
 
@@ -95,9 +100,17 @@ export const useForumStore = create<ForumState>()(
         get().fetchPosts(1);
       },
 
-      setSortBy: (sortBy) => set({ sortBy }),
+      setSortBy: (sortBy) => {
+        set({ sortBy });
+        get().fetchPosts(1);
+      },
+
       setSearchQuery: (query) => set({ searchQuery: query }),
-      setFilters: (filters) => set({ filters })
+      
+      setFilters: (filters) => {
+        set({ filters });
+        get().fetchPosts(1);
+      }
     }),
     {
       name: 'forum-store',
