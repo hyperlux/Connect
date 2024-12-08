@@ -52,9 +52,14 @@ router.put('/profile', authenticate, async (req, res, next) => {
 // Upload profile picture
 router.post('/profile/picture', authenticate, upload.single('profilePicture'), async (req, res, next) => {
   try {
-    console.log('Received file upload request:', req.file);
+    console.log('Received file upload request:', {
+      file: req.file,
+      body: req.body,
+      contentType: req.headers['content-type']
+    });
     
     if (!req.file) {
+      console.error('No file received in the request');
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
@@ -64,7 +69,10 @@ router.post('/profile/picture', authenticate, upload.single('profilePicture'), a
 
     console.log('Updating user profile picture:', {
       userId,
-      filePath
+      filePath,
+      originalName: req.file.originalname,
+      mimeType: req.file.mimetype,
+      size: req.file.size
     });
 
     const updatedUser = await prisma.user.update({

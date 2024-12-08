@@ -199,8 +199,12 @@ export const useAuth = create<AuthState>()(
           const formData = new FormData();
           formData.append('profilePicture', file);
 
-          // Let the browser handle the Content-Type header automatically
-          const updatedUser = await api.withAuth(token).post('/api/users/profile/picture', formData);
+          const updatedUser = await api.withAuth(token).post('/api/users/profile/picture', formData, {
+            headers: {
+              // Let the browser set the Content-Type header with boundary
+              'Content-Type': undefined
+            }
+          });
 
           set((state) => ({ 
             ...state,
