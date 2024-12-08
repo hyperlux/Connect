@@ -1,94 +1,37 @@
 # Deployment Workflow
 
-## Development to Production Workflow
+## Server Setup
+- Ubuntu server running at auroville.social
+- Docker and Docker Compose installed
+- SSL certificates in /etc/letsencrypt
 
-1. Make changes locally
-2. Test changes locally
-3. Commit and push to GitHub
-4. SSH into production server
-5. Pull changes and deploy
+## Development Workflow
 
+1. Make changes and push to git:
 ```bash
-# On your local machine
 git add .
-git commit -m "Your commit message"
+git commit -m "Your changes"
 git push
+```
 
-# SSH into production server
-ssh root@auroville.social
-
-# On production server
-cd ~/AurovilleConnect
+2. Deploy on server:
+```bash
 git pull
-docker-compose down
-docker-compose build
-docker-compose up -d
+docker compose build
+docker compose up -d
 ```
 
-## Important Notes
-
-- The application runs in Docker containers on the production server
-- Do NOT run nginx directly on the host system - it's handled by Docker
-- Ports 80 and 443 are managed by the Docker containers
-
-## Common Issues and Solutions
-
-### 1. CORS Issues
-- CORS is handled by Express in the API server
-- Do not add CORS headers in nginx configuration
-- Check `server/index.js` for CORS settings
-
-### 2. Port Conflicts
-If you see errors about ports 80/443 being in use:
+3. Check logs if needed:
 ```bash
-# Check what's using the ports
-sudo lsof -i :80 -i :443
-
-# If it's docker-proxy processes:
-sudo docker container ls
-docker-compose down
-sudo killall docker-proxy  # Force kill any hanging docker-proxy processes
-sudo systemctl restart docker  # Restart Docker daemon
-
-# If it's nginx running on the host:
-sudo systemctl stop nginx
-sudo systemctl disable nginx  # Prevent nginx from starting on boot
-sudo rm /etc/nginx/sites-enabled/default  # Remove host nginx config
-
-# Clean up all unused Docker resources
-docker system prune -f
-
-# Restart Docker containers
-docker-compose down
-docker-compose up -d
-```
-
-### 3. Container Issues
-To check container status:
-```bash
-docker ps
-docker-compose ps
-docker logs aurovilleconnect_frontend_1  # Check frontend logs
-docker logs aurovilleconnect_api_1       # Check API logs
-
-# If containers are stuck or misbehaving:
-docker-compose down
-docker system prune -f  # Clean up unused resources
-docker volume prune -f  # Clean up unused volumes (careful with database volumes!)
-docker-compose up -d --build  # Rebuild and start
+docker compose logs -f
 ```
 
 ## SSL Certificates
-- SSL certificates are mounted from `/etc/letsencrypt`
-- Renewal is handled by certbot
-- Certificate paths are configured in Docker Compose and nginx configs
+- Managed by Let's Encrypt
+- Auto-renewal configured
+- Mounted at /etc/letsencrypt
 
-## Environment Variables
-Important environment variables in production:
-- `VITE_API_URL=https://api.auroville.social`
-- `VITE_APP_URL=https://auroville.social`
-- `NODE_ENV=production`
-- Database connection strings and secrets are managed in docker-compose.yml
-```
-
-</rewritten_file>
+## Important Notes
+- All development happens directly on the server
+- Single docker-compose.yml for simplicity
+- Production environment variables in .env
