@@ -23,7 +23,7 @@ interface AuthContextType {
   signup: (data: { name: string; email: string; password: string }) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -84,9 +84,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     setError(null);
     try {
-      const response = await api.post<AuthResponse>('/auth/register', data);
-      localStorage.setItem('token', response.data.token);
-      setUser(response.data.user);
+      const { data: response } = await api.post<AuthResponse>('/auth/register', data);
+      localStorage.setItem('token', response.token);
+      setUser(response.user);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to signup');
       throw error;
