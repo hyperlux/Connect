@@ -11,14 +11,14 @@ const bannerImages = [
   },
   {
     id: 2,
-    url: '/The_Banyan_Tree_(Ficus_benghalensis)_,_Auroville_,Pondicherry.jpg',
+    url: '/banyan.jpg',
     title: 'The Sacred Banyan',
     quote: 'The future of the Earth depends on a change of consciousness.',
     author: 'Sri Aurobindo'
   },
   {
     id: 3,
-    url: 'https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80',
+    url: '/matrimandirimg.png',
     title: 'Solar Kitchen',
     quote: 'There should be somewhere upon Earth a place that no nation could claim as its sole property...',
     author: 'The Mother'
