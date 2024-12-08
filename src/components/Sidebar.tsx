@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import { useTheme } from '../lib/theme';
 import { 
   LayoutGrid, 
   Vote, 
@@ -15,6 +16,7 @@ import {
 export default function Sidebar() {
   const location = useLocation();
   const { user } = useAuth();
+  const { theme } = useTheme();
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -25,10 +27,14 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="p-4">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="Auroville" className="h-8 w-8" />
-          <div className="text-sm font-medium text-white">
-            Auroville
-            <div className="text-xs text-gray-400">COMMUNITY</div>
+          <img 
+            src={theme === 'dark' ? "/logodark.png" : "/logolight.png"}
+            alt="Auroville" 
+            className="h-10 w-10 object-contain"
+          />
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-[#E27B58]">Auroville</span>
+            <span className="text-[10px] text-gray-400 uppercase tracking-wider">Community</span>
           </div>
         </Link>
       </div>
