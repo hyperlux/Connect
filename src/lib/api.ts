@@ -13,149 +13,41 @@ declare global {
   }
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://api.auroville.social';
+import axios from 'axios';
 
-interface ApiError {
-  message: string;
-  status?: number;
-}
+const baseURL = process.env.NODE_ENV === 'production' 
+  ? 'https://api.auroville.social'
+  : 'http://localhost:3000';
 
-async function handleResponse(response: Response) {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const error: ApiError = {
-      message: errorData.message || 'An error occurred',
-      status: response.status
-    };
-    throw error;
+export const api = axios.create({
+  baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add a request interceptor to add the auth token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return response.json();
-}
+);
 
-async function apiRequest(endpoint: string, options: RequestInit = {}) {
-  const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
-  
-  // Don't set Content-Type for FormData
-  const isFormData = options.body instanceof FormData;
-  console.log('Request body type:', {
-    isFormData,
-    type: options.body ? options.body.constructor.name : 'undefined',
-    isString: typeof options.body === 'string'
-  });
-
-  const headers = {
-    ...(!isFormData && { 'Content-Type': 'application/json' }),
-    'Accept': 'application/json',
-    ...options.headers,
-  };
-
-  console.log('🚀 Making API request:', {
-    url,
-    method: options.method,
-    headers,
-    bodyType: options.body ? options.body.constructor.name : 'undefined',
-    isFormData
-  });
-
-  try {
-    console.log('⏳ Sending fetch request...');
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      credentials: 'include',
-      mode: 'cors'
-    });
-
-    console.log('📥 Response received:', {
-      status: response.status,
-      statusText: response.statusText,
-      url: response.url,
-      headers: {
-        'content-type': response.headers.get('content-type'),
-        'access-control-allow-origin': response.headers.get('access-control-allow-origin'),
-        'access-control-allow-credentials': response.headers.get('access-control-allow-credentials'),
-        'access-control-allow-methods': response.headers.get('access-control-allow-methods'),
-        'access-control-allow-headers': response.headers.get('access-control-allow-headers')
-      }
-    });
-
-    return await handleResponse(response);
-  } catch (error) {
-    console.error('🔥 API request failed:', {
-      error,
-      type: error instanceof Error ? error.constructor.name : typeof error,
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined
-    });
-    throw error;
+// Add a response interceptor to handle errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
   }
-}
-
-// API object with common methods
-export const api = {
-  get: (endpoint: string, options: RequestInit = {}) => 
-    apiRequest(endpoint, { ...options, method: 'GET' }),
-  
-  post: (endpoint: string, data: any, options: RequestInit = {}) =>
-    apiRequest(endpoint, {
-      ...options,
-      method: 'POST',
-      body: data instanceof FormData ? data : JSON.stringify(data),
-    }),
-  
-  put: (endpoint: string, data: any, options: RequestInit = {}) =>
-    apiRequest(endpoint, {
-      ...options,
-      method: 'PUT',
-      body: data instanceof FormData ? data : JSON.stringify(data),
-    }),
-  
-  delete: (endpoint: string, options: RequestInit = {}) =>
-    apiRequest(endpoint, { ...options, method: 'DELETE' }),
-
-  // Helper to add auth token to requests
-  withAuth: (token: string) => ({
-    get: (endpoint: string, options: RequestInit = {}) =>
-      apiRequest(endpoint, {
-        ...options,
-        headers: {
-          ...options.headers,
-          'Authorization': `Bearer ${token}`,
-        },
-      }),
-
-    post: (endpoint: string, data: any, options: RequestInit = {}) =>
-      apiRequest(endpoint, {
-        ...options,
-        method: 'POST',
-        headers: {
-          ...(!(data instanceof FormData) && { 'Content-Type': 'application/json' }),
-          'Authorization': `Bearer ${token}`,
-          ...options.headers,
-        },
-        body: data instanceof FormData ? data : JSON.stringify(data),
-      }),
-
-    put: (endpoint: string, data: any, options: RequestInit = {}) =>
-      apiRequest(endpoint, {
-        ...options,
-        method: 'PUT',
-        headers: {
-          ...(!(data instanceof FormData) && { 'Content-Type': 'application/json' }),
-          'Authorization': `Bearer ${token}`,
-          ...options.headers,
-        },
-        body: data instanceof FormData ? data : JSON.stringify(data),
-      }),
-
-    delete: (endpoint: string, options: RequestInit = {}) =>
-      apiRequest(endpoint, {
-        ...options,
-        method: 'DELETE',
-        headers: {
-          ...options.headers,
-          'Authorization': `Bearer ${token}`,
-        },
-      }),
-  })
-}; 
+); 
