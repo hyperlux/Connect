@@ -25,20 +25,24 @@ export default function Dashboard() {
             <CriticalAnnouncements />
           </div>
 
+          {/* Priority 2: Today's Events */}
+          <div className="max-w-[calc(100vw-240px)]">
+            <TodayEvents />
+          </div>
+
+          {/* Priority 3: Latest Posts */}
+          <div className="max-w-[calc(100vw-240px)]">
+            <LatestPosts />
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-[calc(100vw-240px)]">
             {/* Left Column - Spans 2 columns */}
             <div className="lg:col-span-2 space-y-4">            
-              {/* Priority 2: Resources and Services */}
+              {/* Priority 4: Resources and Services */}
               <ResourcesAndServices />
               
-              {/* Priority 3: Today's Events */}
-              <TodayEvents />
-
-              {/* Priority 4: Community Highlights */}
+              {/* Priority 5: Community Highlights */}
               <CommunityHighlights />
-
-              {/* Priority 5: Latest Posts */}
-              <LatestPosts />
             </div>
 
             {/* Right Column */}
