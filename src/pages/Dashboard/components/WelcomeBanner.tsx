@@ -42,7 +42,7 @@ export default function WelcomeBanner() {
   }, []);
 
   return (
-    <div className="relative h-[400px] rounded-xl overflow-hidden">
+    <div className="relative h-[280px] rounded-xl overflow-hidden">
       {bannerImages.map((image, index) => (
         <div
           key={image.id}
@@ -56,10 +56,10 @@ export default function WelcomeBanner() {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent">
-            <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-              <h2 className="text-4xl font-bold mb-3">{image.title}</h2>
-              <p className="text-xl mb-3 italic">"{image.quote}"</p>
-              <p className="text-sm">— {image.author}</p>
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <h2 className="text-2xl font-bold mb-2">{image.title}</h2>
+              <p className="text-base mb-2 italic">"{image.quote}"</p>
+              <p className="text-xs">— {image.author}</p>
             </div>
           </div>
         </div>
@@ -69,21 +69,21 @@ export default function WelcomeBanner() {
         onClick={prevSlide}
         className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/20 hover:bg-black/30 transition-colors"
       >
-        <ChevronLeft className="w-6 h-6 text-white" />
+        <ChevronLeft className="w-5 h-5 text-white" />
       </button>
       <button
         onClick={nextSlide}
         className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/20 hover:bg-black/30 transition-colors"
       >
-        <ChevronRight className="w-6 h-6 text-white" />
+        <ChevronRight className="w-5 h-5 text-white" />
       </button>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
         {bannerImages.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-colors ${
+            className={`w-1.5 h-1.5 rounded-full transition-colors ${
               index === currentIndex ? 'bg-white' : 'bg-white/50'
             }`}
           />

@@ -19,20 +19,20 @@ const stats = [
 export default function Dashboard() {
   return (
     <div className="flex-1 overflow-auto bg-gray-50 dark:bg-[#1E1E1E]">
-      <div className="max-w-7xl mx-auto pt-4 px-4">
+      <div className="max-w-full mx-auto pt-2 px-3">
         {/* Priority 1: Critical Announcements */}
-        <div className="mb-6">
+        <div className="mb-4">
           <CriticalAnnouncements />
         </div>
 
         {/* Priority 2: Welcome Banner */}
-        <div className="mb-6">
+        <div className="mb-4">
           <WelcomeBanner />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
           {/* Left Column - Spans 2 columns */}
-          <div className="lg:col-span-2 space-y-6">            
+          <div className="lg:col-span-2 space-y-4">            
             {/* Priority 3: Today's Events */}
             <TodayEvents />
             
@@ -47,7 +47,7 @@ export default function Dashboard() {
           </div>
 
           {/* Right Column */}
-          <div className="space-y-6">            
+          <div className="space-y-4">            
             {/* Priority 7: Marketplace */}
             <Bazaar />
             
