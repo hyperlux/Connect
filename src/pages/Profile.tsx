@@ -31,7 +31,7 @@ export default function Profile() {
           <div className="p-6 sm:p-8 border-b">
             <div className="flex items-center gap-6">
               <img
-                src={user.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                src={user.profilePicture || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                 alt={`${user.name}'s profile`}
                 className="w-24 h-24 rounded-full object-cover"
               />

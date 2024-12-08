@@ -7,7 +7,7 @@ interface User {
   name: string;
   email: string;
   bio?: string;
-  avatar?: string;
+  profilePicture?: string;
   createdAt: string;
   role?: string;
 }
@@ -29,6 +29,7 @@ interface AuthState {
   logout: () => Promise<void>;
   clearError: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
+  uploadProfilePicture: (file: File) => Promise<void>;
 }
 
 const clearAuthState = {
@@ -182,6 +183,35 @@ export const useAuth = create<AuthState>()(
           }));
         } catch (error: any) {
           console.error('Profile update error:', error);
+          set((state) => ({ ...state, error: error.message, isLoading: false }));
+          throw error;
+        }
+      },
+
+      uploadProfilePicture: async (file: File) => {
+        try {
+          set((state) => ({ ...state, isLoading: true, error: null }));
+          const token = get().token;
+          if (!token) {
+            throw new Error('No authentication token');
+          }
+
+          const formData = new FormData();
+          formData.append('profilePicture', file);
+
+          const updatedUser = await api.withAuth(token).post('/api/users/profile/picture', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          set((state) => ({ 
+            ...state,
+            user: { ...state.user, ...updatedUser },
+            isLoading: false 
+          }));
+        } catch (error: any) {
+          console.error('Profile picture upload error:', error);
           set((state) => ({ ...state, error: error.message, isLoading: false }));
           throw error;
         }

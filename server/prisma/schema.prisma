@@ -19,6 +19,7 @@ model User {
   verificationToken String?
   resetToken        String?
   resetTokenExpiry  DateTime?
+  profilePicture    String?         // URL to the stored profile picture
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   cityServices      CityService[]
