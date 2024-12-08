@@ -42,12 +42,12 @@ export default function WelcomeBanner() {
   }, []);
 
   return (
-    <div className="relative h-80 mb-8 rounded-xl overflow-hidden">
+    <div className="relative h-[400px] rounded-xl overflow-hidden">
       {bannerImages.map((image, index) => (
         <div
           key={image.id}
           className={`absolute inset-0 transition-opacity duration-500 ${
-            index === currentIndex ? 'opacity-100' : 'opacity-0'
+            index === currentIndex ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
         >
           <img
@@ -55,10 +55,10 @@ export default function WelcomeBanner() {
             alt={image.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent">
             <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-              <h2 className="text-3xl font-bold mb-2">{image.title}</h2>
-              <p className="text-lg mb-2 italic">"{image.quote}"</p>
+              <h2 className="text-4xl font-bold mb-3">{image.title}</h2>
+              <p className="text-xl mb-3 italic">"{image.quote}"</p>
               <p className="text-sm">— {image.author}</p>
             </div>
           </div>
@@ -67,18 +67,18 @@ export default function WelcomeBanner() {
       
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+        className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/20 hover:bg-black/30 transition-colors"
       >
         <ChevronLeft className="w-6 h-6 text-white" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/20 hover:bg-black/30 transition-colors"
       >
         <ChevronRight className="w-6 h-6 text-white" />
       </button>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
         {bannerImages.map((_, index) => (
           <button
             key={index}

@@ -19,40 +19,40 @@ const announcements = [
 
 export default function CriticalAnnouncements() {
   return (
-    <div className="bg-white dark:bg-dark-card rounded-xl shadow-sm p-4">
-      <h2 className="font-semibold text-gray-900 dark:text-dark-primary mb-2 text-sm">Important Announcements</h2>
-      <div className="space-y-2">
+    <div className="bg-[#1E1E1E] rounded-xl p-4">
+      <h2 className="font-semibold text-white mb-3 text-base">Important Announcements</h2>
+      <div className="space-y-3">
         {announcements.map((announcement) => (
           <div
             key={announcement.id}
-            className={`p-2 rounded-lg ${
+            className={`p-3 rounded-lg ${
               announcement.type === 'urgent'
-                ? 'bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30'
-                : 'bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30'
+                ? 'bg-red-900/20 border border-red-900/30'
+                : 'bg-blue-900/20 border border-blue-900/30'
             }`}
           >
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-3">
               {announcement.type === 'urgent' ? (
-                <AlertTriangle className="h-4 w-4 text-red-500 dark:text-red-400 mt-0.5 shrink-0" />
+                <AlertTriangle className="h-5 w-5 text-red-400 mt-0.5 shrink-0" />
               ) : (
-                <Info className="h-4 w-4 text-blue-500 dark:text-blue-400 mt-0.5 shrink-0" />
+                <Info className="h-5 w-5 text-blue-400 mt-0.5 shrink-0" />
               )}
               <div>
-                <h3 className={`font-medium text-sm ${
+                <h3 className={`font-medium text-base ${
                   announcement.type === 'urgent' 
-                    ? 'text-red-800 dark:text-red-200' 
-                    : 'text-blue-800 dark:text-blue-200'
+                    ? 'text-red-200' 
+                    : 'text-blue-200'
                 }`}>
                   {announcement.title}
                 </h3>
-                <p className={`text-xs mt-0.5 ${
+                <p className={`text-sm mt-1 ${
                   announcement.type === 'urgent' 
-                    ? 'text-red-600 dark:text-red-300' 
-                    : 'text-blue-600 dark:text-blue-300'
+                    ? 'text-red-300' 
+                    : 'text-blue-300'
                 }`}>
                   {announcement.message}
                 </p>
-                <span className="text-[10px] text-gray-500 dark:text-dark-secondary mt-1 block">
+                <span className="text-xs text-gray-400 mt-2 block">
                   {announcement.timestamp}
                 </span>
               </div>
