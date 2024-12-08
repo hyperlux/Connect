@@ -26,16 +26,12 @@ export default function Sidebar() {
     <div className="h-full bg-[#1a1a1a] text-gray-400 overflow-y-auto">
       {/* Logo */}
       <div className="p-4">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="block">
           <img 
             src={theme === 'dark' ? "/logodark.png" : "/logolight.png"}
             alt="Auroville" 
-            className="h-10 w-10 object-contain"
+            className="h-12 w-auto object-contain mx-auto"
           />
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-[#E27B58]">Auroville</span>
-            <span className="text-[10px] text-gray-400 uppercase tracking-wider">Community</span>
-          </div>
         </Link>
       </div>
 

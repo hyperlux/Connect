@@ -4,11 +4,13 @@ import { useAuth } from '../lib/auth';
 import ThemeToggle from './ThemeToggle';
 import { NotificationsPopover } from './NotificationsPopover';
 import { useEffect, useState } from 'react';
+import { useTheme } from '../lib/theme';
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     console.log('Header auth state:', { user, isAuthenticated });
@@ -43,8 +45,19 @@ export default function Header() {
           <Menu className="h-5 w-5" />
         </button>
 
+        {/* Logo */}
+        <div className="hidden lg:block w-52 px-4">
+          <Link to="/" className="block">
+            <img 
+              src={theme === 'dark' ? "/logodark.png" : "/logolight.png"}
+              alt="Auroville" 
+              className="h-8 object-contain"
+            />
+          </Link>
+        </div>
+
         {/* Search and Visitor Count Container */}
-        <div className="flex-1 ml-4 lg:ml-52 flex flex-col">
+        <div className="flex-1 flex flex-col">
           <div className="relative w-full max-w-[500px]">
             <input
               type="text"

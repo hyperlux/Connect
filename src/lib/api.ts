@@ -46,7 +46,6 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const headers = {
     ...(!isFormData && { 'Content-Type': 'application/json' }),
     'Accept': 'application/json',
-    'Origin': 'https://auroville.social',
     ...options.headers,
   };
 
@@ -55,9 +54,7 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
     method: options.method,
     headers,
     bodyType: options.body ? options.body.constructor.name : 'undefined',
-    isFormData,
-    mode: 'cors',
-    credentials: 'include'
+    isFormData
   });
 
   try {
@@ -103,14 +100,14 @@ export const api = {
     apiRequest(endpoint, {
       ...options,
       method: 'POST',
-      body: JSON.stringify(data),
+      body: data instanceof FormData ? data : JSON.stringify(data),
     }),
   
   put: (endpoint: string, data: any, options: RequestInit = {}) =>
     apiRequest(endpoint, {
       ...options,
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: data instanceof FormData ? data : JSON.stringify(data),
     }),
   
   delete: (endpoint: string, options: RequestInit = {}) =>
@@ -127,30 +124,28 @@ export const api = {
         },
       }),
 
-    post: (endpoint: string, data: any, options: RequestInit = {}) => {
-      const isFormData = data instanceof FormData;
-      return apiRequest(endpoint, {
+    post: (endpoint: string, data: any, options: RequestInit = {}) =>
+      apiRequest(endpoint, {
         ...options,
         method: 'POST',
         headers: {
-          ...(!isFormData && { 'Content-Type': 'application/json' }),
+          ...(!(data instanceof FormData) && { 'Content-Type': 'application/json' }),
           'Authorization': `Bearer ${token}`,
           ...options.headers,
         },
-        body: isFormData ? data : JSON.stringify(data),
-      });
-    },
+        body: data instanceof FormData ? data : JSON.stringify(data),
+      }),
 
     put: (endpoint: string, data: any, options: RequestInit = {}) =>
       apiRequest(endpoint, {
         ...options,
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          ...(!(data instanceof FormData) && { 'Content-Type': 'application/json' }),
           'Authorization': `Bearer ${token}`,
           ...options.headers,
         },
-        body: JSON.stringify(data),
+        body: data instanceof FormData ? data : JSON.stringify(data),
       }),
 
     delete: (endpoint: string, options: RequestInit = {}) =>
