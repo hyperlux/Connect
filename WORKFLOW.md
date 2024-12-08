@@ -1,54 +1,73 @@
-# Auroville Connect Workflow
+# Deployment Workflow
 
-## Development Workflow
+## Development to Production Workflow
 
-1. Make changes locally using Cursor
-2. Test changes locally:
-   ```bash
-   # Start all services
-   docker-compose up -d
-   
-   # View logs
-   docker-compose logs -f
-   ```
+1. Make changes locally
+2. Test changes locally
+3. Commit and push to GitHub
+4. SSH into production server
+5. Pull changes and deploy
 
-3. Commit and push changes:
-   ```bash
-   git add .
-   git commit -m "your commit message"
-   git push origin main
-   ```
+```bash
+# On your local machine
+git add .
+git commit -m "Your commit message"
+git push
 
-4. Deploy to production server:
-   ```bash
-   # SSH into server
-   ssh root@134.209.151.102
+# SSH into production server
+ssh root@auroville.social
 
-   # Navigate to project
-   cd AurovilleConnect
+# On production server
+cd ~/AurovilleConnect
+git pull
+docker-compose -f docker-compose.prod.yml up -d --build
+```
 
-   # Pull latest changes
-   git pull origin main
+## Important Notes
 
-   # Rebuild and restart containers
-   docker-compose down
-   docker-compose build
-   docker-compose up -d
+- The application runs in Docker containers on the production server
+- Do NOT run nginx directly on the host system - it's handled by Docker
+- Ports 80 and 443 are managed by the Docker containers
 
-   # View logs if needed
-   docker-compose logs -f
-   ```
+## Common Issues and Solutions
 
-5. View changes at https://auroville.social
+### 1. CORS Issues
+- CORS is handled by Express in the API server
+- Do not add CORS headers in nginx configuration
+- Check `server/index.js` for CORS settings
 
-## Docker Services
+### 2. Port Conflicts
+If you see errors about ports 80/443 being in use:
+```bash
+# Check what's using the ports
+sudo lsof -i :80 -i :443
 
-The application runs three services:
-- Frontend (nginx) - Serves the web application
-- API (Node.js) - Runs on port 5000
-- Database (PostgreSQL) - Runs on port 5432
+# If it's nginx running on the host:
+sudo systemctl stop nginx
+sudo rm /etc/nginx/sites-enabled/default  # Remove host nginx config
+
+# Restart Docker containers
+docker-compose -f docker-compose.prod.yml down
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### 3. Container Issues
+To check container status:
+```bash
+docker ps
+docker-compose ps
+docker logs aurovilleconnect_frontend_1  # Check frontend logs
+docker logs aurovilleconnect_api_1       # Check API logs
+```
+
+## SSL Certificates
+- SSL certificates are mounted from `/etc/letsencrypt`
+- Renewal is handled by certbot
+- Certificate paths are configured in Docker Compose and nginx configs
 
 ## Environment Variables
-
-All configuration is done through environment variables in docker-compose.yml and .env files.
-No distinction between development and production environments to keep things simple.
+Important environment variables in production:
+- `VITE_API_URL=https://api.auroville.social`
+- `VITE_APP_URL=https://auroville.social`
+- `NODE_ENV=production`
+- Database connection strings and secrets are managed in docker-compose.prod.yml
