@@ -34,6 +34,7 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/index.js ./
 COPY --from=builder /app/routes ./routes
 COPY --from=builder /app/middleware ./middleware
+COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/.env ./.env
 
 # Add healthcheck
