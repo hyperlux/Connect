@@ -21,8 +21,10 @@ const baseURL = process.env.NODE_ENV === 'production'
 
 export const api = axios.create({
   baseURL,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
 });
 
@@ -36,6 +38,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('Request error:', error);
     return Promise.reject(error);
   }
 );
@@ -44,9 +47,19 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+    if (error.response) {
+      // Server responded with a status code outside the 2xx range
+      console.error('Response error:', error.response.data);
+      if (error.response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('Network error:', error.request);
+    } else {
+      // Something happened in setting up the request
+      console.error('Error:', error.message);
     }
     return Promise.reject(error);
   }
@@ -58,6 +71,7 @@ export const withAuth = (token: string) => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    withCredentials: true,
   };
 
   return {
