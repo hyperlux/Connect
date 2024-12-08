@@ -26,11 +26,6 @@ export default function Dashboard() {
             <CriticalAnnouncements />
           </div>
 
-          {/* Priority 2: Welcome Banner */}
-          <div className="max-w-[calc(100vw-240px)]">
-            <WelcomeBanner />
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-[calc(100vw-240px)]">
             {/* Left Column - Spans 2 columns */}
             <div className="lg:col-span-2 space-y-4">            

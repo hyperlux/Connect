@@ -78,19 +78,42 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div>
+    <div className="min-h-screen bg-[#1E1E1E] flex">
+      {/* Welcome Banner Section */}
+      <div className="hidden lg:block w-1/2 relative overflow-hidden">
+        <div className="absolute inset-0">
           <img
-            className="mx-auto h-16 w-auto"
-            src="/logolight.png"
+            src="/matrimandirimg.png"
             alt="Auroville"
+            className="w-full h-full object-cover"
           />
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Welcome to Auroville
-          </h2>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent">
+            <div className="p-12 h-full flex flex-col justify-center">
+              <h1 className="text-4xl font-bold text-white mb-4">Welcome to Auroville</h1>
+              <p className="text-xl text-white/90 mb-6 italic">
+                "Auroville wants to be the bridge between the past and the future."
+              </p>
+              <p className="text-white/80">— The Mother</p>
+            </div>
+          </div>
         </div>
-        <LoginForm />
+      </div>
+
+      {/* Login Form Section */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+        <div className="w-full max-w-md space-y-8">
+          <div>
+            <img
+              className="mx-auto h-16 w-auto"
+              src="/logodark.png"
+              alt="Auroville"
+            />
+            <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-white">
+              Sign in to your account
+            </h2>
+          </div>
+          <LoginForm />
+        </div>
       </div>
     </div>
   );
