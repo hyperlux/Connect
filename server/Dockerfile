@@ -10,6 +10,4 @@ COPY . .
 
 EXPOSE 5000
 
-RUN apk add --no-cache bash
-
 CMD ["npm", "start"] 

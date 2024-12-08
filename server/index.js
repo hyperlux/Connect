@@ -27,55 +27,13 @@ const PORT = process.env.PORT || 5000;
 const HOST = '0.0.0.0';
 
 // CORS configuration
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5000',
-  'https://auroville.social',
-  'http://frontend',  // Docker service name
-  'https://api.auroville.social',
-  process.env.CORS_ORIGIN
-].filter(Boolean);
-
-// Debug middleware to log CORS details
-app.use((req, res, next) => {
-  console.log('🔍 Incoming request details:', {
-    method: req.method,
-    url: req.url,
-    origin: req.headers.origin,
-    host: req.headers.host,
-    'access-control-request-method': req.headers['access-control-request-method'],
-    'access-control-request-headers': req.headers['access-control-request-headers']
-  });
-  next();
-});
-
 app.use(cors({
-  origin: function(origin, callback) {
-    console.log('🔒 CORS Origin Check:', {
-      requestOrigin: origin,
-      allowedOrigins: allowedOrigins
-    });
-    
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) {
-      console.log('✅ No origin - allowing request');
-      return callback(null, true);
-    }
-    
-    if (allowedOrigins.includes(origin)) {
-      console.log('✅ Origin allowed:', origin);
-      callback(null, true);
-    } else {
-      console.error('❌ Origin not allowed:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: 'https://auroville.social',
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Authorization'],
   maxAge: 86400,
-  preflightContinue: false,
   optionsSuccessStatus: 204
 }));
 
