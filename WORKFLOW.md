@@ -42,9 +42,19 @@ If you see errors about ports 80/443 being in use:
 # Check what's using the ports
 sudo lsof -i :80 -i :443
 
+# If it's docker-proxy processes:
+sudo docker container ls
+docker-compose down
+sudo killall docker-proxy  # Force kill any hanging docker-proxy processes
+sudo systemctl restart docker  # Restart Docker daemon
+
 # If it's nginx running on the host:
 sudo systemctl stop nginx
+sudo systemctl disable nginx  # Prevent nginx from starting on boot
 sudo rm /etc/nginx/sites-enabled/default  # Remove host nginx config
+
+# Clean up all unused Docker resources
+docker system prune -f
 
 # Restart Docker containers
 docker-compose -f docker-compose.prod.yml down
@@ -58,6 +68,12 @@ docker ps
 docker-compose ps
 docker logs aurovilleconnect_frontend_1  # Check frontend logs
 docker logs aurovilleconnect_api_1       # Check API logs
+
+# If containers are stuck or misbehaving:
+docker-compose down
+docker system prune -f  # Clean up unused resources
+docker volume prune -f  # Clean up unused volumes (careful with database volumes!)
+docker-compose -f docker-compose.prod.yml up -d --build  # Rebuild and start
 ```
 
 ## SSL Certificates
@@ -71,3 +87,6 @@ Important environment variables in production:
 - `VITE_APP_URL=https://auroville.social`
 - `NODE_ENV=production`
 - Database connection strings and secrets are managed in docker-compose.prod.yml
+```
+
+</rewritten_file>
