@@ -10,19 +10,23 @@ datasource db {
 }
 
 model User {
-  id           String          @id @default(uuid())
-  email        String          @unique
-  password     String
-  name         String
-  role         String          @default("USER")
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  cityServices CityService[]
-  events       Event[]         @relation("OrganizedEvents")
-  attending    EventAttendee[]
-  comments     ForumComment[]
-  posts        ForumPost[]
-  notifications Notification[]
+  id                String          @id @default(uuid())
+  email             String          @unique
+  password          String
+  name              String
+  role              String          @default("USER")
+  emailVerified     Boolean         @default(false)
+  verificationToken String?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  cityServices      CityService[]
+  events            Event[]         @relation("OrganizedEvents")
+  attending         EventAttendee[]
+  comments          ForumComment[]
+  posts             ForumPost[]
+  notifications     Notification[]
 
   @@index([email])
 }
