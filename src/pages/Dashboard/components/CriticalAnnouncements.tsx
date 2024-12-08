@@ -21,7 +21,7 @@ export default function CriticalAnnouncements() {
   return (
     <div className="bg-[#1E1E1E] rounded-xl p-3">
       <h2 className="font-semibold text-white mb-2 text-sm">Important Announcements</h2>
-      <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-2">
         {announcements.map((announcement) => (
           <div
             key={announcement.id}

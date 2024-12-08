@@ -57,8 +57,8 @@ export default function Header() {
         </div>
 
         {/* Search and Visitor Count Container */}
-        <div className="flex-1 flex flex-col">
-          <div className="relative w-full max-w-[500px]">
+        <div className="flex-1 flex flex-col items-center">
+          <div className="relative w-full max-w-[500px] mx-auto">
             <input
               type="text"
               placeholder="Search..."
@@ -66,7 +66,7 @@ export default function Header() {
             />
             <Search className="absolute left-2.5 top-2 h-4 w-4 text-gray-400" />
           </div>
-          <div className="mt-0.5 hidden sm:flex items-center gap-1 text-xs">
+          <div className="mt-0.5 hidden sm:flex items-center gap-1 text-xs justify-center">
             <Users className="h-3.5 w-3.5 text-auroville-primary" />
             <span className="text-auroville-primary font-medium">1,247</span>
             <span className="text-gray-400">visitors today</span>
