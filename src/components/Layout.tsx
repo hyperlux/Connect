@@ -14,13 +14,13 @@ export default function Layout() {
   }, [theme]);
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-white">
-      <div className="w-52 flex-shrink-0">
+    <div className="min-h-screen flex bg-[#1a1a1a]">
+      <div className="fixed left-0 top-0 h-full w-52 z-30">
         <Sidebar />
       </div>
       <div className="flex-1 flex flex-col min-w-0">
         <Header />
-        <main className="flex-1 p-6 overflow-auto bg-gray-50 dark:bg-[#1e1e1e]">
+        <main className="flex-1 overflow-auto bg-[#1e1e1e]">
           <Outlet />
         </main>
       </div>

@@ -18,41 +18,43 @@ const stats = [
 
 export default function Dashboard() {
   return (
-    <div className="flex-1 overflow-auto bg-gray-50 dark:bg-[#1E1E1E]">
-      <div className="max-w-full mx-auto pt-2 px-3">
-        {/* Priority 1: Critical Announcements */}
-        <div className="mb-4">
-          <CriticalAnnouncements />
-        </div>
-
-        {/* Priority 2: Welcome Banner */}
-        <div className="mb-4">
-          <WelcomeBanner />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-          {/* Left Column - Spans 2 columns */}
-          <div className="lg:col-span-2 space-y-4">            
-            {/* Priority 3: Today's Events */}
-            <TodayEvents />
-            
-            {/* Priority 4: Decision Hub */}
-            <DecisionHub />
-
-            {/* Priority 5: Community Highlights */}
-            <CommunityHighlights />
-
-            {/* Priority 6: Latest Posts */}
-            <LatestPosts />
+    <div className="flex-1 overflow-auto bg-[#1E1E1E]">
+      <div className="ml-52 max-w-full">
+        <div className="px-4 py-4 space-y-4">
+          {/* Priority 1: Critical Announcements */}
+          <div className="max-w-[calc(100vw-240px)]">
+            <CriticalAnnouncements />
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-4">            
-            {/* Priority 7: Marketplace */}
-            <Bazaar />
-            
-            {/* Priority 8: Stats Grid */}
-            <StatsGrid stats={stats} />
+          {/* Priority 2: Welcome Banner */}
+          <div className="max-w-[calc(100vw-240px)]">
+            <WelcomeBanner />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-[calc(100vw-240px)]">
+            {/* Left Column - Spans 2 columns */}
+            <div className="lg:col-span-2 space-y-4">            
+              {/* Priority 3: Today's Events */}
+              <TodayEvents />
+              
+              {/* Priority 4: Decision Hub */}
+              <DecisionHub />
+
+              {/* Priority 5: Community Highlights */}
+              <CommunityHighlights />
+
+              {/* Priority 6: Latest Posts */}
+              <LatestPosts />
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-4">            
+              {/* Priority 7: Marketplace */}
+              <Bazaar />
+              
+              {/* Priority 8: Stats Grid */}
+              <StatsGrid stats={stats} />
+            </div>
           </div>
         </div>
       </div>

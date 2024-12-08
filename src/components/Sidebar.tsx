@@ -1,156 +1,207 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../lib/auth';
 import { 
-  Building2, 
-  Calendar, 
+  LayoutGrid, 
+  Vote, 
   MessageSquare, 
-  FileText, 
-  LayoutDashboard,
-  Vote,
-  ShoppingBag,
+  Calendar, 
+  ShoppingBag, 
+  Building2, 
+  FileText,
   Settings,
   ExternalLink
 } from 'lucide-react';
-import { useAuth } from '../lib/auth';
-import { useTheme } from '../lib/theme';
-
-interface MenuItem {
-  icon: React.ComponentType<any>;
-  label: string;
-  href: string;
-}
-
-interface ExternalLink {
-  label: string;
-  href: string;
-  description: string;
-}
-
-const menuItems: MenuItem[] = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
-  { icon: Vote, label: 'Decision Hub', href: '/decisions' },
-  { icon: MessageSquare, label: 'Forums', href: '/forums' },
-  { icon: Calendar, label: 'Events', href: '/events' },
-  { icon: ShoppingBag, label: 'Bazaar', href: '/bazaar' },
-  { icon: Building2, label: 'Services', href: '/services' },
-  { icon: FileText, label: 'Resources', href: '/resources' },
-  { icon: Settings, label: 'Settings', href: '/settings' }
-];
-
-const externalLinks: ExternalLink[] = [
-  { 
-    label: 'Auroville Foundation', 
-    href: 'http://www.aurovillefoundation.org.in/',
-    description: 'Official Foundation Website'
-  },
-  { 
-    label: 'Directory', 
-    href: 'https://directory.auroville.services/',
-    description: 'Community Directory'
-  },
-  { 
-    label: 'Media Portal', 
-    href: 'https://auroville.media/',
-    description: 'News and Media'
-  },
-  { 
-    label: 'Wiki', 
-    href: 'https://wiki.auroville.org.in/wiki/Welcome',
-    description: 'Community Knowledge Base'
-  }
-];
 
 export default function Sidebar() {
   const location = useLocation();
-  const { isAuthenticated, user } = useAuth();
-  const { theme } = useTheme();
+  const { user } = useAuth();
+
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
   return (
-    <div className="h-screen w-72 flex flex-col fixed bg-white dark:bg-[#1a1a1a] border-r border-gray-200 dark:border-[#2a2a2a]">
-      <div className="p-6 border-b border-gray-200 dark:border-[#2a2a2a]">
-        <Link to="/" className="flex items-center">
-          <img 
-            src={theme === 'dark' ? "/logodark.png" : "/logolight.png"}
-            alt="Auroville Community" 
-            className="h-8 w-auto"
-          />
+    <div className="h-full bg-[#1a1a1a] text-gray-400 overflow-y-auto">
+      {/* Logo */}
+      <div className="p-4">
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/logo.png" alt="Auroville" className="h-8 w-8" />
+          <div className="text-sm font-medium text-white">
+            Auroville
+            <div className="text-xs text-gray-400">COMMUNITY</div>
+          </div>
         </Link>
       </div>
-      
-      <nav className="flex-1 overflow-y-auto">
-        <div className="px-4 py-4">
-          <ul className="space-y-1">
-            {menuItems.map((item) => {
-              const isActive = location.pathname === item.href || 
-                (item.href !== '/' && location.pathname.startsWith(item.href));
-              const Icon = item.icon;
 
-              return (
-                <li key={item.label}>
-                  <Link
-                    to={item.href}
-                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
-                      isActive
-                        ? 'bg-[#FDF1EC] dark:bg-[#E27B58]/20 text-[#E27B58]'
-                        : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#2a2a2a]'
-                    }`}
-                  >
-                    <Icon className={`w-5 h-5 ${
-                      isActive 
-                        ? 'text-[#E27B58]' 
-                        : 'text-gray-600 dark:text-gray-400'
-                    }`} />
-                    <span className="text-sm font-medium">{item.label}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+      {/* Main Navigation */}
+      <nav className="mt-2 px-2">
+        <Link
+          to="/dashboard"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+            isActive('/dashboard')
+              ? 'bg-[#4A2618] text-auroville-primary'
+              : 'hover:bg-[#2a2a2a] hover:text-white'
+          }`}
+        >
+          <LayoutGrid className="h-5 w-5" />
+          <span>Dashboard</span>
+        </Link>
 
-        <div className="px-4 pt-4 pb-2">
-          <h3 className="px-4 text-xs font-semibold uppercase tracking-wider mb-3 text-gray-500 dark:text-gray-400">
-            External Resources
-          </h3>
-          <ul className="space-y-1">
-            {externalLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#2a2a2a]"
-              >
-                <ExternalLink className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                <div>
-                  <span className="block text-sm font-medium">{link.label}</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {link.description}
-                  </span>
-                </div>
-              </a>
-            ))}
-          </ul>
-        </div>
+        <Link
+          to="/decision-hub"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+            isActive('/decision-hub')
+              ? 'bg-[#4A2618] text-auroville-primary'
+              : 'hover:bg-[#2a2a2a] hover:text-white'
+          }`}
+        >
+          <Vote className="h-5 w-5" />
+          <span>Decision Hub</span>
+        </Link>
+
+        <Link
+          to="/forums"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+            isActive('/forums')
+              ? 'bg-[#4A2618] text-auroville-primary'
+              : 'hover:bg-[#2a2a2a] hover:text-white'
+          }`}
+        >
+          <MessageSquare className="h-5 w-5" />
+          <span>Forums</span>
+        </Link>
+
+        <Link
+          to="/events"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+            isActive('/events')
+              ? 'bg-[#4A2618] text-auroville-primary'
+              : 'hover:bg-[#2a2a2a] hover:text-white'
+          }`}
+        >
+          <Calendar className="h-5 w-5" />
+          <span>Events</span>
+        </Link>
+
+        <Link
+          to="/bazaar"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+            isActive('/bazaar')
+              ? 'bg-[#4A2618] text-auroville-primary'
+              : 'hover:bg-[#2a2a2a] hover:text-white'
+          }`}
+        >
+          <ShoppingBag className="h-5 w-5" />
+          <span>Bazaar</span>
+        </Link>
+
+        <Link
+          to="/services"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+            isActive('/services')
+              ? 'bg-[#4A2618] text-auroville-primary'
+              : 'hover:bg-[#2a2a2a] hover:text-white'
+          }`}
+        >
+          <Building2 className="h-5 w-5" />
+          <span>Services</span>
+        </Link>
+
+        <Link
+          to="/resources"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+            isActive('/resources')
+              ? 'bg-[#4A2618] text-auroville-primary'
+              : 'hover:bg-[#2a2a2a] hover:text-white'
+          }`}
+        >
+          <FileText className="h-5 w-5" />
+          <span>Resources</span>
+        </Link>
+
+        <Link
+          to="/settings"
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+            isActive('/settings')
+              ? 'bg-[#4A2618] text-auroville-primary'
+              : 'hover:bg-[#2a2a2a] hover:text-white'
+          }`}
+        >
+          <Settings className="h-5 w-5" />
+          <span>Settings</span>
+        </Link>
       </nav>
 
-      {isAuthenticated && user && (
-        <div className="p-4 border-t border-gray-200 dark:border-[#2a2a2a]">
-          <Link
-            to="/profile"
-            className="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-[#2a2a2a]"
+      {/* External Resources */}
+      <div className="mt-6 px-4">
+        <h3 className="text-xs font-medium text-gray-400 px-2 mb-2">EXTERNAL RESOURCES</h3>
+        <nav className="space-y-1">
+          <a
+            href="https://auroville.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
           >
+            <ExternalLink className="h-4 w-4" />
+            <div>
+              <div>Auroville Foundation</div>
+              <div className="text-xs text-gray-500">Official Foundation Website</div>
+            </div>
+          </a>
+
+          <a
+            href="https://directory.auroville.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+          >
+            <ExternalLink className="h-4 w-4" />
+            <div>
+              <div>Directory</div>
+              <div className="text-xs text-gray-500">Community Directory</div>
+            </div>
+          </a>
+
+          <a
+            href="https://news.auroville.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+          >
+            <ExternalLink className="h-4 w-4" />
+            <div>
+              <div>Media Portal</div>
+              <div className="text-xs text-gray-500">News and Media</div>
+            </div>
+          </a>
+
+          <a
+            href="https://wiki.auroville.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+          >
+            <ExternalLink className="h-4 w-4" />
+            <div>
+              <div>Wiki</div>
+              <div className="text-xs text-gray-500">Community Knowledge Base</div>
+            </div>
+          </a>
+        </nav>
+      </div>
+
+      {/* User Profile */}
+      {user && (
+        <div className="mt-6 p-4">
+          <Link to="/profile" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#2a2a2a] transition-colors">
             <img
               src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=E27B58&color=fff`}
-              alt="Profile"
+              alt={user.name}
               className="w-8 h-8 rounded-full"
             />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                {user.name}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Community Member
-              </p>
+            <div>
+              <div className="text-sm font-medium text-white">{user.name}</div>
+              <div className="text-xs text-gray-400">Community Member</div>
             </div>
           </Link>
         </div>
