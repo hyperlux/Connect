@@ -25,36 +25,34 @@ export default function Dashboard() {
             <CriticalAnnouncements />
           </div>
 
-          {/* Priority 2: Events and Posts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-[calc(100vw-240px)]">
-            {/* Today's Events */}
-            <div>
-              <TodayEvents />
-            </div>
-
-            {/* Latest Posts */}
-            <div>
-              <LatestPosts />
-            </div>
+          {/* Priority 2: Resources and Services */}
+          <div className="max-w-[calc(100vw-240px)]">
+            <ResourcesAndServices />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-[calc(100vw-240px)]">
-            {/* Left Column - Spans 2 columns */}
-            <div className="lg:col-span-2 space-y-4">            
-              {/* Priority 3: Resources and Services */}
-              <ResourcesAndServices />
+            {/* Left Column */}
+            <div className="space-y-4">
+              {/* Priority 3: Today's Events */}
+              <TodayEvents />
               
-              {/* Priority 4: Community Highlights */}
+              {/* Priority 4: Stats Grid */}
+              <StatsGrid stats={stats} />
+            </div>
+
+            {/* Middle Column */}
+            <div className="space-y-4">
+              {/* Priority 5: Latest Posts */}
+              <LatestPosts />
+              
+              {/* Priority 6: Community Highlights */}
               <CommunityHighlights />
             </div>
 
             {/* Right Column */}
             <div className="space-y-4">            
-              {/* Priority 5: Marketplace */}
+              {/* Priority 7: Marketplace */}
               <Bazaar />
-              
-              {/* Priority 6: Stats Grid */}
-              <StatsGrid stats={stats} />
             </div>
           </div>
         </div>
