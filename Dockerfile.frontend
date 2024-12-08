@@ -10,8 +10,12 @@ RUN npm install
 # Copy source files
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application with debugging
+RUN echo "Starting build process..." && \
+    ls -la && \
+    npm run build && \
+    echo "Build complete. Contents of dist:" && \
+    ls -la dist/
 
 # Production stage
 FROM nginx:alpine
@@ -28,11 +32,18 @@ COPY --from=build /app/public/ /usr/share/nginx/html/
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Debug: List contents of html directory
+RUN echo "Contents of nginx html directory:" && \
+    ls -la /usr/share/nginx/html/
+
 # Set proper permissions
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html
 
+# Create a basic health check page
+RUN echo "OK" > /usr/share/nginx/html/health.html
+
 EXPOSE 80
 
-# Start nginx
+# Start nginx with debug output
 CMD ["nginx", "-g", "daemon off;"] 

@@ -4,6 +4,7 @@ import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const isProd = mode === 'production';
   
   return {
     plugins: [react()],
@@ -11,23 +12,41 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       port: 5173,
       strictPort: true,
-      hmr: {
+      hmr: isProd ? false : {
         clientPort: 443,
         host: 'auroville.social'
       },
       proxy: {
         '/api': {
-          target: 'http://localhost:5000',
+          target: isProd ? 'http://backend:5000' : 'http://localhost:5000',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
           secure: false
         }
       }
     },
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
+      sourcemap: true,
+      manifest: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
       },
+    },
+    preview: {
+      port: 80,
+      host: true,
+      strictPort: true,
     }
   };
 });
