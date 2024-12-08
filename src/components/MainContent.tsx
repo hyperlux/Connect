@@ -2,15 +2,11 @@ import styled from 'styled-components';
 import React, { PropsWithChildren } from 'react';
 import { DefaultTheme } from 'styled-components';
 
-interface ThemeProps {
-  theme: DefaultTheme;
-}
-
-const ContentWrapper = styled.div<ThemeProps>`
+const ContentWrapper = styled.div`
   flex: 1;
   padding: 20px;
-  background-color: ${({ theme }) => theme.colors.background.primary};
-  color: ${({ theme }) => theme.colors.text};
+  background-color: ${({ theme }) => theme.colors?.background?.primary || '#ffffff'};
+  color: ${({ theme }) => theme.colors?.text || '#000000'};
 `;
 
 const MainContent: React.FC<PropsWithChildren> = ({ children }) => {
