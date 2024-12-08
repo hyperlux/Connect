@@ -6,7 +6,7 @@ services:
     image: auroville/frontend
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=https://auroville.social/api
+      - VITE_API_URL=https://api.auroville.social
     ports:
       - "80:80"
       - "443:443"
@@ -24,7 +24,7 @@ services:
       - NODE_ENV=development
       - PORT=5000
       - CORS_ORIGIN=https://auroville.social
-      - API_URL=https://auroville.social/api
+      - API_URL=https://api.auroville.social
       - JWT_SECRET=72jmcBa8LYTi7szZp1Lw9+GmKuEXp76og8B1FyySqOg8f3a5d2e1c4b7
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/auroville
       - SMTP_SERVER=smtp.ionos.com
