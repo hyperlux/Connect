@@ -1,73 +1,45 @@
 # CORS Debugging Log
 
 ## Current Status
-1. ✅ CORS is now working correctly:
+1. ✅ CORS is working correctly for auth endpoints:
    - Preflight OPTIONS requests are successful
    - Proper CORS headers are being returned
    - Frontend can communicate with the API
 
-2. ❌ Authentication failing with 401 Unauthorized:
-   - Request reaches the backend successfully
-   - Server responds with 401 "Invalid email or password"
-   - Full request/response cycle is logged
-   - Frontend console shows detailed error tracking
+2. ✅ Authentication now working:
+   - Login successful
+   - JWT tokens being generated correctly
+   - User session maintained
+
+3. ❌ New CORS issue with notifications endpoint:
+   - Preflight request failing for https://api.auroville.social/api/notifications
+   - Error: "Response to preflight request doesn't pass access control check"
+   - Endpoint not returning HTTP ok status for OPTIONS request
 
 ## Latest Findings
-1. Frontend logs show:
-   ```
-   Starting login process...
-   🚀 Making API request to: https://api.auroville.social/auth/login
-   📥 Response received: {status: 401}
-   🔥 API request failed: Invalid email or password
-   ```
+1. Frontend successfully authenticating:
+   - Login working correctly
+   - Protected routes rendering properly
+   - Auth state being maintained
 
-2. Request details:
+2. Notifications endpoint issues:
    ```
-   Method: POST
-   URL: https://api.auroville.social/auth/login
-   Headers: Content-Type: application/json
-   Body: {
-     "email": "polletkiro@gmail.com",
-     "password": "Admin123!"
-   }
+   Access to fetch at 'https://api.auroville.social/api/notifications' 
+   from origin 'https://auroville.social' has been blocked by CORS policy
    ```
-
-3. Backend Status:
-   - Admin user created successfully in database
-   - Email verification attempted
-   - Database connection appears to be working
-   - SMTP server configured and working
 
 ## Next Steps
-1. Database Connection Verification:
-   - Add logging to Prisma client initialization
-   - Verify DATABASE_URL environment variable in production
-   - Check if Prisma can connect to database
+1. Notifications API Fix:
+   - Add CORS handling for notifications endpoint
+   - Ensure OPTIONS requests are handled correctly
+   - Verify CORS headers for /api/notifications route
 
-2. Authentication Flow Check:
-   - Add detailed logging to password comparison
-   - Verify JWT_SECRET is properly set
-   - Check user record structure in database
-
-3. Testing Steps:
-   - Add more detailed error logging in auth route
-   - Test database queries directly
-   - Verify environment variables
-
-## Infrastructure Status
-1. Frontend:
-   - React Router warnings present but not affecting auth
-   - Login form successfully sending requests
-   - Error handling working as expected
-
-2. Backend:
-   - Running and receiving requests
-   - Authentication middleware responding
-   - SMTP server configured and working
-   - Need to verify database connection
+2. Infrastructure Status:
+   - Frontend: Working with authenticated routes
+   - Backend: Auth working, needs CORS fix for notifications
+   - Database: Connection verified and working
 
 3. Next Actions:
-   - Add detailed logging to auth route
-   - Verify database connection string
-   - Test database queries directly
-   - Check environment variables
+   - Add CORS handling for notifications endpoint
+   - Test notifications API with proper CORS headers
+   - Verify all other API endpoints for CORS configuration

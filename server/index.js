@@ -28,16 +28,15 @@ const HOST = '0.0.0.0';
 
 // CORS configuration
 app.use(cors({
-  origin: function(origin, callback) {
-    console.log('🌐 CORS Origin:', origin);
-    callback(null, origin);
-  },
+  origin: ['https://auroville.social', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  preflightContinue: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 204
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 
 // Parse JSON bodies
 app.use(express.json());
