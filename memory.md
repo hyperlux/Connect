@@ -110,3 +110,28 @@
 - Track performance of centered header elements
 - Monitor dashboard layout effectiveness
 - Maintain security updates
+
+## Recent Changes
+
+### Authentication and Theme Module Fixes (Latest)
+- Removed duplicate auth.ts and theme.ts files in favor of their .tsx counterparts
+- Fixed ThemeProvider exports and imports across the application
+- Added missing User interface properties (createdAt, profilePicture, bio)
+- Added missing AuthContext methods (register, clearError, updateProfile, uploadProfilePicture)
+- Updated imports in App.tsx and other components to use correct file extensions
+
+### Current Issue
+- CORS configuration error on the API server
+- The 'Access-Control-Allow-Origin' header contains duplicate values
+- Error occurs when attempting to login at api.auroville.social/auth/login
+- Need to fix CORS configuration in the backend to only include one value for Access-Control-Allow-Origin
+
+### Required Backend Fix
+```nginx
+# Current problematic configuration (example)
+add_header 'Access-Control-Allow-Origin' 'https://auroville.social';
+add_header 'Access-Control-Allow-Origin' 'https://auroville.social';
+
+# Should be changed to
+add_header 'Access-Control-Allow-Origin' 'https://auroville.social';
+```
