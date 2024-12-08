@@ -32,6 +32,7 @@ const allowedOrigins = [
   'http://localhost:5000',
   'https://auroville.social',
   'http://frontend',  // Docker service name
+  'https://api.auroville.social',
   process.env.CORS_ORIGIN
 ].filter(Boolean);
 
@@ -50,7 +51,9 @@ app.use(cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-  exposedHeaders: ['Authorization']
+  exposedHeaders: ['Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 
 // Parse JSON bodies

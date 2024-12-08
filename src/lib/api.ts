@@ -20,7 +20,9 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
       ...options,
       headers,
       credentials: 'include',
-      mode: 'cors'
+      mode: 'cors',
+      cache: 'no-cache',
+      referrerPolicy: 'no-referrer'
     });
 
     console.log('API response:', {
