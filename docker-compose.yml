@@ -37,6 +37,8 @@ services:
     depends_on:
       - db
     restart: unless-stopped
+    volumes:
+      - ./server/prisma:/app/prisma
 
   db:
     image: postgres:15-alpine
