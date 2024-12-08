@@ -15,10 +15,10 @@ export default function SettingsLayout() {
             <NavLink
               to="/settings/profile"
               className={({ isActive }) =>
-                `flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+                `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-auroville-light dark:bg-[#E27B58]/20 text-auroville-primary'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-lighter'
                 }`
               }
             >
@@ -29,10 +29,10 @@ export default function SettingsLayout() {
             <NavLink
               to="/settings/notifications"
               className={({ isActive }) =>
-                `flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+                `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-auroville-light dark:bg-[#E27B58]/20 text-auroville-primary'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-lighter'
                 }`
               }
             >
@@ -43,10 +43,10 @@ export default function SettingsLayout() {
             <NavLink
               to="/settings/privacy"
               className={({ isActive }) =>
-                `flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+                `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-auroville-light dark:bg-[#E27B58]/20 text-auroville-primary'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-lighter'
                 }`
               }
             >
@@ -57,10 +57,10 @@ export default function SettingsLayout() {
             <NavLink
               to="/settings/security"
               className={({ isActive }) =>
-                `flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+                `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-auroville-light dark:bg-[#E27B58]/20 text-auroville-primary'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-lighter'
                 }`
               }
             >
@@ -72,7 +72,7 @@ export default function SettingsLayout() {
 
         {/* Main Content */}
         <div className="col-span-9">
-          <div className="bg-white rounded-xl shadow-sm">
+          <div className="bg-white dark:bg-dark-card rounded-xl shadow-sm">
             <Outlet />
           </div>
         </div>
