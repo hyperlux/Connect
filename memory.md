@@ -1,4 +1,176 @@
-# Development Status & Progress Log
+# Development Memory
+
+## Docker Setup Explanation
+
+### Container Architecture
+1. Frontend Container (`Dockerfile.frontend`):
+   - Builds React application
+   - Uses nginx to serve static files
+   - Handles client-side routing
+   - Serves on port 80/443
+   - Located at: auroville.social
+
+2. Backend Container (`Dockerfile`):
+   - Runs Node.js API server
+   - Handles API requests
+   - Serves on port 5000
+   - Located at: api.auroville.social
+
+### Docker Configuration
+```yaml
+# docker-compose.yml structure
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+```
+
+### Deployment Flow
+1. Local Development:
+   ```bash
+   # Development mode
+   npm run dev
+   ```
+
+2. Production Build:
+   ```bash
+   # Build and start containers
+   docker-compose down
+   docker compose up -d --build
+   ```
+
+3. Server Update:
+   ```bash
+   # On server
+   git pull origin main
+   docker-compose down
+   docker compose up -d --build
+   ```
+
+### Container Roles
+1. Frontend Container:
+   - Serves static React app
+   - Handles client routing
+   - Proxies API requests to backend
+   - Manages SSL/HTTPS
+
+2. Backend Container:
+   - Runs API server
+   - Handles database connections
+   - Processes business logic
+   - Manages authentication
+
+### Monitoring
+```bash
+# View container logs
+docker logs aurovilleconnect-frontend-1
+docker logs aurovilleconnect-backend-1
+
+# Check container status
+docker ps
+
+# View nginx logs
+sudo tail -f /var/log/nginx/error.log
+sudo tail -f /var/log/nginx/access.log
+```
+
+## Recent Changes
+- Simplified service worker
+- Updated Docker configurations
+- Fixed file permissions
+- Updated nginx settings
+
+## Current Status (Latest)
+- Containers are running but application is not rendering
+- Service worker is configured but may be interfering with loading
+- Import paths have been fixed but application still not loading
+
+## Debugging Steps Needed
+1. Container Health Check:
+   ```bash
+   # Check container logs
+   docker logs aurovilleconnect-frontend-1
+   docker logs aurovilleconnect-backend-1
+   
+   # Check container status
+   docker ps
+   ```
+
+2. Frontend Build Verification:
+   - Check if the build files are being generated correctly
+   - Verify the nginx configuration is serving the correct files
+   - Check browser console for any JavaScript errors
+   - Verify the static files are accessible
+
+3. Service Worker Issues:
+   - Temporarily disable service worker for debugging
+   - Check if application loads without service worker
+   - Verify cache storage is not corrupted
+
+4. Network Requests:
+   - Monitor network requests in browser dev tools
+   - Check for 404 errors on essential files
+   - Verify API endpoints are accessible
+   - Check CORS configuration
+
+5. Required Checks:
+   ```bash
+   # Check nginx configuration
+   sudo nginx -t
+   
+   # Check nginx logs
+   sudo tail -f /var/log/nginx/error.log
+   sudo tail -f /var/log/nginx/access.log
+   
+   # Verify frontend build
+   docker exec aurovilleconnect-frontend-1 ls -la /usr/share/nginx/html
+   ```
+
+## Recent Changes
+### Service Worker Updates
+- Reduced cached assets to essential static files
+- Added error handling for cache operations
+- Excluded API requests from caching
+- Added offline fallback support
+
+### Import Path Fixes
+- Updated auth imports to use .tsx extension
+- Fixed routes import path
+- Corrected theme provider import
+
+### Next Steps
+1. Check frontend container build output
+2. Verify static files are being served
+3. Temporarily disable service worker
+4. Check for JavaScript console errors
+5. Verify API connectivity
+
+### Previous Changes
+- Enhanced API client configuration
+- Updated nginx CORS configuration
+- Fixed authentication module imports
+- Added proper error handling
+
+### Monitoring
+- Watch container logs
+- Monitor nginx error logs
+- Check browser console errors
+- Track network requests
+
+## Development Status & Progress Log
 
 ## Current Status
 1. ✅ Recent Changes:
@@ -135,3 +307,66 @@ add_header 'Access-Control-Allow-Origin' 'https://auroville.social';
 # Should be changed to
 add_header 'Access-Control-Allow-Origin' 'https://auroville.social';
 ```
+
+### API and CORS Configuration Updates (Latest)
+- Enhanced API client configuration in `src/lib/api.ts`:
+  - Added TypeScript types with AxiosError
+  - Improved error handling with specific status codes
+  - Added request timeout (10s)
+  - Added better error logging with context
+  - Enabled withCredentials for CORS
+  - Added Accept header
+
+- Updated nginx CORS configuration:
+  - Simplified CORS headers to avoid duplication
+  - Added proper error handling with JSON responses
+  - Added request method restrictions
+  - Improved OPTIONS request handling
+  - Added error handler location block
+
+### Current Issues
+1. CORS Error:
+   - Still seeing "Access-Control-Allow-Origin header contains multiple values" error
+   - Need to verify nginx configuration is properly applied on the server
+
+2. Authentication Module:
+   - Import errors with auth.ts vs auth.tsx
+   - Need to ensure all imports are using .tsx extension
+
+3. Service Worker:
+   - Cache errors in service worker
+   - "Failed to execute 'addAll' on 'Cache': Request failed"
+
+### Required Actions
+1. Backend:
+   ```bash
+   # Verify nginx configuration
+   sudo nginx -t
+   # Restart nginx
+   sudo systemctl restart nginx
+   ```
+
+2. Frontend:
+   ```bash
+   # Rebuild containers
+   docker-compose down
+   docker compose up -d --build
+   ```
+
+3. Code Fixes Needed:
+   - Update all auth imports to use .tsx extension
+   - Fix service worker caching strategy
+   - Verify all routes are properly exported
+
+### Previous Changes
+- Removed duplicate auth.ts and theme.ts files
+- Fixed ThemeProvider exports
+- Added missing User interface properties
+- Added missing AuthContext methods
+- Updated imports in App.tsx
+
+### Monitoring
+- Watch nginx error logs for CORS issues
+- Monitor API response times
+- Track authentication flow
+- Check service worker caching

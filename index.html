@@ -2,27 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/logodark.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#E27B58" />
     <link rel="manifest" href="/manifest.json" />
     <title>Auroville Community</title>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/service-worker.js')
-            .then(function(registration) {
-              console.log('ServiceWorker registration successful');
-            })
-            .catch(function(err) {
-              console.log('ServiceWorker registration failed: ', err);
-            });
-        });
-      }
-    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register service worker after main script loads
+      window.addEventListener('load', function() {
+        if ('serviceWorker' in navigator) {
+          // Unregister any existing service workers first
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+              registration.unregister();
+            }
+            // Then register the new one
+            navigator.serviceWorker.register('/service-worker.js')
+              .then(function(registration) {
+                console.log('ServiceWorker registration successful');
+              })
+              .catch(function(err) {
+                console.log('ServiceWorker registration failed: ', err);
+              });
+          });
+        }
+      });
+    </script>
   </body>
 </html>

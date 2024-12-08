@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../lib/auth.tsx';
 import { useTheme } from '../lib/theme';
 import { 
   LayoutGrid, 
