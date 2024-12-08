@@ -1,11 +1,12 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv {
-  readonly VITE_API_URL: string
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv
+// Environment variable types
+declare module 'vite/client' {
+  interface ImportMetaEnv {
+    readonly VITE_API_URL: string
+    readonly VITE_APP_URL: string
+    // Add other env variables as needed
+  }
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.auroville.social';

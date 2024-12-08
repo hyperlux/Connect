@@ -16,10 +16,11 @@ git push
 
 2. Deploy on server:
 ```bash
-git pull
+git pull origin main
+docker compose down
 docker compose build
 docker compose up -d
-```
+docker compose logs -f
 
 3. Check logs if needed:
 ```bash
