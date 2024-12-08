@@ -35,14 +35,6 @@ export default function Header() {
     <header className="px-6 py-3 bg-white dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center gap-2">
-            <img 
-              src="/logo.png" 
-              alt="Auroville Community" 
-              className="h-12 w-auto"
-            />
-          </Link>
-
           <div className="relative w-96">
             <input
               type="text"
