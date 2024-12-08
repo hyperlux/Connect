@@ -9,13 +9,7 @@ const bannerImages = [
     quote: 'Auroville wants to be the bridge between the past and the future.',
     author: 'The Mother'
   },
-  {
-    id: 2,
-    url: '/matrimandirimg.png',
-    title: 'Solar Kitchen',
-    quote: 'There should be somewhere upon Earth a place that no nation could claim as its sole property...',
-    author: 'The Mother'
-  }
+
 ];
 
 export default function WelcomeBanner() {
