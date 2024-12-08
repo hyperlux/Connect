@@ -15,25 +15,25 @@ FROM nginx:alpine
 # Copy built assets
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy logo files (only the ones we know exist)
-COPY --from=build /app/public/logodark.png /usr/share/nginx/html/logodark.png
-COPY --from=build /app/public/logolight.png /usr/share/nginx/html/logolight.png
-COPY --from=build /app/public/banyan.jpg /usr/share/nginx/html/banyan.jpg
-COPY --from=build /app/public/firematri.png /usr/share/nginx/html/firematri.png
-COPY --from=build /app/public/matrimandirimg.png /usr/share/nginx/html/matrimandirimg.png
+# Create public directory
+RUN mkdir -p /usr/share/nginx/html/public
 
-# Copy PWA files
-COPY --from=build /app/public/manifest.json /usr/share/nginx/html/manifest.json
-COPY --from=build /app/public/service-worker.js /usr/share/nginx/html/service-worker.js
+# Copy only existing logo files
+COPY --from=build /app/public/logodark.png /usr/share/nginx/html/public/logodark.png || true
+COPY --from=build /app/public/logolight.png /usr/share/nginx/html/public/logolight.png || true
+COPY --from=build /app/public/banyan.jpg /usr/share/nginx/html/public/banyan.jpg || true
+COPY --from=build /app/public/firematri.png /usr/share/nginx/html/public/firematri.png || true
+COPY --from=build /app/public/matrimandirimg.png /usr/share/nginx/html/public/matrimandirimg.png || true
+
+# Create empty favicon if it doesn't exist
+RUN touch /usr/share/nginx/html/favicon.ico
+
+# Copy PWA files if they exist
+COPY --from=build /app/public/manifest.json /usr/share/nginx/html/manifest.json || true
+COPY --from=build /app/public/service-worker.js /usr/share/nginx/html/service-worker.js || true
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy public assets first
-COPY public/ /app/public/
-
-# Ensure favicon.ico exists
-RUN touch /app/public/favicon.ico
 
 EXPOSE 80
 
