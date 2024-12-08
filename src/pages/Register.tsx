@@ -9,8 +9,7 @@ export default function Register() {
     email: '',
     password: '',
     confirmPassword: '',
-    firstName: '',
-    lastName: '',
+    name: '',
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +32,8 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      await register(formData);
+      const { confirmPassword, ...registerData } = formData;
+      await register(registerData);
       setVerificationSent(true);
     } catch (err: any) {
       setError(err.message || 'Failed to register. Please try again.');
@@ -77,35 +77,20 @@ export default function Register() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-1">
-                First Name
-              </label>
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-1">
-                Last Name
-              </label>
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
-                required
-              />
-            </div>
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+              Full Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
+              placeholder="Enter your full name"
+              required
+            />
           </div>
 
           <div>
@@ -119,6 +104,7 @@ export default function Register() {
               value={formData.email}
               onChange={handleChange}
               className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
+              placeholder="Enter your email"
               required
             />
           </div>
@@ -134,6 +120,7 @@ export default function Register() {
               value={formData.password}
               onChange={handleChange}
               className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
+              placeholder="Create a password"
               required
             />
           </div>
@@ -149,6 +136,7 @@ export default function Register() {
               value={formData.confirmPassword}
               onChange={handleChange}
               className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
+              placeholder="Confirm your password"
               required
             />
           </div>
