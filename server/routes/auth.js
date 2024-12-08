@@ -111,33 +111,43 @@ router.post('/register', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        role: 'USER',
-        verificationToken
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true
+    try {
+      // Create user
+      const user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          role: 'USER',
+          verificationToken
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true
+        }
+      });
+
+      // Send verification email
+      try {
+        await sendVerificationEmail(email, verificationToken);
+      } catch (emailError) {
+        console.error('Email sending failed:', emailError);
+        // Don't fail registration if email fails
       }
-    });
 
-    // Send verification email
-    await sendVerificationEmail(email, verificationToken);
-
-    // Return user data (but no token yet - require email verification)
-    res.status(201).json({
-      user,
-      message: 'Registration successful. Please check your email to verify your account.',
-      requiresVerification: true
-    });
+      // Return user data
+      res.status(201).json({
+        user,
+        message: 'Registration successful. Please check your email to verify your account.',
+        requiresVerification: true
+      });
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      res.status(500).json({ message: 'Registration failed. Database error.' });
+    }
   } catch (error) {
     console.error('Registration error:', error);
     if (error instanceof z.ZodError) {
