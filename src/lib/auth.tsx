@@ -8,6 +8,11 @@ interface User {
   avatar?: string;
 }
 
+interface AuthResponse {
+  token: string;
+  user: User;
+}
+
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
@@ -20,7 +25,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,8 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const response = await api.get('/auth/me');
-      setUser(response.data);
+      const { data } = await api.get<User>('/auth/me');
+      setUser(data);
     } catch (error) {
       localStorage.removeItem('token');
       setError('Session expired. Please login again.');
@@ -51,9 +56,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await api.post('/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token);
-      setUser(response.data.user);
+      const { data } = await api.post<AuthResponse>('/auth/login', { email, password });
+      localStorage.setItem('token', data.token);
+      setUser(data.user);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to login');
       throw error;
@@ -79,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await api.post('/auth/register', data);
+      const response = await api.post<AuthResponse>('/auth/register', data);
       localStorage.setItem('token', response.data.token);
       setUser(response.data.user);
     } catch (error) {
@@ -105,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 export function useAuth() {
   const context = useContext(AuthContext);
