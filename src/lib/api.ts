@@ -34,8 +34,17 @@ async function handleResponse(response: Response) {
 
 async function apiRequest(endpoint: string, options: RequestInit = {}) {
   const url = `${API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  
+  // Don't set Content-Type for FormData
+  const isFormData = options.body instanceof FormData;
+  console.log('Request body type:', {
+    isFormData,
+    type: options.body ? options.body.constructor.name : 'undefined',
+    isString: typeof options.body === 'string'
+  });
+
   const headers = {
-    'Content-Type': 'application/json',
+    ...(!isFormData && { 'Content-Type': 'application/json' }),
     'Accept': 'application/json',
     'Origin': 'https://auroville.social',
     ...options.headers,
@@ -45,7 +54,8 @@ async function apiRequest(endpoint: string, options: RequestInit = {}) {
     url,
     method: options.method,
     headers,
-    body: options.body,
+    bodyType: options.body ? options.body.constructor.name : 'undefined',
+    isFormData,
     mode: 'cors',
     credentials: 'include'
   });
@@ -117,24 +127,28 @@ export const api = {
         },
       }),
 
-    post: (endpoint: string, data: any, options: RequestInit = {}) =>
-      apiRequest(endpoint, {
+    post: (endpoint: string, data: any, options: RequestInit = {}) => {
+      const isFormData = data instanceof FormData;
+      return apiRequest(endpoint, {
         ...options,
         method: 'POST',
         headers: {
-          ...options.headers,
+          ...(!isFormData && { 'Content-Type': 'application/json' }),
           'Authorization': `Bearer ${token}`,
+          ...options.headers,
         },
-        body: JSON.stringify(data),
-      }),
+        body: isFormData ? data : JSON.stringify(data),
+      });
+    },
 
     put: (endpoint: string, data: any, options: RequestInit = {}) =>
       apiRequest(endpoint, {
         ...options,
         method: 'PUT',
         headers: {
-          ...options.headers,
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
+          ...options.headers,
         },
         body: JSON.stringify(data),
       }),

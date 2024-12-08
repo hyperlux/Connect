@@ -12,9 +12,9 @@ const mockRecentData = [
 
 export default function ElectricityStats() {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6">
+    <div className="bg-white dark:bg-dark-card rounded-xl shadow-sm p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">Electricity Consumption Statistics</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-dark-primary">Electricity Consumption Statistics</h2>
         <a
           href="/data/electricity-stats-2023.pdf"
           className="flex items-center gap-2 text-auroville-primary hover:text-opacity-80"
@@ -25,11 +25,11 @@ export default function ElectricityStats() {
       </div>
 
       <div className="mb-6">
-        <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg mb-6">
-          <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+        <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg mb-6">
+          <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
           <div>
-            <h3 className="font-medium text-gray-900">Note on Data</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="font-medium text-gray-900 dark:text-dark-primary">Note on Data</h3>
+            <p className="text-sm text-gray-600 dark:text-dark-secondary">
               The statistics shown here are from 2019-2023. Historical data (2001-2005) can be accessed through the archives.
               All consumption values are in kWh and costs in INR.
             </p>
@@ -39,12 +39,20 @@ export default function ElectricityStats() {
         <div className="h-80 mb-6">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={mockRecentData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="year" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
-              <Legend />
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="year" stroke="#9CA3AF" />
+              <YAxis yAxisId="left" stroke="#9CA3AF" />
+              <YAxis yAxisId="right" orientation="right" stroke="#9CA3AF" />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#1F2937',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  color: '#E5E7EB'
+                }}
+                labelStyle={{ color: '#E5E7EB' }}
+              />
+              <Legend wrapperStyle={{ color: '#E5E7EB' }} />
               <Line
                 yAxisId="left"
                 type="monotone"
@@ -66,9 +74,9 @@ export default function ElectricityStats() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="font-medium text-gray-900 mb-2">Latest Statistics (2023)</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
+          <div className="p-4 bg-gray-50 dark:bg-dark-lighter rounded-lg">
+            <h3 className="font-medium text-gray-900 dark:text-dark-primary mb-2">Latest Statistics (2023)</h3>
+            <ul className="space-y-2 text-sm text-gray-600 dark:text-dark-secondary">
               <li>Total Consumption: 4,520,000 kWh</li>
               <li>Total Cost: ₹31,640,000</li>
               <li>Average Monthly Consumption: 376,667 kWh</li>
@@ -76,9 +84,9 @@ export default function ElectricityStats() {
             </ul>
           </div>
 
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="font-medium text-gray-900 mb-2">5-Year Trends</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
+          <div className="p-4 bg-gray-50 dark:bg-dark-lighter rounded-lg">
+            <h3 className="font-medium text-gray-900 dark:text-dark-primary mb-2">5-Year Trends</h3>
+            <ul className="space-y-2 text-sm text-gray-600 dark:text-dark-secondary">
               <li>Consumption Growth: +6.35%</li>
               <li>Cost Increase: +6.35%</li>
               <li>Peak Year: 2023 (4.52M kWh)</li>
@@ -88,8 +96,8 @@ export default function ElectricityStats() {
         </div>
       </div>
 
-      <div className="border-t pt-4">
-        <h3 className="font-medium text-gray-900 mb-2">Historical Data Access</h3>
+      <div className="border-t dark:border-gray-700 pt-4">
+        <h3 className="font-medium text-gray-900 dark:text-dark-primary mb-2">Historical Data Access</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <a
             href="/archives/electricity/2001-2005-annual.pdf"

@@ -52,22 +52,22 @@ export default function Services() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">City Services</h1>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-primary">City Services</h1>
+        <button className="bg-auroville-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors">
           Add Service
         </button>
       </div>
 
       <div className="flex gap-6">
         <aside className="w-64">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Categories</h2>
+          <div className="bg-white dark:bg-dark-card rounded-xl shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-primary mb-4">Categories</h2>
             <ul className="space-y-2">
               <li>
                 <button
                   onClick={() => setSelectedCategory('All')}
-                  className={`w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700 ${
-                    selectedCategory === 'All' ? 'bg-gray-100' : ''
+                  className={`w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-lighter text-gray-700 dark:text-dark-secondary ${
+                    selectedCategory === 'All' ? 'bg-gray-100 dark:bg-dark-lighter' : ''
                   }`}
                 >
                   All Services
@@ -77,8 +77,8 @@ export default function Services() {
                 <li key={category}>
                   <button
                     onClick={() => setSelectedCategory(category)}
-                    className={`w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 text-gray-700 ${
-                      selectedCategory === category ? 'bg-gray-100' : ''
+                    className={`w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-lighter text-gray-700 dark:text-dark-secondary ${
+                      selectedCategory === category ? 'bg-gray-100 dark:bg-dark-lighter' : ''
                     }`}
                   >
                     {category}
@@ -92,7 +92,7 @@ export default function Services() {
         <div className="flex-1">
           <div className="grid gap-6 md:grid-cols-2">
             {filteredServices.map((service) => (
-              <div key={service.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div key={service.id} className="bg-white dark:bg-dark-card rounded-xl shadow-sm overflow-hidden">
                 <img
                   src={service.image}
                   alt={service.name}
@@ -100,18 +100,18 @@ export default function Services() {
                 />
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-2">
-                    <Building2 className="h-5 w-5 text-blue-600" />
-                    <span className="text-sm font-medium text-blue-600">{service.category}</span>
+                    <Building2 className="h-5 w-5 text-auroville-primary" />
+                    <span className="text-sm font-medium text-auroville-primary">{service.category}</span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{service.name}</h3>
-                  <p className="text-gray-600 mb-4">{service.description}</p>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-dark-primary mb-2">{service.name}</h3>
+                  <p className="text-gray-600 dark:text-dark-secondary mb-4">{service.description}</p>
                   
                   <div className="space-y-2">
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-gray-600 dark:text-dark-secondary">
                       <Phone className="h-5 w-5 mr-2" />
                       <span>{service.contact.phone}</span>
                     </div>
-                    <div className="flex items-center text-gray-600">
+                    <div className="flex items-center text-gray-600 dark:text-dark-secondary">
                       <Mail className="h-5 w-5 mr-2" />
                       <span>{service.contact.email}</span>
                     </div>
@@ -119,7 +119,7 @@ export default function Services() {
                       href={service.contact.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center text-blue-600 hover:text-blue-700"
+                      className="flex items-center text-auroville-primary hover:text-opacity-80 transition-colors"
                     >
                       <ExternalLink className="h-5 w-5 mr-2" />
                       <span>Visit Website</span>

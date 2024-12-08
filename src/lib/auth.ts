@@ -196,8 +196,20 @@ export const useAuth = create<AuthState>()(
             throw new Error('No authentication token');
           }
 
+          console.log('Creating FormData with file:', {
+            name: file.name,
+            type: file.type,
+            size: file.size
+          });
+
           const formData = new FormData();
           formData.append('profilePicture', file);
+
+          // Debug log FormData contents
+          console.log('FormData entries:');
+          for (const pair of formData.entries()) {
+            console.log(pair[0], pair[1]);
+          }
 
           // Let the browser handle the Content-Type header automatically
           const updatedUser = await api.withAuth(token).post('/api/users/profile/picture', formData);
