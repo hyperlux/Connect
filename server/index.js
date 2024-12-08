@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
@@ -25,17 +24,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const HOST = '0.0.0.0';
-
-// CORS configuration
-app.use(cors({
-  origin: 'https://auroville.social',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Authorization'],
-  maxAge: 86400,
-  optionsSuccessStatus: 204
-}));
 
 // Parse JSON bodies
 app.use(express.json());
