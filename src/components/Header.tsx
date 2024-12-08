@@ -34,27 +34,24 @@ export default function Header() {
   return (
     <header className="px-6 py-3 bg-white dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#2a2a2a]">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-8">
-          <div className="relative w-96">
+        {/* Search and Visitor Count Container */}
+        <div className="flex-1 ml-52 flex flex-col">
+          <div className="relative w-[600px]">
             <input
               type="text"
               placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-[#2a2a2a] border border-gray-300 dark:border-[#333333] text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#2a2a2a] border border-[#333333] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
             />
-            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-400" />
+            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+          </div>
+          <div className="mt-1 flex items-center gap-1.5 text-sm">
+            <Users className="h-4 w-4 text-auroville-primary" />
+            <span className="text-auroville-primary font-medium">1,247</span>
+            <span className="text-gray-400">visitors today</span>
           </div>
         </div>
 
         <div className="flex items-center gap-6">
-          {/* Visitor Counter */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-auroville-light dark:bg-[#2a2a2a]">
-            <Users className="h-5 w-5 text-auroville-primary" />
-            <div className="text-sm">
-              <span className="font-medium text-auroville-primary">1,247</span>
-              <span className="ml-1 text-gray-600 dark:text-gray-400">visitors today</span>
-            </div>
-          </div>
-
           <ThemeToggle />
 
           {isAuthenticated && user ? (
