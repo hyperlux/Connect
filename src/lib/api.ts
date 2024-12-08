@@ -13,12 +13,13 @@ declare global {
   }
 }
 
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
 const baseURL = process.env.NODE_ENV === 'production' 
   ? 'https://api.auroville.social'
   : 'http://localhost:3000';
 
+// Create axios instance with default config
 export const api = axios.create({
   baseURL,
   withCredentials: true,
@@ -26,9 +27,11 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
+  // Increase timeout for slower connections
+  timeout: 10000,
 });
 
-// Add a request interceptor to add the auth token
+// Add a request interceptor
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -37,31 +40,57 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    console.error('Request error:', error);
+  (error: AxiosError) => {
+    console.error('Request error:', error.message);
     return Promise.reject(error);
   }
 );
 
-// Add a response interceptor to handle errors
+// Add a response interceptor
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  (error: AxiosError) => {
     if (error.response) {
-      // Server responded with a status code outside the 2xx range
-      console.error('Response error:', error.response.data);
-      if (error.response.status === 401) {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.error('Response error:', {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers,
+      });
+
+      // Handle specific error cases
+      switch (error.response.status) {
+        case 401:
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          break;
+        case 403:
+          console.error('Access forbidden');
+          break;
+        case 500:
+          console.error('Server error');
+          break;
       }
     } else if (error.request) {
-      // Request was made but no response received
-      console.error('Network error:', error.request);
+      // The request was made but no response was received
+      console.error('Network error - no response received:', error.request);
     } else {
       // Something happened in setting up the request
       console.error('Error:', error.message);
     }
-    return Promise.reject(error);
+
+    // Add error context for better debugging
+    const enhancedError = {
+      ...error,
+      context: {
+        url: error.config?.url,
+        method: error.config?.method,
+        timestamp: new Date().toISOString(),
+      },
+    };
+
+    return Promise.reject(enhancedError);
   }
 );
 
