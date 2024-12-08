@@ -118,7 +118,6 @@ router.post('/register', async (req, res) => {
         email,
         password: hashedPassword,
         role: 'USER',
-        emailVerified: false,
         verificationToken
       },
       select: {
