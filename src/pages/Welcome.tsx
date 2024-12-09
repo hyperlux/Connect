@@ -4,9 +4,14 @@ import { Info, MapPin, Calendar, Book, Users, Leaf, Heart, ChevronLeft, ChevronR
 
 const carouselImages = [
   {
-    url: '/auroimgs/50matrimandir_31007584638_o.jpg',
+    url: '/auroimgs/fred-c-drone-photos_43068849880_o.jpg',
     title: 'Matrimandir',
-    description: 'The soul of Auroville'
+    description: 'The soul of Auroville - A place for concentration'
+  },
+  {
+    url: '/auroimgs/05jogging-in-the-green-belt_29944057187_o.jpg',
+    title: 'Green Belt',
+    description: 'Connecting with nature through outdoor activities'
   },
   {
     url: '/auroimgs/06residential-zone_44160197054_o.jpg',
