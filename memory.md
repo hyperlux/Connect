@@ -186,3 +186,32 @@ https//:www.auroville.social
    - Responsive design (mobile-friendly)
    - Consistent branding elements
 
+## Latest Debugging Session (Login Issues)
+
+### Progress
+1. Fixed CORS configuration in nginx and API client
+2. Updated API base URL to use `https://auroville.social/api`
+3. Enhanced nginx logging for API requests
+4. Current Status: Getting 500 Internal Server Error from backend
+
+### Error Details
+```
+POST https://auroville.social/api/auth/login 500 (Internal Server Error)
+Response error: {status: 500, data: {...}, headers: Rr}
+```
+
+### Next Steps
+1. Need to check backend logs to identify the cause of the 500 error
+2. Verify backend service is running correctly
+3. Check backend API endpoint implementation
+4. Verify database connection and state
+
+### Configuration State
+- Frontend proxy is working (requests reaching backend)
+- CORS is properly configured
+- API client is set up with correct base URL
+- Service worker is registered successfully
+
+### Non-Critical Issues
+- React Router warning about v7_startTransition (can be addressed later)
+
