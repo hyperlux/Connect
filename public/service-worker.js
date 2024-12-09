@@ -14,5 +14,21 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  event.respondWith(fetch(event.request));
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Handle API requests differently
+  if (event.request.url.includes('api.auroville.social')) {
+    return;
+  }
+
+  // For all other requests, try the network first, then the cache
+  event.respondWith(
+    fetch(event.request)
+      .catch(() => {
+        return caches.match(event.request);
+      })
+  );
 }); 

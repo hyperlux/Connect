@@ -26,6 +26,7 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'Origin': 'https://auroville.social'
   },
   // Increase timeout for slower connections
   timeout: 10000,
@@ -38,6 +39,9 @@ api.interceptors.request.use(
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Add CORS headers to every request
+    config.headers['Access-Control-Allow-Origin'] = 'https://auroville.social';
+    config.headers['Access-Control-Allow-Credentials'] = 'true';
     return config;
   },
   (error: AxiosError) => {
