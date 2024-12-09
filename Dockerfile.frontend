@@ -3,21 +3,17 @@ FROM node:18-alpine as build
 
 WORKDIR /app
 
-# Increase Node memory limit and use production mode
-ENV NODE_OPTIONS="--max-old-space-size=2048"
-ENV NODE_ENV=production
-
 # Install dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install
 
 # Copy source files
 COPY . .
 
-# Build with production optimizations
+# Build the application with debugging
 RUN echo "Starting build process..." && \
-    export VITE_BUILD_MEMORY_LIMIT=1024 && \
-    npm run build -- --mode production && \
+    ls -la && \
+    npm run build && \
     echo "Build complete. Contents of dist:" && \
     ls -la dist/
 
