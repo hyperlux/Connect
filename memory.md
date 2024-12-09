@@ -49,3 +49,31 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
+```
+
+## Latest Debug Session (December 9, 2024)
+
+### SSL Configuration
+1. SSL certificates verified:
+   ```bash
+   /etc/letsencrypt/live/auroville.social/
+   ├── cert.pem -> ../../archive/auroville.social/cert2.pem
+   ├── chain.pem -> ../../archive/auroville.social/chain2.pem
+   ├── fullchain.pem -> ../../archive/auroville.social/fullchain2.pem
+   └── privkey.pem -> ../../archive/auroville.social/privkey2.pem
+   ```
+
+2. SSL Configuration in nginx:
+   - Added SSL certificate paths
+   - Configured modern SSL protocols and ciphers
+   - Maintained working static file serving
+   - Combined HTTP and HTTPS in single server block
+
+### Next Steps
+1. Test HTTPS access
+2. Monitor SSL handshake in logs
+3. Verify certificate renewal process
+4. Consider adding HSTS later
+
+https//:www.auroville.social
+

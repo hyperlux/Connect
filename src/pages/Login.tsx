@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import WelcomeBanner from '../pages/Dashboard/components/WelcomeBanner';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -26,7 +27,13 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1E1E1E] px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#1E1E1E] px-4">
+      {/* Welcome Banner */}
+      <div className="w-full max-w-4xl mb-8">
+        <WelcomeBanner />
+      </div>
+
+      {/* Login Form */}
       <div className="max-w-md w-full bg-[#2A2A2A] rounded-xl shadow-lg p-8">
         <div className="text-center mb-8">
           <img src="/logodark.png" alt="Auroville" className="h-12 mx-auto mb-4" />
