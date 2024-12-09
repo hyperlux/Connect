@@ -62,6 +62,15 @@ export default function Welcome() {
     <div className="min-h-screen bg-[#1E1E1E]">
       {/* Hero Section with Carousel */}
       <div className="relative h-screen">
+        {/* Logo Header */}
+        <div className="absolute top-0 left-0 z-10 p-4">
+          <img
+            src="/logodark.png"
+            alt="Auroville Logo"
+            className="h-12 w-auto"
+          />
+        </div>
+
         {carouselImages.map((image, index) => (
           <div
             key={image.url}
@@ -76,11 +85,6 @@ export default function Welcome() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30">
               <div className="container mx-auto px-6 h-full flex flex-col justify-center items-center text-center">
-                <img
-                  src="/logodark.png"
-                  alt="Auroville Logo"
-                  className="w-32 h-32 mb-8"
-                />
                 <h1 className="text-6xl font-bold text-white mb-6">
                   {image.title}
                 </h1>
