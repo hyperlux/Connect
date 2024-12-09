@@ -26,6 +26,7 @@ import SecuritySettings from './pages/Settings/SecuritySettings';
 import SignupForm from './components/SignupForm';
 import ResetPassword from './pages/ResetPassword';
 import Login from './pages/Login';
+import Welcome from './pages/Welcome';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -35,10 +36,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
   
-  console.log('ProtectedRoute state:', { isAuthenticated, isLoading, pathname: location.pathname });
-
   if (isLoading) {
-    console.log('Auth is loading');
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -50,70 +48,20 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!isAuthenticated) {
-    console.log('Not authenticated, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  console.log('Authenticated, rendering children');
   return <>{children}</>;
 }
 
-function LoginPage() {
-  const { user } = useAuth();
-  
-  if (user) {
-    return <Navigate to="/" replace />;
-  }
-
-  return (
-    <div className="min-h-screen bg-[#1E1E1E] flex">
-      {/* Welcome Banner Section */}
-      <div className="hidden lg:block w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="/firematri.png"
-            alt="Auroville"
-            className="w-full h-full object-cover brightness-75"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
-            <div className="absolute bottom-0 left-0 right-0 p-16">
-              <h1 className="text-5xl font-bold text-white mb-6">Welcome to Auroville</h1>
-              <div className="space-y-4">
-                <p className="text-2xl text-white/90 italic leading-relaxed">
-                  "Auroville wants to be the bridge between the past and the future."
-                </p>
-                <p className="text-lg text-white/80">— The Mother</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Login Form Section */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <img
-              className="mx-auto h-16 w-auto mb-8"
-              src="/logodark.png"
-              alt="Auroville"
-            />
-            <h2 className="text-3xl font-bold tracking-tight text-white">
-              Sign in to your account
-            </h2>
-          </div>
-          <LoginForm />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <Routes>
       {/* Public routes */}
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Welcome />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignupForm />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -121,7 +69,7 @@ export default function AppRoutes() {
 
       {/* Protected routes */}
       <Route 
-        path="/" 
+        path="/dashboard" 
         element={
           <ProtectedRoute>
             <Layout />

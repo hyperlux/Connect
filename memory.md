@@ -105,3 +105,84 @@ https//:www.auroville.social
 </div>
 ```
 
+### Login Page Layout Improvements (December 9, 2024)
+1. Image Section Enhancement:
+   - Added image brightness control for better readability
+   - Optimized gradient overlay (bottom to top)
+   - Improved text positioning and hierarchy
+   - Enhanced visual composition
+
+2. Updated Layout:
+```tsx
+<div className="min-h-screen bg-[#1E1E1E] flex">
+  {/* Left side: Welcome Banner */}
+  <div className="hidden lg:block w-1/2 relative">
+    <img 
+      src="/firematri.png" 
+      className="w-full h-full object-cover brightness-75"
+    />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+      <div className="absolute bottom-0 p-16">
+        <h1 className="text-5xl font-bold text-white">Welcome to Auroville</h1>
+        <p className="text-2xl text-white/90 italic">Quote...</p>
+      </div>
+    </div>
+  </div>
+  
+  {/* Right side: Login Form */}
+  <div className="w-full lg:w-1/2">
+    <LoginForm />
+  </div>
+</div>
+```
+
+3. Key Style Changes:
+   - Text sizes: h1 (text-5xl), quote (text-2xl)
+   - Gradient: from-black/90 via-black/40 to-transparent
+   - Spacing: p-16 for main content
+   - Image: brightness-75 for better contrast
+
+### Welcome Page Addition (December 9, 2024)
+1. Created new landing page with:
+   - Full-screen hero section with Matrimandir image
+   - Centered content with logo and welcome message
+   - Call-to-action buttons for Sign In and Join Community
+   - About section with three key pillars: Connect, Collaborate, Create
+
+2. Route Changes:
+   - "/" now shows Welcome page for non-authenticated users
+   - "/" redirects to "/dashboard" for authenticated users
+   - Moved login form to dedicated "/login" route
+   - Updated protected route handling
+
+3. Key Components:
+```tsx
+// Welcome page structure
+<div className="min-h-screen">
+  {/* Hero Section */}
+  <div className="relative h-screen">
+    <img src="/firematri.png" />
+    <div className="overlay">
+      <h1>Welcome to Auroville Community</h1>
+      <div className="cta-buttons">
+        <Link to="/login">Sign In</Link>
+        <Link to="/signup">Join Community</Link>
+      </div>
+    </div>
+  </div>
+
+  {/* About Section */}
+  <div className="grid grid-cols-3">
+    <div>Connect</div>
+    <div>Collaborate</div>
+    <div>Create</div>
+  </div>
+</div>
+```
+
+4. Style Highlights:
+   - Full-screen hero with gradient overlay
+   - Centered content layout
+   - Responsive design (mobile-friendly)
+   - Consistent branding elements
+
