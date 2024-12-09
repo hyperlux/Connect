@@ -77,3 +77,31 @@ services:
 
 https//:www.auroville.social
 
+### Login Page Image Fix
+1. Issue: Login page banner image not loading (404 error)
+2. Root Cause: Incorrect image path in routes.tsx
+3. Solution:
+   - Changed image path from `/matrimandirimg.png` to `/firematri.png`
+   - Image path was corrected in `routes.tsx` LoginPage component
+   - Verified image exists in `/usr/share/nginx/html/firematri.png`
+
+### Current Login Page Structure
+```tsx
+// Login page layout
+<div className="min-h-screen bg-[#1E1E1E] flex">
+  {/* Left side: Welcome Banner */}
+  <div className="hidden lg:block w-1/2">
+    <img src="/firematri.png" />
+    <div className="gradient overlay">
+      <h1>Welcome to Auroville</h1>
+      <p>"Auroville wants to be the bridge between the past and the future."</p>
+    </div>
+  </div>
+  
+  {/* Right side: Login Form */}
+  <div className="w-full lg:w-1/2">
+    <LoginForm />
+  </div>
+</div>
+```
+
