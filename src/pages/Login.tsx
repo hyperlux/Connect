@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
-import WelcomeBanner from '../pages/Dashboard/components/WelcomeBanner';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -27,18 +26,17 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#1E1E1E] px-4">
-      {/* Welcome Banner */}
-      <div className="w-full max-w-4xl mb-8">
-        <WelcomeBanner />
-      </div>
-
-      {/* Login Form */}
-      <div className="max-w-md w-full bg-[#2A2A2A] rounded-xl shadow-lg p-8">
-        <div className="text-center mb-8">
-          <img src="/logodark.png" alt="Auroville" className="h-12 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white">Welcome Back</h2>
-          <p className="text-gray-400">Sign in to your account</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#1E1E1E] px-4">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
+          <img
+            className="mx-auto h-16 w-auto mb-8"
+            src="/logodark.png"
+            alt="Auroville"
+          />
+          <h2 className="text-3xl font-bold tracking-tight text-white">
+            Sign in to your account
+          </h2>
         </div>
 
         {error && (
@@ -47,35 +45,37 @@ export default function Login() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6 bg-[#2A2A2A] p-8 rounded-xl">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
-              placeholder="Enter your password"
-              required
-            />
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
@@ -103,12 +103,17 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-gray-400">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-auroville-primary hover:text-opacity-80">
-            Sign up
+        <div className="text-center">
+          <Link to="/" className="text-sm text-auroville-primary hover:text-opacity-80">
+            ← Back to Welcome Page
           </Link>
-        </p>
+          <p className="mt-4 text-gray-400">
+            Don't have an account?{' '}
+            <Link to="/signup" className="text-auroville-primary hover:text-opacity-80">
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
