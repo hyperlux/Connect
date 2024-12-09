@@ -38,6 +38,17 @@ api.interceptors.request.use(
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+    // Log outgoing requests in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Request:', {
+        url: config.url,
+        method: config.method,
+        data: config.data,
+        headers: config.headers
+      });
+    }
+    
     return config;
   },
   (error: AxiosError) => {
@@ -51,12 +62,14 @@ api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
+      // Log detailed error information
       console.error('Response error:', {
         status: error.response.status,
         data: error.response.data,
         headers: error.response.headers,
+        url: error.config?.url,
+        method: error.config?.method,
+        requestData: error.config?.data
       });
 
       // Handle specific error cases
@@ -69,28 +82,20 @@ api.interceptors.response.use(
           console.error('Access forbidden');
           break;
         case 500:
-          console.error('Server error');
+          console.error('Server error:', error.response.data);
           break;
       }
     } else if (error.request) {
-      // The request was made but no response was received
-      console.error('Network error - no response received:', error.request);
+      console.error('Network error - no response received:', {
+        request: error.request,
+        url: error.config?.url,
+        method: error.config?.method
+      });
     } else {
-      // Something happened in setting up the request
       console.error('Error:', error.message);
     }
 
-    // Add error context for better debugging
-    const enhancedError = {
-      ...error,
-      context: {
-        url: error.config?.url,
-        method: error.config?.method,
-        timestamp: new Date().toISOString(),
-      },
-    };
-
-    return Promise.reject(enhancedError);
+    return Promise.reject(error);
   }
 );
 

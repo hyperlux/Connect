@@ -190,9 +190,15 @@ https//:www.auroville.social
 
 ### Progress
 1. Fixed CORS configuration in nginx and API client
-2. Updated API base URL to use `https://auroville.social/api`
-3. Enhanced nginx logging for API requests
+2. Updated API base URL to use relative URL `/api` in production
+3. Enhanced error logging in API client
 4. Current Status: Getting 500 Internal Server Error from backend
+
+### Latest Changes
+1. Switched to relative URLs for API endpoints
+2. Increased request timeout to 30 seconds
+3. Added detailed request/response logging
+4. Simplified error handling to preserve original error objects
 
 ### Error Details
 ```
@@ -201,17 +207,19 @@ Response error: {status: 500, data: {...}, headers: Rr}
 ```
 
 ### Next Steps
-1. Need to check backend logs to identify the cause of the 500 error
-2. Verify backend service is running correctly
-3. Check backend API endpoint implementation
-4. Verify database connection and state
+1. Test login with the updated configuration
+2. Monitor detailed error logs in browser console
+3. Check backend logs for corresponding error details
+4. Verify backend API endpoint matches frontend expectations
 
 ### Configuration State
 - Frontend proxy is working (requests reaching backend)
 - CORS is properly configured
-- API client is set up with correct base URL
+- API client is using relative URLs
 - Service worker is registered successfully
+- Enhanced error logging is in place
 
 ### Non-Critical Issues
 - React Router warning about v7_startTransition (can be addressed later)
+- TypeScript error for vite/client types (does not affect functionality)
 
