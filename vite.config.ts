@@ -28,15 +28,27 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
-      sourcemap: true,
-      manifest: true,
+      sourcemap: false,
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true
+        }
+      },
       rollupOptions: {
         output: {
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
+            ui: ['@headlessui/react', '@heroicons/react'],
+            utils: ['axios', 'date-fns']
           },
-        },
+          chunkSizeWarningLimit: 1000
+        }
       },
+      target: 'es2015',
+      cssCodeSplit: true,
+      reportCompressedSize: false
     },
     resolve: {
       alias: {
