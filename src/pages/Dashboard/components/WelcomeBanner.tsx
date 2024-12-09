@@ -8,6 +8,12 @@ export default function WelcomeBanner() {
           src="/firematri.png"
           alt="Matrimandir"
           className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error('Image failed to load:', e);
+            const img = e.target as HTMLImageElement;
+            img.onerror = null; // Prevent infinite loop
+            img.src = '/logodark.png'; // Fallback image
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent">
           <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
