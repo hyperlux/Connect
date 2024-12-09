@@ -12,26 +12,25 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // More defensive service worker registration
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', async function() {
-          try {
-            // Unregister any existing service workers
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            for (let registration of registrations) {
-              await registration.unregister();
+      // Register service worker after main script loads
+      window.addEventListener('load', function() {
+        if ('serviceWorker' in navigator) {
+          // Unregister any existing service workers first
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+              registration.unregister();
             }
-            
-            // Register new service worker
-            const registration = await navigator.serviceWorker.register('/service-worker.js', {
-              scope: '/'
-            });
-            console.log('ServiceWorker registration successful with scope:', registration.scope);
-          } catch (err) {
-            console.log('ServiceWorker registration failed:', err);
-          }
-        });
-      }
+            // Then register the new one
+            navigator.serviceWorker.register('/service-worker.js')
+              .then(function(registration) {
+                console.log('ServiceWorker registration successful');
+              })
+              .catch(function(err) {
+                console.log('ServiceWorker registration failed: ', err);
+              });
+          });
+        }
+      });
     </script>
   </body>
 </html>

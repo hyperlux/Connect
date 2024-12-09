@@ -42,7 +42,7 @@ export default function WelcomeBanner() {
   }, []);
 
   return (
-    <div className="relative h-[280px] rounded-xl overflow-hidden bg-[#1E1E1E]">
+    <div className="relative h-[280px] rounded-xl overflow-hidden">
       {bannerImages.map((image, index) => (
         <div
           key={image.id}
@@ -53,7 +53,7 @@ export default function WelcomeBanner() {
           <img
             src={image.url}
             alt={image.title}
-            className="w-full h-full object-contain p-4"
+            className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent">
             <div className="absolute bottom-0 left-0 right-0 p-6 text-white">

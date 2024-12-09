@@ -1,4 +1,4 @@
-// Simple service worker that skips caching
+// Minimal service worker for testing
 self.addEventListener('install', event => {
   self.skipWaiting();
 });
@@ -14,6 +14,5 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Skip handling fetch events
   event.respondWith(fetch(event.request));
 }); 

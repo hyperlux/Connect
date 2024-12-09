@@ -27,9 +27,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start pt-8 bg-[#1E1E1E] px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#1E1E1E] px-4">
       {/* Welcome Banner */}
-      <div className="w-full max-w-4xl mb-8 bg-[#2A2A2A] rounded-xl shadow-lg overflow-hidden">
+      <div className="w-full max-w-4xl mb-8">
         <WelcomeBanner />
       </div>
 
