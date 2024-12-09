@@ -28,12 +28,13 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
-      sourcemap: true,
-      manifest: true,
+      sourcemap: false,
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         output: {
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
+            images: [/\.(png|jpe?g|svg|gif|webp)$/],
           },
         },
       },
