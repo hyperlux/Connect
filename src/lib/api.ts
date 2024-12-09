@@ -15,8 +15,9 @@ declare global {
 
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
+// In production, we use relative URLs since we're proxying through nginx
 const baseURL = process.env.NODE_ENV === 'production' 
-  ? 'https://api.auroville.social'
+  ? '/api'
   : 'http://localhost:3000';
 
 // Create axios instance with default config
