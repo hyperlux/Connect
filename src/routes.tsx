@@ -71,7 +71,7 @@ function LoginPage() {
       <div className="hidden lg:block w-1/2 relative overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/matrimandirimg.png"
+            src="/firematri.png"
             alt="Auroville"
             className="w-full h-full object-cover"
           />
