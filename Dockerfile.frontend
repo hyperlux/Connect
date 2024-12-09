@@ -33,7 +33,22 @@ COPY --from=build /app/public/ /usr/share/nginx/html/
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Create nginx main configuration
-RUN echo 'user nginx;\nworker_processes auto;\nerror_log /var/log/nginx/error.log warn;\npid /var/run/nginx.pid;\n\nevents {\n    worker_connections 1024;\n}\n\nhttp {\n    include /etc/nginx/mime.types;\n    default_type application/octet-stream;\n    include /etc/nginx/conf.d/*.conf;\n}' > /etc/nginx/nginx.conf
+RUN cat > /etc/nginx/nginx.conf << 'EOL'
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    include /etc/nginx/conf.d/*.conf;
+}
+EOL
 
 # Debug: List contents and permissions
 RUN echo "Contents of nginx html directory:" && \
