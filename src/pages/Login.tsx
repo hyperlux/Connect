@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { login } from '../lib/api';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Login() {
@@ -10,7 +9,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useAuth();
+  const { login } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -18,8 +17,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await login({ email, password });
-      setUser(response.user);
+      await login({ email, password });
       
       // Get the redirect path from location state or default to dashboard
       const from = location.state?.from?.pathname || '/dashboard';
