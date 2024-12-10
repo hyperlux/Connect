@@ -225,62 +225,55 @@ Response error: {status: 500, data: {...}, headers: Rr}
 
 # Debugging Session History
 
-## Initial Setup and UI Changes
-- Implemented Docker setup
-- Made UI changes (sidebar colors, layout adjustments)
-- Created welcome banner with image carousel
-- Added new images to carousel
+## Latest Progress (December 10, 2023)
+1. Fixed React Router TypeScript errors:
+   - Removed unsupported future flags
+   - Kept only `v7_normalizeFormMethod`
+   - Removed `v7_prependBasename` due to type errors
+2. Build process improvements:
+   - Updated Docker configuration
+   - Fixed nginx configuration
+   - Enhanced error logging
 
-## Authentication and API Issues
+## Current State
+1. Backend:
+   - Container builds successfully
+   - Running on port 5000
+   - Using Node.js 18 Alpine image
 
-### CORS and API Configuration Progress
-1. Initial CORS errors when trying to access API
-2. Updated nginx configuration to handle CORS
-3. Modified API client configuration
-4. Added proper error logging and handling
+2. Frontend:
+   - Using nginx:alpine
+   - React Router configured with supported flags
+   - API client using relative URLs
+   - Service worker registered
 
-### Current State (Login Flow)
-- Frontend successfully makes requests to `https://auroville.social/api`
-- Service worker is registered and working
-- Getting 500 Internal Server Error from backend on login attempt
-- Enhanced error logging is in place
+3. Configuration:
+   - API base URL: `/api` in production
+   - CORS headers properly configured
+   - Nginx proxy settings updated
+   - Docker compose setup working
 
-### Configuration Details
-1. API Client:
-   - Base URL: `https://auroville.social/api` in production
-   - Timeout: 10 seconds
-   - Credentials: enabled
-   - Headers: Content-Type and Accept JSON
+## Next Steps
+1. Rebuild containers with latest changes
+2. Verify login functionality
+3. Check API connectivity
+4. Monitor error logs
 
-2. Nginx:
-   - Proxying `/api` requests to backend
-   - CORS headers configured
-   - Error logging enabled
+## Known Issues
+1. React Router warnings (resolved by using supported flags)
+2. TypeScript configuration needs alignment with React Router types
+3. Previous CORS issues resolved with nginx configuration
 
-3. Error Handling:
-   - Detailed request/response logging
-   - Specific handlers for 401, 403, 500 errors
-   - Network error tracking
-
-### Current Error
-```
-POST https://auroville.social/api/auth/login 500 (Internal Server Error)
-Response error: {status: 500, data: {...}, headers: Rr}
-```
-
-### Next Steps
-1. Need to check backend logs for detailed error
-2. Verify backend service status
-3. Check database connectivity
-4. Validate API endpoint implementation
-
-### Known Issues
-1. React Router Future Flag Warning (non-critical)
-2. TypeScript vite/client types missing (non-critical)
-
-### Recent Changes
-- Switched between relative and absolute URLs for API
-- Added enhanced error logging
-- Updated nginx proxy configuration
-- Configured proper CORS headers
+## Recent Changes
+1. Updated router configuration:
+   - Removed `v7_prependBasename`
+   - Kept only `v7_normalizeFormMethod`
+2. API client improvements:
+   - Using relative URLs
+   - Enhanced error handling
+   - Increased timeout to 30 seconds
+3. Build process:
+   - Fixed TypeScript errors
+   - Updated Docker configuration
+   - Enhanced error logging
 

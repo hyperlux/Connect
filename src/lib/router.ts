@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 
 export const routerConfig = {
   future: {
-    v7_normalizeFormMethod: true,
-    v7_prependBasename: true
+    v7_normalizeFormMethod: true
   }
 }; 
