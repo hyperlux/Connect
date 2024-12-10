@@ -15,8 +15,10 @@ declare global {
 
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
-// Use relative URLs for API requests
-const baseURL = '/api';
+// In production, we use relative URLs since we're on the same domain
+const baseURL = process.env.NODE_ENV === 'production' 
+  ? '/api'  // Use relative URL in production
+  : 'http://localhost:5000';
 
 // Create axios instance with default config
 export const api = axios.create({
@@ -26,7 +28,7 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
-  timeout: 30000,
+  timeout: 30000, // Increase timeout for slower connections
 });
 
 // Add a request interceptor
@@ -39,10 +41,11 @@ api.interceptors.request.use(
     
     // Log outgoing requests in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('API Request:', {
-        url: `${config.baseURL}${config.url}`,
+      console.log('Request:', {
+        url: config.url,
         method: config.method,
-        data: config.data
+        data: config.data,
+        headers: config.headers
       });
     }
     
@@ -60,10 +63,11 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response) {
       // Log detailed error information
-      console.error('API Response error:', {
+      console.error('Response error:', {
         status: error.response.status,
         data: error.response.data,
-        url: `${error.config?.baseURL}${error.config?.url}`,
+        headers: error.response.headers,
+        url: error.config?.url,
         method: error.config?.method,
         requestData: error.config?.data
       });
@@ -71,16 +75,14 @@ api.interceptors.response.use(
       // Handle specific error cases
       switch (error.response.status) {
         case 401:
-          localStorage.removeItem('token');
+          // Only remove token and redirect if not on login page
           if (!window.location.pathname.includes('/login')) {
+            localStorage.removeItem('token');
             window.location.href = '/login';
           }
           break;
         case 403:
           console.error('Access forbidden');
-          break;
-        case 404:
-          console.error('API endpoint not found');
           break;
         case 500:
           console.error('Server error:', error.response.data);
@@ -88,9 +90,12 @@ api.interceptors.response.use(
       }
     } else if (error.request) {
       console.error('Network error - no response received:', {
-        url: `${error.config?.baseURL}${error.config?.url}`,
+        request: error.request,
+        url: error.config?.url,
         method: error.config?.method
       });
+    } else {
+      console.error('Error:', error.message);
     }
 
     return Promise.reject(error);
