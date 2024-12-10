@@ -14,7 +14,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Create router with all recommended future flags
+// Create router with supported future flags
 const router = createBrowserRouter([
   {
     path: '*',
@@ -22,11 +22,6 @@ const router = createBrowserRouter([
   }
 ], {
   future: {
-    v7_startTransition: true,
-    v7_relativeSplatPath: true,
-    v7_fetcherPersist: true,
-    v7_partialHydration: true,
-    v7_skipActionErrorRevalidation: true,
     v7_normalizeFormMethod: true
   }
 });
