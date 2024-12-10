@@ -118,3 +118,37 @@ export const withAuth = (token: string) => {
     delete: <T>(url: string) => api.delete<T>(url, config),
   };
 }; 
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    role: string;
+  };
+}
+
+export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
+  try {
+    const response = await api.post<LoginResponse>('/auth/login', credentials);
+    
+    // Store the token
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+    }
+    
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Login error:', error.message);
+      throw error;
+    }
+    throw new Error('An unexpected error occurred during login');
+  }
+}

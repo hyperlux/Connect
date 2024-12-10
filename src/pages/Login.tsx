@@ -1,119 +1,124 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../lib/auth';
+import React, { useState } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { login } from '../lib/api';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setUser } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
     setIsLoading(true);
 
     try {
-      await login(email, password);
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message || 'Failed to login. Please try again.');
+      const response = await login({ email, password });
+      setUser(response.user);
+      
+      // Get the redirect path from location state or default to dashboard
+      const from = location.state?.from?.pathname || '/dashboard';
+      navigate(from, { replace: true });
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1E1E1E] px-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
           <img
-            className="mx-auto h-16 w-auto mb-8"
+            className="mx-auto h-12 w-auto"
             src="/logodark.png"
             alt="Auroville"
           />
-          <h2 className="text-3xl font-bold tracking-tight text-white">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Sign in to your account
           </h2>
         </div>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-900/20 border border-red-900/30 rounded-lg">
-            <p className="text-red-400 text-sm">{error}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6 bg-[#2A2A2A] p-8 rounded-xl">
-          <div className="space-y-4">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-                Email
+              <label htmlFor="email" className="sr-only">
+                Email address
               </label>
               <input
                 id="email"
+                name="email"
                 type="email"
+                autoComplete="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
-                placeholder="Enter your email"
-                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-auroville-primary focus:border-auroville-primary focus:z-10 sm:text-sm"
+                placeholder="Email address"
               />
             </div>
-
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1">
+              <label htmlFor="password" className="sr-only">
                 Password
               </label>
               <input
                 id="password"
+                name="password"
                 type="password"
+                autoComplete="current-password"
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
-                placeholder="Enter your password"
-                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-auroville-primary focus:border-auroville-primary focus:z-10 sm:text-sm"
+                placeholder="Password"
               />
             </div>
           </div>
+
+          {error && (
+            <div className="text-red-500 text-sm text-center">{error}</div>
+          )}
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember"
-                type="checkbox"
-                className="h-4 w-4 text-auroville-primary focus:ring-auroville-primary border-gray-300 rounded"
-              />
-              <label htmlFor="remember" className="ml-2 block text-sm text-gray-400">
-                Remember me
-              </label>
+            <div className="text-sm">
+              <Link
+                to="/forgot-password"
+                className="font-medium text-auroville-primary hover:text-auroville-secondary"
+              >
+                Forgot your password?
+              </Link>
             </div>
-            <Link to="/forgot-password" className="text-sm text-auroville-primary hover:text-opacity-80">
-              Forgot password?
-            </Link>
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full px-4 py-2 bg-auroville-primary text-white rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50"
-          >
-            {isLoading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-auroville-primary hover:bg-auroville-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-auroville-primary ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {isLoading ? 'Signing in...' : 'Sign in'}
+            </button>
+          </div>
 
-        <div className="text-center">
-          <Link to="/" className="text-sm text-auroville-primary hover:text-opacity-80">
-            ← Back to Welcome Page
-          </Link>
-          <p className="mt-4 text-gray-400">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-auroville-primary hover:text-opacity-80">
-              Sign up
-            </Link>
-          </p>
-        </div>
+          <div className="text-center">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?{' '}
+              <Link
+                to="/signup"
+                className="font-medium text-auroville-primary hover:text-auroville-secondary"
+              >
+                Sign up
+              </Link>
+            </span>
+          </div>
+        </form>
       </div>
     </div>
   );
