@@ -25,7 +25,19 @@ export interface AuthContextType {
   uploadProfilePicture: (file: File) => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContextType | null>(null);
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+  error: null,
+  login: async () => { throw new Error('AuthContext not initialized') },
+  register: async () => { throw new Error('AuthContext not initialized') },
+  logout: () => { throw new Error('AuthContext not initialized') },
+  clearError: () => { throw new Error('AuthContext not initialized') },
+  setUser: () => { throw new Error('AuthContext not initialized') },
+  updateProfile: async () => { throw new Error('AuthContext not initialized') },
+  uploadProfilePicture: async () => { throw new Error('AuthContext not initialized') }
+});
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -132,7 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-export function useAuth() {
+export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
