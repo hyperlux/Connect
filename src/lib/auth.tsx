@@ -25,11 +25,12 @@ export interface AuthContextType {
   uploadProfilePicture: (file: File) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -51,29 +52,77 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (credentials: { email: string; password: string }) => {
-    const response = await api.post('/auth/login', credentials);
-    const { token, user } = response.data;
-    localStorage.setItem('token', token);
-    setUser(user);
+    try {
+      const response = await api.post('/auth/login', credentials);
+      const { token, user } = response.data;
+      localStorage.setItem('token', token);
+      setUser(user);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+      throw err;
+    }
+  };
+
+  const register = async (data: { name: string; email: string; password: string }) => {
+    try {
+      const response = await api.post('/auth/register', data);
+      setError(null);
+      return response.data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed');
+      throw err;
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
+    setError(null);
+  };
+
+  const clearError = () => setError(null);
+
+  const updateProfile = async (data: { name?: string; email?: string; bio?: string }) => {
+    try {
+      const response = await api.put('/auth/profile', data);
+      setUser(response.data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Profile update failed');
+      throw err;
+    }
+  };
+
+  const uploadProfilePicture = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('profilePicture', file);
+      const response = await api.post('/auth/profile/picture', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setUser(response.data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Profile picture upload failed');
+      throw err;
+    }
   };
 
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
     isLoading,
-    error: null,
+    error,
     login,
-    register: async (data: { name: string; email: string; password: string }) => {},
+    register,
     logout,
-    clearError: () => {},
+    clearError,
     setUser,
-    updateProfile: async (data: { name?: string; email?: string; bio?: string }) => {},
-    uploadProfilePicture: async (file: File) => {}
+    updateProfile,
+    uploadProfilePicture
   };
 
   return (
