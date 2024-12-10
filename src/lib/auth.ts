@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 export interface LoginCredentials {
@@ -35,7 +35,11 @@ const api = axios.create({
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,21 +112,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const contextValue: AuthContextType = {
+    user,
+    isAuthenticated: !!user,
+    isLoading,
+    error,
+    login,
+    logout,
+    register,
+    clearError,
+    updateProfile,
+    uploadProfilePicture,
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        error,
-        login,
-        logout,
-        register,
-        clearError,
-        updateProfile,
-        uploadProfilePicture,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
