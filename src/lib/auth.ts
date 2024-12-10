@@ -29,8 +29,16 @@ export interface AuthContextType {
 }
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  baseURL: '/api',
   withCredentials: true,
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -45,8 +53,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+    if (token && storedUser) {
       setUser(JSON.parse(storedUser));
     }
     setIsLoading(false);
@@ -56,13 +65,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setError(null);
       const response = await api.post('/auth/login', credentials);
-      const userData = response.data;
-      setUser(userData);
+      const { user: userData, token } = response.data;
+      
+      localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(userData));
+      
+      setUser(userData);
       return userData;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
-      throw err;
+      const errorMessage = err.response?.data?.message || 'Login failed';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
@@ -72,14 +85,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await api.post('/auth/register', userData);
       return response.data;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
-      throw err;
+      const errorMessage = err.response?.data?.message || 'Registration failed';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
   const logout = () => {
-    setUser(null);
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
+    setUser(null);
   };
 
   const clearError = () => setError(null);
@@ -92,8 +107,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(updatedUser));
       return updatedUser;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Profile update failed');
-      throw err;
+      const errorMessage = err.response?.data?.message || 'Profile update failed';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
@@ -101,14 +117,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const formData = new FormData();
       formData.append('profilePicture', file);
-      const response = await api.post('/users/profile-picture', formData);
+      const response = await api.post('/users/profile/picture', formData);
       const updatedUser = response.data;
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
       return updatedUser;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Profile picture upload failed');
-      throw err;
+      const errorMessage = err.response?.data?.message || 'Profile picture upload failed';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
