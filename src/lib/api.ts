@@ -15,7 +15,7 @@ declare global {
 
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
-// In production, we use relative URLs since we're on the same domain
+// Use relative URLs for API requests
 const baseURL = '/api';
 
 // Create axios instance with default config
@@ -26,7 +26,7 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
-  timeout: 30000, // Increased timeout
+  timeout: 30000,
 });
 
 // Add a request interceptor
@@ -78,6 +78,9 @@ api.interceptors.response.use(
           break;
         case 403:
           console.error('Access forbidden');
+          break;
+        case 404:
+          console.error('API endpoint not found');
           break;
         case 500:
           console.error('Server error:', error.response.data);
