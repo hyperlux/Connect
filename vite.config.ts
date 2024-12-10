@@ -18,10 +18,11 @@ export default defineConfig(({ mode }) => {
       },
       proxy: {
         '/api': {
-          target: isProd ? 'http://backend:5000' : 'http://localhost:5000',
+          target: process.env.NODE_ENV === 'production' 
+            ? 'https://api.auroville.social' 
+            : 'http://localhost:5000',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
-          secure: false
+          rewrite: (path) => path.replace(/^\/api/, '')
         }
       }
     },
