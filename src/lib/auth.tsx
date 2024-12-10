@@ -6,15 +6,23 @@ interface User {
   email: string;
   name: string;
   role: string;
+  bio?: string;
+  profilePicture?: string;
+  createdAt?: string;
 }
 
 export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  error: string | null;
   login: (credentials: { email: string; password: string }) => Promise<void>;
+  register: (data: { name: string; email: string; password: string }) => Promise<void>;
   logout: () => void;
+  clearError: () => void;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  updateProfile: (data: { name?: string; email?: string; bio?: string }) => Promise<void>;
+  uploadProfilePicture: (file: File) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -58,9 +66,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     isAuthenticated: !!user,
     isLoading,
+    error: null,
     login,
+    register: async (data: { name: string; email: string; password: string }) => {},
     logout,
-    setUser
+    clearError: () => {},
+    setUser,
+    updateProfile: async (data: { name?: string; email?: string; bio?: string }) => {},
+    uploadProfilePicture: async (file: File) => {}
   };
 
   return (

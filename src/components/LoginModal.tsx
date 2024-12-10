@@ -27,13 +27,13 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
     };
   }, [clearError]);
 
-  const onSubmit = async (data: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      setSubmitError(null);
-      await login(data.email, data.password);
+      await login({ email, password });
       onClose();
-    } catch (error: any) {
-      setSubmitError(error.message);
+    } catch (error) {
+      console.error('Login error:', error);
     }
   };
 
@@ -55,7 +55,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: Logi
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email

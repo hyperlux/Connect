@@ -45,16 +45,12 @@ export default function LoginForm() {
     }
   }, [isAuthenticated, user, navigate]);
 
-  const onSubmit = async (data: LoginFormData) => {
-    console.log('Attempting login...');
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      await login(data.email, data.password);
-      console.log('Login successful, waiting for state update...');
-    } catch (error: any) {
-      console.error('Login failed:', error);
-      if (error.response?.data?.needsVerification) {
-        setNeedsVerification(true);
-      }
+      await login({ email, password });
+    } catch (error) {
+      console.error('Login error:', error);
     }
   };
 
@@ -83,7 +79,7 @@ export default function LoginForm() {
   return (
     <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div className="bg-white dark:bg-[#1E1E1E] py-8 px-4 shadow-xl sm:rounded-lg sm:px-10 border border-gray-200 dark:border-gray-800 transition-colors duration-200">
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-900 dark:text-gray-200 transition-colors duration-200">
               Email
