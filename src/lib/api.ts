@@ -15,10 +15,8 @@ declare global {
 
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
-// In production, we use relative URLs since we're proxying through nginx
-const baseURL = process.env.NODE_ENV === 'production' 
-  ? 'https://auroville.social/api'
-  : 'http://localhost:3000';
+// In production, we use relative URLs since we're on the same domain
+const baseURL = '/api';
 
 // Create axios instance with default config
 export const api = axios.create({
@@ -28,7 +26,7 @@ export const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
-  timeout: 10000,
+  timeout: 30000, // Increased timeout
 });
 
 // Add a request interceptor
@@ -41,11 +39,10 @@ api.interceptors.request.use(
     
     // Log outgoing requests in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('Request:', {
-        url: config.url,
+      console.log('API Request:', {
+        url: `${config.baseURL}${config.url}`,
         method: config.method,
-        data: config.data,
-        headers: config.headers
+        data: config.data
       });
     }
     
@@ -63,11 +60,10 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response) {
       // Log detailed error information
-      console.error('Response error:', {
+      console.error('API Response error:', {
         status: error.response.status,
         data: error.response.data,
-        headers: error.response.headers,
-        url: error.config?.url,
+        url: `${error.config?.baseURL}${error.config?.url}`,
         method: error.config?.method,
         requestData: error.config?.data
       });
@@ -76,7 +72,9 @@ api.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           localStorage.removeItem('token');
-          window.location.href = '/login';
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login';
+          }
           break;
         case 403:
           console.error('Access forbidden');
@@ -87,12 +85,9 @@ api.interceptors.response.use(
       }
     } else if (error.request) {
       console.error('Network error - no response received:', {
-        request: error.request,
-        url: error.config?.url,
+        url: `${error.config?.baseURL}${error.config?.url}`,
         method: error.config?.method
       });
-    } else {
-      console.error('Error:', error.message);
     }
 
     return Promise.reject(error);
