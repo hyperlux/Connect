@@ -14,7 +14,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Create router with only supported future flags
+// Create router with all recommended future flags
 const router = createBrowserRouter([
   {
     path: '*',
@@ -22,7 +22,11 @@ const router = createBrowserRouter([
   }
 ], {
   future: {
-    // Only include the officially supported flag
+    v7_startTransition: true,
+    v7_relativeSplatPath: true,
+    v7_fetcherPersist: true,
+    v7_partialHydration: true,
+    v7_skipActionErrorRevalidation: true,
     v7_normalizeFormMethod: true
   }
 });
