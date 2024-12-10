@@ -223,3 +223,64 @@ Response error: {status: 500, data: {...}, headers: Rr}
 - React Router warning about v7_startTransition (can be addressed later)
 - TypeScript error for vite/client types (does not affect functionality)
 
+# Debugging Session History
+
+## Initial Setup and UI Changes
+- Implemented Docker setup
+- Made UI changes (sidebar colors, layout adjustments)
+- Created welcome banner with image carousel
+- Added new images to carousel
+
+## Authentication and API Issues
+
+### CORS and API Configuration Progress
+1. Initial CORS errors when trying to access API
+2. Updated nginx configuration to handle CORS
+3. Modified API client configuration
+4. Added proper error logging and handling
+
+### Current State (Login Flow)
+- Frontend successfully makes requests to `https://auroville.social/api`
+- Service worker is registered and working
+- Getting 500 Internal Server Error from backend on login attempt
+- Enhanced error logging is in place
+
+### Configuration Details
+1. API Client:
+   - Base URL: `https://auroville.social/api` in production
+   - Timeout: 10 seconds
+   - Credentials: enabled
+   - Headers: Content-Type and Accept JSON
+
+2. Nginx:
+   - Proxying `/api` requests to backend
+   - CORS headers configured
+   - Error logging enabled
+
+3. Error Handling:
+   - Detailed request/response logging
+   - Specific handlers for 401, 403, 500 errors
+   - Network error tracking
+
+### Current Error
+```
+POST https://auroville.social/api/auth/login 500 (Internal Server Error)
+Response error: {status: 500, data: {...}, headers: Rr}
+```
+
+### Next Steps
+1. Need to check backend logs for detailed error
+2. Verify backend service status
+3. Check database connectivity
+4. Validate API endpoint implementation
+
+### Known Issues
+1. React Router Future Flag Warning (non-critical)
+2. TypeScript vite/client types missing (non-critical)
+
+### Recent Changes
+- Switched between relative and absolute URLs for API
+- Added enhanced error logging
+- Updated nginx proxy configuration
+- Configured proper CORS headers
+
