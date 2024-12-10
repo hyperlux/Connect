@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { X, Loader2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAuth } from '../lib/auth';
 
 interface LoginModalProps {
@@ -9,137 +9,119 @@ interface LoginModalProps {
   onSwitchToRegister: () => void;
 }
 
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
 export default function LoginModal({ isOpen, onClose, onSwitchToRegister }: LoginModalProps) {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const { login, isLoading, error, clearError } = useAuth();
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { login, error: authError } = useAuth();
+  const { 
+    register, 
+    handleSubmit: hookHandleSubmit, 
+    formState: { errors, isSubmitting },
+    reset 
+  } = useForm<LoginFormData>();
 
-  React.useEffect(() => {
-    if (error) {
-      setSubmitError(error);
-    }
-  }, [error]);
-
-  React.useEffect(() => {
-    return () => {
-      clearError();
-      setSubmitError(null);
-    };
-  }, [clearError]);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
     try {
-      await login({ email, password });
+      await login(data);
+      reset();
       onClose();
     } catch (error) {
-      console.error('Login error:', error);
+      // Error is handled by auth context
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl max-w-md w-full p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Login to Auroville Community</h2>
-          <button onClick={onClose} disabled={isLoading}>
-            <X className="h-6 w-6 text-gray-500" />
-          </button>
-        </div>
-
-        {submitError && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg">
-            {submitError}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              {...register('email', { required: 'Email is required' })}
-              className="w-full rounded-lg border-gray-300 focus:border-auroville-primary focus:ring-auroville-primary"
-              disabled={isLoading}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.email.message as string}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              {...register('password', { required: 'Password is required' })}
-              className="w-full rounded-lg border-gray-300 focus:border-auroville-primary focus:ring-auroville-primary"
-              disabled={isLoading}
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.password.message as string}
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="remember"
-                className="rounded border-gray-300 text-auroville-primary focus:ring-auroville-primary"
-                disabled={isLoading}
-              />
-              <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
-                Remember me
-              </label>
-            </div>
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-25" onClick={onClose} />
+        
+        <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Sign In</h2>
             <button
-              type="button"
-              className="text-sm text-auroville-primary hover:underline"
-              disabled={isLoading}
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
             >
-              Forgot password?
+              <X className="h-5 w-5" />
             </button>
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-2 px-4 bg-auroville-primary text-white rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                Signing in...
-              </>
-            ) : (
-              'Sign In'
-            )}
-          </button>
+          <form onSubmit={hookHandleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Email
+              </label>
+              <input
+                {...register('email', {
+                  required: 'Email is required',
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: 'Invalid email address'
+                  }
+                })}
+                type="email"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-auroville-primary focus:outline-none focus:ring-auroville-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+              )}
+            </div>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Password
+              </label>
+              <input
+                {...register('password', {
+                  required: 'Password is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Password must be at least 6 characters'
+                  }
+                })}
+                type="password"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-auroville-primary focus:outline-none focus:ring-auroville-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+              />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+              )}
+            </div>
+
+            {authError && (
+              <p className="text-sm text-red-600">{authError}</p>
+            )}
+
+            <div className="flex flex-col space-y-4">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex w-full items-center justify-center rounded-md bg-auroville-primary px-4 py-2 text-sm font-medium text-white hover:bg-auroville-primary-dark focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:ring-offset-2 disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  'Sign in'
+                )}
+              </button>
+
               <button
                 type="button"
                 onClick={onSwitchToRegister}
-                className="text-auroville-primary hover:underline"
-                disabled={isLoading}
+                className="text-sm text-auroville-primary hover:underline"
               >
-                Sign up
+                Don't have an account? Sign up
               </button>
-            </p>
-          </div>
-        </form>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
