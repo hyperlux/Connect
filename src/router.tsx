@@ -1,7 +1,17 @@
 import { createBrowserRouter } from 'react-router-dom';
+import EmailSentPage from './pages/EmailSentPage';
+import EmailVerifiedPage from './pages/EmailVerifiedPage';
 
 const router = createBrowserRouter([
-  // your routes here
+  // your existing routes
+  {
+    path: '/email-sent',
+    element: <EmailSentPage />
+  },
+  {
+    path: '/email-verified',
+    element: <EmailVerifiedPage />
+  }
 ], {
   future: {
     v7_relativeSplatPath: true,
