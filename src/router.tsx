@@ -11,3 +11,5 @@ const router = createBrowserRouter([
     v7_skipActionErrorRevalidation: true
   }
 });
+
+export default router;
