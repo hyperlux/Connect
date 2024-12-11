@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import { useTheme } from '../lib/theme';
 import { useEffect } from 'react';
+import './layout-fixes.css';
 
 export default function Layout() {
   const { theme } = useTheme();
@@ -14,21 +15,17 @@ export default function Layout() {
   }, [theme]);
 
   return (
-    <div className="min-h-screen flex bg-[#1a1a1a]">
+    <div className="layout-container">
       {/* Sidebar */}
-      <aside className="w-64 flex-none">
-        <div className="h-full border-r border-[#2a2a2a]">
-          <Sidebar />
-        </div>
+      <aside className="layout-sidebar-container">
+        <Sidebar />
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="layout-main-container">
         <Header />
-        <main className="flex-1 bg-[#1a1a1a] overflow-hidden">
-          <div className="h-full">
-            <Outlet />
-          </div>
+        <main className="layout-content">
+          <Outlet />
         </main>
       </div>
     </div>

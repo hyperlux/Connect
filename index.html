@@ -7,6 +7,50 @@
     <meta name="theme-color" content="#E27B58" />
     <link rel="manifest" href="/manifest.json" />
     <title>Auroville Community</title>
+    <style>
+      /* Critical CSS for layout */
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #1A1A1A;
+      }
+      #root {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 256px 1fr;
+        background-color: #1A1A1A;
+      }
+      /* Prevent layout shift */
+      .layout-container {
+        display: grid;
+        grid-template-columns: 256px 1fr;
+        min-height: 100vh;
+        background-color: #1A1A1A;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .layout-sidebar-container {
+        width: 256px;
+        min-width: 256px;
+        max-width: 256px;
+        background-color: #1A1A1A;
+        border-right: 1px solid #2A2A2A;
+        position: relative;
+        margin: 0;
+        padding: 0;
+      }
+      .layout-main-container {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        background-color: #1A1A1A;
+        position: relative;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
