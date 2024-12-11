@@ -292,3 +292,22 @@ This happened because Prisma Client was generated for "debian-openssl-3.0.x", bu
 3. Request logging implemented
 4. Input validation working
 
+## Latest Progress
+1. Identified and resolved Prisma Client configuration issue for `linux-musl` environment.
+2. Regenerated Prisma Client with correct binary targets inside the Docker container.
+3. Rebuilt and restarted the backend service to apply changes.
+4. Integrated new pages for email sent and email verified states into the routing configuration.
+5. Verified that the backend service is running correctly and handling requests as expected.
+
+## Latest Troubleshooting Steps
+1. Checked backend logs for errors related to database connections or server-side issues.
+2. Verified database connection from the backend service.
+3. Ensured all necessary environment variables are correctly set.
+4. Tested the `/auth/login` API endpoint manually to verify response.
+5. Reviewed recent code changes in authentication logic for correctness.
+
+## Observations
+- 500 Internal Server Error persists during login attempts.
+- Backend logs indicate potential issues with Prisma Client configuration.
+- Need to ensure OpenSSL is correctly installed and detected in the container.
+
