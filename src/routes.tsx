@@ -27,6 +27,7 @@ import SignupForm from './components/SignupForm';
 import ResetPassword from './pages/ResetPassword';
 import Login from './pages/Login';
 import Welcome from './pages/Welcome';
+import EmailSentPage from './pages/EmailSentPage';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -64,6 +65,7 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignupForm />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/email-sent" element={<EmailSentPage />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
