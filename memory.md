@@ -371,3 +371,35 @@ generator client {
   docker compose up -d
   ```
 
+## Layout Debugging Session (December 11, 2024)
+
+### Sidebar Spacing Issue
+1. Initial Problem:
+   - Extra space between sidebar and main content
+   - Double logo appearing in header and sidebar
+   - Inconsistent padding and margins
+
+2. First Attempt:
+   - Removed duplicate logo from header
+   - Adjusted sidebar width and positioning
+   - Changed main content padding
+   - Result: Still had spacing issues
+
+3. Second Attempt:
+   - Tried fixed positioning for sidebar
+   - Adjusted main content with padding-left
+   - Made sidebar more compact
+   - Result: Made sidebar too narrow and spacing still off
+
+4. Current Approach:
+   - Restored standard sidebar width (w-64)
+   - Using flex layout without fixed positioning
+   - Keeping rounded corners and proper padding
+   - Need to fix remaining gap between sidebar and main content
+
+### Next Steps
+1. Remove any unnecessary padding/margin between sidebar and main content
+2. Ensure consistent spacing throughout the layout
+3. Maintain proper responsive behavior
+4. Keep sidebar navigation items properly styled
+
