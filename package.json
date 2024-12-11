@@ -11,7 +11,7 @@
     "build:prod": "tsc && cross-env NODE_ENV=production vite build",
     "preview": "vite preview",
     "start:server": "cd server && npm run dev",
-    "start:all": "concurrently \"npm run dev\" \"npm run start:server\""
+    "start:all": "concurrently \"npm run dev:local\" \"npm run start:server\""
   },
   "dependencies": {
     "@prisma/client": "^6.0.1",
@@ -42,6 +42,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^9.1.0",
     "cross-env": "^7.0.3",
+    "nodemon": "^3.0.2",
     "prisma": "^6.0.1",
     "typescript": "^5.7.2",
     "vite": "^5.4.11"
