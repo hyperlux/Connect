@@ -37,17 +37,6 @@ export default function Header() {
           <Menu className="h-5 w-5" />
         </button>
 
-        {/* Logo */}
-        <div className="hidden lg:block w-52 px-4">
-          <Link to="/" className="block">
-            <img 
-              src={theme === 'dark' ? "/logodark.png" : "/logolight.png"}
-              alt="Auroville" 
-              className="h-8 object-contain"
-            />
-          </Link>
-        </div>
-
         {/* Search and Visitor Count Container */}
         <div className="flex-1 flex flex-col items-center">
           <div className="relative w-full max-w-[500px] mx-auto">
