@@ -30,7 +30,7 @@ export default function Forums() {
     queryFn: async () => {
       const params = new URLSearchParams();
       if (selectedCategory) params.append('category', selectedCategory);
-      const response = await api.get(`/forums?${params.toString()}`);
+      const response = await api.get(`/api/forums/posts?${params.toString()}`);
       return response.data;
     },
   });
@@ -43,10 +43,22 @@ export default function Forums() {
     );
   }, [posts, searchQuery]);
 
+  if (!isAuthenticated) {
+    return (
+      <div className="flex-1 bg-gray-50 dark:bg-dark-lighter p-6">
+        <div className="max-w-md mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-dark-primary">
+            Sign in to Access Forums
+          </h2>
+          <LoginForm />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 bg-gray-50 dark:bg-dark-lighter">
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <LoginForm />
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-primary">
@@ -56,15 +68,13 @@ export default function Forums() {
               Join discussions, share ideas, and connect with the community
             </p>
           </div>
-          {isAuthenticated && (
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-auroville-primary text-white rounded-lg hover:bg-opacity-90"
-            >
-              <Plus className="h-5 w-5" />
-              New Post
-            </button>
-          )}
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-auroville-primary text-white rounded-lg hover:bg-opacity-90"
+          >
+            <Plus className="h-5 w-5" />
+            New Post
+          </button>
         </div>
 
         <div className="flex gap-6">
