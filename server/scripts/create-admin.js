@@ -1,5 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -33,7 +33,8 @@ async function createAdmin(email, name, password) {
         email,
         name,
         password: hashedPassword,
-        role: 'ADMIN'
+        role: 'ADMIN',
+        emailVerified: true
       }
     });
 
@@ -64,4 +65,4 @@ createAdmin(email, name, password)
   .catch(error => {
     console.error('Failed to create/update admin:', error);
     process.exit(1);
-  }); 
+  });
