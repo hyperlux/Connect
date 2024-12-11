@@ -17,7 +17,7 @@ import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
 // In production, we use relative URLs since we're on the same domain
 const baseURL = process.env.NODE_ENV === 'production' 
-  ? '/api'  // Use relative URL in production
+  ? ''  // Empty string in production since nginx handles the /api prefix
   : 'http://localhost:5000';
 
 // Create axios instance with default config
