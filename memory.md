@@ -225,17 +225,32 @@ Response error: {status: 500, data: {...}, headers: Rr}
 
 # Debugging Session History
 
-## Latest Progress (December 10, 2023)
-1. Identified Prisma Query Engine compatibility issue
-2. Backend logs show detailed error information
-3. Database connection failing due to binary mismatch
-4. Email service successfully configured
+## Latest Debug Session (December 11, 2024)
 
-## Current Error Details
-```
-Prisma Client could not locate the Query Engine for runtime "linux-musl".
-This happened because Prisma Client was generated for "debian-openssl-3.0.x", but the actual deployment required "linux-musl".
-```
+### Progress
+1. Fixed Prisma Query Engine compatibility by:
+   - Installing OpenSSL in container
+   - Updated binaryTargets in schema.prisma to include linux-musl
+   - Regenerated Prisma client
+
+2. Current Status: 
+   - Previous 500 error resolved
+   - New 404 error indicates routing issue
+   - Request reaching: POST https://auroville.social/api/auth/login
+
+### Next Focus
+1. Route mounting configuration
+2. Verify auth router endpoints
+3. Check nginx proxy settings
+
+### Latest Changes
+1. Prisma configuration updated:
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
+}
+
 
 ## Current State
 1. Backend:
@@ -256,10 +271,10 @@ This happened because Prisma Client was generated for "debian-openssl-3.0.x", bu
 
 ## Next Steps
 1. Rebuild backend with proper Prisma setup:
-   ```bash
+   
    # Inside backend container
    npx prisma generate
-   ```
+   
 2. Verify OpenSSL installation in container
 3. Check database container accessibility
 4. Test database connection after fixes
@@ -271,23 +286,23 @@ This happened because Prisma Client was generated for "debian-openssl-3.0.x", bu
 
 ## Debug Plan
 1. Execute in backend container:
-   ```bash
+   
    apk add --no-cache openssl
    npx prisma generate
-   ```
+   
 2. Verify database connection
 3. Test user authentication
 4. Monitor Prisma query execution
 
 ## Recent Changes
 1. Schema already includes required binary targets:
-   ```prisma
+   
    generator client {
      provider = "prisma-client-js"
      previewFeatures = ["postgresqlExtensions"]
      binaryTargets = ["native", "linux-musl-openssl-3.0.x", "linux-musl"]
    }
-   ```
+   
 2. Email service successfully configured
 3. Request logging implemented
 4. Input validation working
