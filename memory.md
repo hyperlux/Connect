@@ -340,3 +340,34 @@ generator client {
 - Backend logs indicate potential issues with Prisma Client configuration.
 - Need to ensure OpenSSL is correctly installed and detected in the container.
 
+## Authentication Issues
+
+### Login 500 Error (Fixed)
+- Issue: Server was returning 500 error during login attempts
+- Root Causes:
+  1. Missing database: The 'auroville' database didn't exist in PostgreSQL
+  2. OpenSSL dependencies: The Alpine-based Docker container was missing required OpenSSL libraries
+- Solutions:
+  1. Created database: `CREATE DATABASE auroville;`
+  2. Added OpenSSL to Dockerfile: `RUN apk add --no-cache openssl openssl-dev`
+  3. Ran Prisma migrations: `npx prisma migrate deploy`
+
+### Email Verification Page Error (Fixed)
+- Issue: Email verification page showed "Verification Failed" immediately
+- Root Cause: Frontend was using incorrect API endpoint format for verification
+- Solution: Updated the API endpoint in `VerifyEmail.tsx` from `/auth/verify-email/${token}` to `/auth/verify-email?token=${token}`
+- Additional improvements:
+  - Added better error messaging
+  - Improved UI feedback during verification process
+  - Added automatic redirect to login page after successful verification
+
+## Docker Setup
+- Backend runs in Alpine Linux container
+- Requires OpenSSL dependencies for Prisma
+- Database initialization needed before first run
+- Remember to rebuild containers after code changes:
+  ```bash
+  docker compose build backend/frontend
+  docker compose up -d
+  ```
+
