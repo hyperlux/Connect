@@ -16,10 +16,12 @@ export default function Layout() {
   return (
     <div className="min-h-screen flex bg-[#1a1a1a]">
       {/* Sidebar */}
-      <Sidebar />
+      <div className="w-64">
+        <Sidebar />
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 ml-56">
+      <div className="flex-1">
         <Header />
         <main className="p-6 bg-[#1e1e1e] min-h-[calc(100vh-64px)]">
           <Outlet />
