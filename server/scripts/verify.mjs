@@ -2,10 +2,15 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function verifyUser() {
+async function verifyUser(email) {
+  if (!email) {
+    console.error('Please provide an email address');
+    process.exit(1);
+  }
+
   try {
     const user = await prisma.user.update({
-      where: { email: 'polletkiro@gmail.com' },
+      where: { email },
       data: { 
         emailVerified: true,
         verificationToken: null
@@ -19,4 +24,6 @@ async function verifyUser() {
   }
 }
 
-verifyUser(); 
+// Get email from command line argument
+const email = process.argv[2];
+verifyUser(email);

@@ -28,7 +28,7 @@ const HOST = '0.0.0.0';
 
 // CORS configuration
 app.use(cors({
-  origin: ['https://auroville.social', 'http://localhost:3000'],
+  origin: ['https://auroville.social', 'http://localhost:3000', 'http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -67,11 +67,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// Public routes
+// Routes with /api prefix to match frontend proxy configuration
 app.use('/api/auth', authRouter);
 app.use('/api/events', eventsRouter);
-
-// Protected routes
 app.use('/api/forums', authenticate, forumsRouter);
 app.use('/api/users', authenticate, usersRouter);
 app.use('/api/services', authenticate, servicesRouter);

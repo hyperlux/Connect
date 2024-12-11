@@ -123,14 +123,15 @@ router.post('/register', async (req, res) => {
     );
 
     try {
-      // Create user
+      // Create user with email auto-verified for development
       const user = await prisma.user.create({
         data: {
           name,
           email,
           password: hashedPassword,
           role: 'USER',
-          verificationToken
+          verificationToken,
+          emailVerified: true // Auto-verify for development
         },
         select: {
           id: true,
@@ -141,19 +142,22 @@ router.post('/register', async (req, res) => {
         }
       });
 
-      // Send verification email
-      try {
-        await sendVerificationEmail(email, verificationToken);
-      } catch (emailError) {
-        console.error('Email sending failed:', emailError);
-        // Don't fail registration if email fails
-      }
+      // Create JWT token for immediate login
+      const token = jwt.sign(
+        { 
+          userId: user.id, 
+          email: user.email, 
+          role: user.role 
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
+      );
 
-      // Return user data
+      // Return user data and token
       res.status(201).json({
         user,
-        message: 'Registration successful. Please check your email to verify your account.',
-        requiresVerification: true
+        token,
+        message: 'Registration successful. You can now log in.',
       });
     } catch (dbError) {
       console.error('Database error:', dbError);

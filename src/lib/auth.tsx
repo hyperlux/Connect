@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(userData));
       
       setUser(userData);
-      return userData;
+      return response.data;
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Login failed';
       setError(errorMessage);
@@ -86,6 +86,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setError(null);
       const response = await api.post('/auth/register', userData);
+      const { user: registeredUser, token } = response.data;
+      
+      if (token) {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(registeredUser));
+        setUser(registeredUser);
+      }
+      
       return response.data;
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Registration failed';

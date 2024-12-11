@@ -23,16 +23,6 @@ export default function SignupForm() {
   const [registrationError, setRegistrationError] = useState<string | null>(null);
   const { register, handleSubmit, watch, formState: { errors, isSubmitting }, getValues } = useForm<SignupFormData>();
 
-  const handleResendVerification = async (email: string) => {
-    try {
-      await api.post('/auth/resend-verification', { email });
-      alert('Verification email has been resent. Please check your inbox and spam folder.');
-    } catch (error: any) {
-      console.error('Failed to resend verification:', error);
-      alert('Failed to resend verification email. Please try again.');
-    }
-  };
-
   const onSubmit = async (data: SignupFormData) => {
     try {
       const registerData: RegisterData = {
@@ -40,15 +30,17 @@ export default function SignupForm() {
         email: data.email,
         password: data.password
       };
-      await registerUser(registerData);
-      navigate('/email-sent');
+      const response = await registerUser(registerData);
+      
+      // Since we're auto-verifying emails now, we can redirect to the dashboard
+      if (response.token) {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       console.error('Signup failed:', error);
-      if (error.response?.data?.message === 'Email already registered') {
-        setRegistrationError('This email is already registered. Would you like to resend the verification email?');
-      } else {
-        setRegistrationError(error.response?.data?.message || 'Registration failed. Please try again.');
-      }
+      setRegistrationError(error.response?.data?.message || 'Registration failed. Please try again.');
     }
   };
 
@@ -149,19 +141,10 @@ export default function SignupForm() {
 
             {registrationError && (
               <div className="rounded-md bg-yellow-50 dark:bg-yellow-900/30 p-4 border border-yellow-200 dark:border-yellow-800">
-                <div className="flex flex-col space-y-2">
+                <div className="flex">
                   <div className="text-sm text-yellow-700 dark:text-yellow-300">
                     {registrationError}
                   </div>
-                  {registrationError.includes('already registered') && (
-                    <button
-                      type="button"
-                      onClick={() => handleResendVerification(getValues('email'))}
-                      className="text-sm text-yellow-700 dark:text-yellow-300 underline hover:text-yellow-600 dark:hover:text-yellow-200"
-                    >
-                      Resend verification email
-                    </button>
-                  )}
                 </div>
               </div>
             )}
@@ -197,4 +180,4 @@ export default function SignupForm() {
       </div>
     </div>
   );
-} 
+}
