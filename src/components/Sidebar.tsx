@@ -29,16 +29,16 @@ export default function Sidebar() {
           <img 
             src={theme === 'dark' ? "/logodark.png" : "/logolight.png"}
             alt="Auroville" 
-            className="h-12 w-auto object-contain mx-auto"
+            className="h-10 w-auto object-contain mx-auto"
           />
         </Link>
       </div>
 
       {/* Main Navigation */}
-      <nav className="mt-2">
+      <nav className="mt-2 px-2">
         <Link
           to="/dashboard"
-          className={`flex items-center gap-3 px-3 py-2 mx-2 rounded-lg transition-colors ${
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/dashboard')
               ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
@@ -50,7 +50,7 @@ export default function Sidebar() {
 
         <Link
           to="/forums"
-          className={`flex items-center gap-3 px-3 py-2 mx-2 rounded-lg transition-colors ${
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/forums')
               ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
@@ -62,7 +62,7 @@ export default function Sidebar() {
 
         <Link
           to="/events"
-          className={`flex items-center gap-3 px-3 py-2 mx-2 rounded-lg transition-colors ${
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/events')
               ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
@@ -74,7 +74,7 @@ export default function Sidebar() {
 
         <Link
           to="/bazaar"
-          className={`flex items-center gap-3 px-3 py-2 mx-2 rounded-lg transition-colors ${
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/bazaar')
               ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
@@ -86,7 +86,7 @@ export default function Sidebar() {
 
         <Link
           to="/services"
-          className={`flex items-center gap-3 px-3 py-2 mx-2 rounded-lg transition-colors ${
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/services')
               ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
@@ -98,7 +98,7 @@ export default function Sidebar() {
 
         <Link
           to="/resources"
-          className={`flex items-center gap-3 px-3 py-2 mx-2 rounded-lg transition-colors ${
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/resources')
               ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
@@ -110,7 +110,7 @@ export default function Sidebar() {
 
         <Link
           to="/settings"
-          className={`flex items-center gap-3 px-3 py-2 mx-2 rounded-lg transition-colors ${
+          className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/settings')
               ? 'bg-[#E27B58] text-white'
               : 'hover:bg-[#2a2a2a] hover:text-white'
@@ -122,14 +122,14 @@ export default function Sidebar() {
       </nav>
 
       {/* External Resources */}
-      <div className="mt-6">
-        <h3 className="text-xs font-medium text-gray-400 px-4 mb-2">EXTERNAL RESOURCES</h3>
+      <div className="mt-6 px-4">
+        <h3 className="text-xs font-medium text-gray-400 px-2 mb-2">EXTERNAL RESOURCES</h3>
         <nav className="space-y-1">
           <a
             href="https://auroville.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-3 py-2 mx-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
           >
             <ExternalLink className="h-4 w-4" />
             <div>
@@ -142,7 +142,7 @@ export default function Sidebar() {
             href="https://directory.auroville.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-3 py-2 mx-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
           >
             <ExternalLink className="h-4 w-4" />
             <div>
@@ -155,7 +155,7 @@ export default function Sidebar() {
             href="https://news.auroville.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-3 py-2 mx-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
           >
             <ExternalLink className="h-4 w-4" />
             <div>
@@ -168,7 +168,7 @@ export default function Sidebar() {
             href="https://wiki.auroville.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-3 py-2 mx-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
           >
             <ExternalLink className="h-4 w-4" />
             <div>
@@ -181,8 +181,8 @@ export default function Sidebar() {
 
       {/* User Profile */}
       {user && (
-        <div className="mt-6">
-          <Link to="/profile" className="flex items-center gap-3 px-3 py-2 mx-2 rounded-lg hover:bg-[#2a2a2a] transition-colors">
+        <div className="mt-6 px-4">
+          <Link to="/profile" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#2a2a2a] transition-colors">
             <img
               src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=E27B58&color=fff`}
               alt={user.name}
