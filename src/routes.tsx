@@ -164,9 +164,7 @@ const router = createBrowserRouter([
     ]
   }
 ], {
-  future: {
-    v7_startTransition: true
-  }
+  basename: import.meta.env.BASE_URL
 });
 
-export default router; 
+export default router;
