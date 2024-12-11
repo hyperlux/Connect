@@ -41,7 +41,7 @@ export default function SignupForm() {
         password: data.password
       };
       await registerUser(registerData);
-      navigate('/verify-email');
+      navigate('/email-sent');
     } catch (error: any) {
       console.error('Signup failed:', error);
       if (error.response?.data?.message === 'Email already registered') {
