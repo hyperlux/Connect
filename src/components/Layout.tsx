@@ -23,7 +23,7 @@ export default function Layout() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 bg-[#1e1e1e] p-6">
+        <main className="flex-1 bg-[#1e1e1e] pl-4 pr-6 py-6">
           <Outlet />
         </main>
       </div>
