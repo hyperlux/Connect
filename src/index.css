@@ -17,7 +17,7 @@
 
   .dark {
     --color-primary: #FF6B6B;
-    --color-background: #18191A;
+    --color-background: #1A1A1A;
     --color-card: #242526;
     --color-text: #E4E6EB;
     --color-text-secondary: #B0B3B8;
@@ -25,6 +25,13 @@
 
   body {
     @apply bg-[var(--color-background)] text-[var(--color-text)];
+    margin: 0;
+    padding: 0;
+  }
+
+  #root {
+    min-height: 100vh;
+    display: flex;
   }
 }
 

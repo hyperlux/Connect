@@ -68,6 +68,89 @@ router.get('/posts', async (req, res) => {
   }
 });
 
+// Add route for fetching individual forum post
+router.get('/posts/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const post = await prisma.forumPost.findUnique({
+      where: { id },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
+        },
+        _count: {
+          select: {
+            comments: true
+          }
+        }
+      }
+    });
+
+    if (!post) {
+      return res.status(404).json({ message: 'Forum post not found' });
+    }
+
+    // Update views count
+    await prisma.forumPost.update({
+      where: { id },
+      data: { views: (post.views || 0) + 1 }
+    });
+
+    const formattedPost = {
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      category: post.category,
+      author: {
+        id: post.author.id,
+        name: post.author.name,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}`
+      },
+      comments: post.comments.map(comment => ({
+        id: comment.id,
+        content: comment.content,
+        author: {
+          id: comment.author.id,
+          name: comment.author.name,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author.name)}`
+        },
+        createdAt: comment.createdAt
+      })),
+      commentsCount: post._count.comments,
+      views: post.views + 1,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt
+    };
+
+    res.json(formattedPost);
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    res.status(500).json({ 
+      message: 'Failed to fetch post',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
+
 router.post('/posts', async (req, res) => {
   try {
     const { title, content, category } = postSchema.parse(req.body);
