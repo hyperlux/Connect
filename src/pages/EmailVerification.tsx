@@ -19,8 +19,8 @@ export default function EmailVerification() {
       }
 
       try {
-        const { data } = await api.post('/auth/verify-email', { token });
-        setStatus('success');
+        const { data } = await api.get(`/auth/verify-email?token=${token}`);
+        setStatus(data.verified ? 'success' : 'error');
         setMessage(data.message || 'Email verified successfully');
         
         // Redirect to login after 3 seconds
