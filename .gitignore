@@ -61,3 +61,4 @@ ssl/
 
 # Miscellaneous
 *.log
+.aider*
