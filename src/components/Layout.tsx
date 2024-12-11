@@ -19,7 +19,7 @@ export default function Layout() {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 ml-64">
+      <div className="flex-1 ml-56">
         <Header />
         <main className="p-6 bg-[#1e1e1e] min-h-[calc(100vh-64px)]">
           <Outlet />
