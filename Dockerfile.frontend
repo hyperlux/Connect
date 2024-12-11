@@ -3,19 +3,19 @@ FROM node:18-alpine as build
 
 # Increase Node.js memory limit
 ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NODE_ENV=production
 
 WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 # Copy source files
 COPY . .
 
 # Build the application with debugging
 RUN echo "Starting build process..." && \
-    ls -la && \
     npm run build && \
     echo "Build complete. Contents of dist:" && \
     ls -la dist/
@@ -48,4 +48,4 @@ RUN echo "OK" > /usr/share/nginx/html/health.html
 EXPOSE 80
 
 # Start nginx with debug output
-CMD ["nginx", "-g", "daemon off;"] 
+CMD ["nginx", "-g", "daemon off;"]

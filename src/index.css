@@ -35,43 +35,62 @@ body {
   --color-border: #2A2A2A;
 }
 
-/* Critical layout styles */
-.layout-container {
-  display: grid !important;
-  grid-template-columns: 256px 1fr !important;
-  min-height: 100vh !important;
-  background-color: var(--color-background) !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
+/* Layout styles */
+@layer components {
+  .layout-container {
+    display: grid;
+    grid-template-columns: 256px 1fr;
+    min-height: 100vh;
+    background-color: var(--color-background);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .layout-sidebar-container {
+    width: 256px;
+    min-width: 256px;
+    max-width: 256px;
+    background-color: var(--color-background);
+    border-right: 1px solid var(--color-border);
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  .layout-main-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background-color: var(--color-background);
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  .layout-content {
+    flex: 1;
+    min-width: 0;
+    background-color: var(--color-background);
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
 }
 
-.layout-sidebar-container {
-  width: 256px !important;
-  min-width: 256px !important;
-  max-width: 256px !important;
-  background-color: var(--color-background) !important;
-  border-right: 1px solid var(--color-border) !important;
-  position: relative !important;
-  margin: 0 !important;
-  padding: 0 !important;
+/* Theme classes */
+.light {
+  --color-primary: #FF6B6B;
+  --color-background: #f9fafb;
+  --color-card: #ffffff;
+  --color-text: #111827;
+  --color-text-secondary: #4b5563;
 }
 
-.layout-main-container {
-  display: flex !important;
-  flex-direction: column !important;
-  min-width: 0 !important;
-  background-color: var(--color-background) !important;
-  position: relative !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.layout-content {
-  flex: 1 !important;
-  min-width: 0 !important;
-  background-color: var(--color-background) !important;
-  position: relative !important;
-  margin: 0 !important;
-  padding: 0 !important;
+.dark {
+  --color-primary: #FF6B6B;
+  --color-background: #1A1A1A;
+  --color-card: #242526;
+  --color-text: #E4E6EB;
+  --color-text-secondary: #B0B3B8;
 }

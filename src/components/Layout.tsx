@@ -3,7 +3,6 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import { useTheme } from '../lib/theme';
 import { useEffect } from 'react';
-import './layout-fixes.css';
 
 export default function Layout() {
   const { theme } = useTheme();
