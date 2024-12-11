@@ -68,7 +68,7 @@ app.use((req, res, next) => {
 });
 
 // Public routes
-app.use('/auth', authRouter);
+app.use('/api/auth', authRouter);
 app.use('/api/events', eventsRouter);
 
 // Protected routes
