@@ -30,7 +30,7 @@ export default function Forums() {
     queryFn: async () => {
       const params = new URLSearchParams();
       if (selectedCategory) params.append('category', selectedCategory);
-      const response = await api.get(`/forums/posts?${params.toString()}`);
+      const response = await api.get(`/api/forums/posts?${params.toString()}`);
       return response.data;
     },
   });
