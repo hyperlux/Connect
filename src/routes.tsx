@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { createBrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './lib/auth';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -55,50 +55,122 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   return <>{children}</>;
 }
 
-export default function AppRoutes() {
-  const { isAuthenticated } = useAuth();
+const router = createBrowserRouter([
+  // Public routes
+  {
+    path: "/",
+    element: <Welcome />
+  },
+  {
+    path: "/login",
+    element: <Login />
+  },
+  {
+    path: "/signup",
+    element: <SignupForm />
+  },
+  {
+    path: "/verify-email",
+    element: <VerifyEmail />
+  },
+  {
+    path: "/email-sent",
+    element: <EmailSentPage />
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />
+  },
 
-  return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Welcome />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<SignupForm />} />
-      <Route path="/verify-email" element={<VerifyEmail />} />
-      <Route path="/email-sent" element={<EmailSentPage />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+  // Protected routes
+  {
+    path: "/",
+    element: <ProtectedRoute><Layout /></ProtectedRoute>,
+    children: [
+      {
+        path: "dashboard",
+        element: <Dashboard />
+      },
+      {
+        path: "events",
+        element: <Events />
+      },
+      {
+        path: "events/:eventId",
+        element: <EventDetails />
+      },
+      {
+        path: "forums",
+        element: <Forums />
+      },
+      {
+        path: "services",
+        element: <Services />
+      },
+      {
+        path: "community",
+        element: <Community />
+      },
+      {
+        path: "profile",
+        element: <Profile />
+      },
+      {
+        path: "settings",
+        element: <SettingsLayout />,
+        children: [
+          {
+            path: "profile",
+            element: <ProfileSettings />
+          },
+          {
+            path: "notifications",
+            element: <NotificationSettings />
+          },
+          {
+            path: "privacy",
+            element: <PrivacySettings />
+          },
+          {
+            path: "security",
+            element: <SecuritySettings />
+          }
+        ]
+      },
+      {
+        path: "resources",
+        element: <Resources />
+      },
+      {
+        path: "map",
+        element: <LocalMap />
+      },
+      {
+        path: "decisions",
+        element: <Decisions />
+      },
+      {
+        path: "discover",
+        element: <Discover />
+      },
+      {
+        path: "bazaar",
+        element: <Bazaar />
+      }
+    ]
+  }
+], {
+  future: {
+    v7_relativeSplatPath: true,
+    v7_fetcherPersist: true,
+    v7_normalizeFormMethod: true,
+    v7_partialHydration: true,
+    v7_skipActionErrorRevalidation: true
+  }
+});
 
-      {/* Protected routes */}
-      <Route 
-        element={
-          <ProtectedRoute>
-            <Layout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/events/*" element={<Events />} />
-        <Route path="/events/:eventId" element={<EventDetails />} />
-        <Route path="/forums" element={<Forums />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<SettingsLayout />}>
-          <Route path="profile" element={<ProfileSettings />} />
-          <Route path="notifications" element={<NotificationSettings />} />
-          <Route path="privacy" element={<PrivacySettings />} />
-          <Route path="security" element={<SecuritySettings />} />
-        </Route>
-        <Route path="/resources" element={<Resources />} />
-        <Route path="/map" element={<LocalMap />} />
-        <Route path="/decisions" element={<Decisions />} />
-        <Route path="/discover" element={<Discover />} />
-        <Route path="/bazaar" element={<Bazaar />} />
-      </Route>
-
-      {/* Catch all route */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
-} 
+export default router; 
