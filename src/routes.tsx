@@ -71,31 +71,30 @@ export default function AppRoutes() {
 
       {/* Protected routes */}
       <Route 
-        path="/dashboard" 
         element={
           <ProtectedRoute>
             <Layout />
           </ProtectedRoute>
         }
       >
-        <Route index element={<Dashboard />} />
-        <Route path="events/*" element={<Events />} />
-        <Route path="events/:eventId" element={<EventDetails />} />
-        <Route path="forums" element={<Forums />} />
-        <Route path="services" element={<Services />} />
-        <Route path="community" element={<Community />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="settings" element={<SettingsLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/events/*" element={<Events />} />
+        <Route path="/events/:eventId" element={<EventDetails />} />
+        <Route path="/forums" element={<Forums />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<SettingsLayout />}>
           <Route path="profile" element={<ProfileSettings />} />
           <Route path="notifications" element={<NotificationSettings />} />
           <Route path="privacy" element={<PrivacySettings />} />
           <Route path="security" element={<SecuritySettings />} />
         </Route>
-        <Route path="resources" element={<Resources />} />
-        <Route path="map" element={<LocalMap />} />
-        <Route path="decisions" element={<Decisions />} />
-        <Route path="discover" element={<Discover />} />
-        <Route path="bazaar" element={<Bazaar />} />
+        <Route path="/resources" element={<Resources />} />
+        <Route path="/map" element={<LocalMap />} />
+        <Route path="/decisions" element={<Decisions />} />
+        <Route path="/discover" element={<Discover />} />
+        <Route path="/bazaar" element={<Bazaar />} />
       </Route>
 
       {/* Catch all route */}

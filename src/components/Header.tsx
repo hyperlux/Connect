@@ -3,7 +3,7 @@ import { Search, Users, Menu } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import ThemeToggle from './ThemeToggle';
 import { NotificationsPopover } from './NotificationsPopover';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTheme } from '../lib/theme';
 
 export default function Header() {
@@ -12,18 +12,10 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
 
-  useEffect(() => {
-    console.log('Header auth state:', { user, isAuthenticated });
-  }, [user, isAuthenticated]);
-
   const handleLogout = async () => {
-    console.log('Starting logout...');
     try {
       await logout();
-      console.log('Logout successful, navigating to login...');
-      setTimeout(() => {
-        navigate('/login', { replace: true });
-      }, 0);
+      navigate('/login', { replace: true });
     } catch (error) {
       console.error('Logout error:', error);
       navigate('/login', { replace: true });
