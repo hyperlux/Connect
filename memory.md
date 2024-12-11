@@ -4,33 +4,45 @@
 
 ## Latest Debug Session (December 12, 2024)
 
-### Forum API Endpoint Issue (Fixed)
-1. Issue: Forum page getting 404 error when fetching posts
-   - Error: GET http://localhost:5000/forums? 404 (Not Found)
-   - Frontend was calling incorrect endpoint
+### Forum Posts Fetch Error (Fixed)
+1. Issue: 500 Internal Server Error when fetching forum posts
+   - Error: Unknown field `views` for select statement on model `ForumPostCountOutputType`
+   - Backend was trying to count 'views' as a relation
 
 2. Root Cause Analysis:
-   - Backend routes are mounted with `/api` prefix in index.js
-   - Frontend was not including `/api` prefix in API calls
-   - Backend expects `/api/forums/posts` but frontend was calling `/forums`
+   - 'views' is a regular Int field in ForumPost model, not a relation
+   - Prisma _count select can only count relations (like comments)
+   - Attempting to count 'views' in _count select caused validation error
 
 3. Solution:
-   - Updated Forums.tsx to use correct endpoint path
-   - Changed API call to include `/api` prefix
-   - Updated endpoint to match backend route structure
+   - Removed 'views' from _count select statement
+   - Access 'views' directly from post object in formattedPosts mapping
+   - Added more detailed error logging for troubleshooting
 
 4. Changes Made:
-   ```tsx
+   ```js
    // Before
-   const response = await api.get(`/forums?${params.toString()}`);
+   _count: {
+     select: {
+       comments: true,
+       views: true  // This was incorrect
+     }
+   }
 
    // After
-   const response = await api.get(`/api/forums/posts?${params.toString()}`);
+   _count: {
+     select: {
+       comments: true  // Only count actual relations
+     }
+   }
+
+   // Access views directly in formatting
+   views: post.views
    ```
 
 5. Results:
    - Forum posts now load correctly
-   - API requests properly reach the backend
+   - View counts displayed properly
    - Maintained all existing functionality
 
 [Rest of the file content remains unchanged...]

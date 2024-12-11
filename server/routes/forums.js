@@ -12,9 +12,11 @@ const postSchema = z.object({
 
 router.get('/posts', async (req, res) => {
   try {
+    console.log('Fetching forum posts with query:', req.query);
     const { category } = req.query;
     const where = category && category !== 'All' ? { category } : {};
 
+    console.log('Prisma query where clause:', where);
     const posts = await prisma.forumPost.findMany({
       where,
       include: {
@@ -27,8 +29,7 @@ router.get('/posts', async (req, res) => {
         },
         _count: {
           select: {
-            comments: true,
-            views: true
+            comments: true
           }
         }
       },
@@ -36,6 +37,8 @@ router.get('/posts', async (req, res) => {
         createdAt: 'desc'
       }
     });
+
+    console.log(`Found ${posts.length} posts`);
 
     const formattedPosts = posts.map(post => ({
       id: post.id,
@@ -48,7 +51,7 @@ router.get('/posts', async (req, res) => {
         avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}`
       },
       replies: post._count.comments,
-      views: post._count.views,
+      views: post.views,
       createdAt: post.createdAt,
       lastActivity: post.updatedAt
     }));
@@ -56,7 +59,12 @@ router.get('/posts', async (req, res) => {
     res.json(formattedPosts);
   } catch (error) {
     console.error('Error fetching posts:', error);
-    res.status(500).json({ message: 'Failed to fetch posts' });
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ 
+      message: 'Failed to fetch posts',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
