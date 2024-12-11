@@ -45,4 +45,42 @@
    - View counts displayed properly
    - Maintained all existing functionality
 
+## Layout and API Endpoint Fixes (December 13, 2024)
+
+### Issues Fixed
+1. Wide spacing between sidebar and main content
+2. Forum posts not fetching in production
+3. Inconsistent API endpoint structure between development and production
+
+### Solutions Implemented
+
+1. Layout Spacing Fix:
+   ```jsx
+   // Before (Layout.tsx)
+   <main className="flex-1 bg-[#1e1e1e] pl-2 pr-6 py-6">
+
+   // After
+   <main className="flex-1 bg-[#1e1e1e] px-4 py-6">
+   ```
+
+2. API Endpoint Structure:
+   ```typescript
+   // api.ts - Consistent baseURL configuration
+   const baseURL = process.env.NODE_ENV === 'production' 
+     ? '/api'  // Production
+     : 'http://localhost:5000/api';  // Development
+
+   // Forums.tsx - Consistent endpoint usage
+   const response = await api.get(`/forums/posts?${params.toString()}`);
+
+   // CreatePostModal.tsx - Fixed post endpoint
+   const response = await api.post('/forums/posts', data);
+   ```
+
+3. Results:
+   - Consistent spacing between sidebar and main content
+   - Forum posts fetch correctly in both development and production
+   - API endpoints work consistently across environments
+   - Smooth workflow between local development and production server
+
 [Rest of the file content remains unchanged...]
