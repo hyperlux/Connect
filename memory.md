@@ -228,15 +228,29 @@ Response error: {status: 500, data: {...}, headers: Rr}
 ## Latest Debug Session (December 11, 2024)
 
 ### Progress
-1. Fixed Prisma Query Engine compatibility by:
-   - Installing OpenSSL in container
+1. Fixed Prisma Query Engine compatibility:
+   - Installed OpenSSL in container
    - Updated binaryTargets in schema.prisma to include linux-musl
    - Regenerated Prisma client
 
-2. Current Status: 
-   - Previous 500 error resolved
-   - New 404 error indicates routing issue
-   - Request reaching: POST https://auroville.social/api/auth/login
+2. Fixed API routing:
+   - Identified nginx proxy_pass configuration issue
+   - Updated nginx.conf to preserve /api prefix
+   - Changed proxy_pass from `http://backend:5000/` to `http://backend:5000/api/`
+   - Ensures proper routing between frontend and backend services
+
+3. Current Status: 
+   - Prisma database connectivity resolved
+   - API routing properly configured
+   - Request path alignment between frontend and backend
+
+### Key Changes
+1. nginx.conf update:
+
+location /api/ {
+    proxy_pass http://backend:5000/api/;
+}
+
 
 ### Next Focus
 1. Route mounting configuration
