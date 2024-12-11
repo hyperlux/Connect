@@ -12,9 +12,10 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       port: 5173,
       strictPort: true,
-      hmr: isProd ? false : {
-        clientPort: 443,
-        host: 'auroville.social'
+      hmr: false,
+      watch: {
+        usePolling: false,
+        ignored: ['**/*'],
       },
       proxy: {
         '/api': {
