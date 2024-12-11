@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Events from './pages/Events';
 import EventDetails from './pages/Events/EventDetails';
 import Forums from './pages/Forums';
+import ForumPost from './pages/Forums/ForumPost';
 import Services from './pages/Services';
 import Community from './pages/Community';
 import Profile from './pages/Profile';
@@ -106,6 +107,10 @@ const router = createBrowserRouter([
       {
         path: "forums",
         element: <Forums />
+      },
+      {
+        path: "forums/:postId",
+        element: <ForumPost />
       },
       {
         path: "services",
