@@ -15,10 +15,10 @@ declare global {
 
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
-// In production, we use relative URLs since we're on the same domain
+// Configure base URL based on environment
 const baseURL = process.env.NODE_ENV === 'production' 
-  ? ''  // Empty string in production since nginx handles the /api prefix
-  : 'http://localhost:5000';
+  ? '/api'  // In production, use /api which nginx will proxy
+  : 'http://localhost:5000/api';  // In development, include /api in the base URL
 
 // Create axios instance with default config
 export const api = axios.create({

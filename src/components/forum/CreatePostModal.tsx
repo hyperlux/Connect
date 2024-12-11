@@ -21,7 +21,7 @@ export default function CreatePostModal({ isOpen, onClose, categories }: CreateP
 
   const createPost = useMutation({
     mutationFn: async (data: CreatePostFormData) => {
-      const response = await api.post('/forums', data);
+      const response = await api.post('/forums/posts', data);
       return response.data;
     },
     onSuccess: () => {
@@ -132,4 +132,4 @@ export default function CreatePostModal({ isOpen, onClose, categories }: CreateP
       </div>
     </div>
   );
-} 
+}
