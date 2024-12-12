@@ -14,6 +14,12 @@ Environment=VITE_API_URL=https://api.auroville.social
 Environment=VITE_APP_URL=https://auroville.social
 Environment=FRONTEND_URL=https://auroville.social
 Environment=API_URL=https://api.auroville.social
+Environment=SMTP_AUTH=plain
+Environment=SMTP_DOMAIN=aurovillenetwork.us
+Environment=SMTP_SERVER=smtp.ionos.com
+Environment=SMTP_PORT=465
+Environment=SMTP_USERNAME=notifications@aurovillenetwork.us
+Environment=SMTP_PASSWORD=lovelightforever888!
 
 # Install dependencies for both frontend and server
 ExecStartPre=/usr/bin/npm install
