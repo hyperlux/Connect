@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { api } from '../lib/auth';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -10,33 +10,37 @@ export default function AuthCallback() {
     
     const handleAuthCallback = async () => {
       try {
-        // Get error and access_token from URL query params
+        // Get token from URL query params
         const params = new URLSearchParams(window.location.search);
-        const error = params.get('error');
-        const token = params.get('access_token');
+        const token = params.get('token');
 
-        console.log('URL params:', { error, hasToken: !!token });
+        console.log('URL params:', { hasToken: !!token });
 
-        if (error) {
-          console.error('Auth error:', error);
-          throw new Error(error);
+        if (!token) {
+          throw new Error('No verification token found');
         }
 
-        // Handle the auth callback
-        const { data, error: sessionError } = await supabase.auth.getSession();
-        console.log('Session data:', data);
+        // Verify email with our backend
+        const response = await api.get(`/auth/verify-email?token=${token}`);
+        console.log('Verification response:', response.data);
 
-        if (sessionError) {
-          throw sessionError;
-        }
-
-        if (data?.session) {
-          console.log('Successfully authenticated, redirecting...');
-          navigate('/', { replace: true });
+        if (response.data.verified || response.data.alreadyVerified) {
+          console.log('Successfully verified email, redirecting to login...');
+          navigate('/login', { 
+            replace: true,
+            state: { 
+              message: 'Email verified successfully! You can now log in.' 
+            }
+          });
         }
       } catch (err) {
         console.error('Auth callback error:', err);
-        navigate('/login', { replace: true });
+        navigate('/login', { 
+          replace: true,
+          state: { 
+            error: 'Email verification failed. Please try again or contact support.' 
+          }
+        });
       }
     };
 
@@ -51,4 +55,4 @@ export default function AuthCallback() {
       </div>
     </div>
   );
-} 
+}
