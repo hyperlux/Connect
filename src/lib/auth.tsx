@@ -11,6 +11,7 @@ export interface User {
   name: string;
   email: string;
   profilePicture?: string;
+  bio?: string;
   createdAt: string;
 }
 
