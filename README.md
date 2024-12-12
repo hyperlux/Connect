@@ -2,6 +2,9 @@
 
 A community platform for Auroville residents to connect, share information, and engage in discussions.
 
+![Auroville Connect Dashboard](dashboard.png)
+*The Auroville Connect dashboard showing important announcements, today's events, and community posts*
+
 ## Features
 
 - **Forum System**
