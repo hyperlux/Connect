@@ -3,18 +3,17 @@ import nodemailer from 'nodemailer';
 // Create reusable transporter object using environment variables
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_SERVER,
-  port: parseInt(process.env.SMTP_PORT || '465'),
-  secure: true, // true for 465, false for other ports
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.SMTP_USERNAME,
     pass: process.env.SMTP_PASSWORD
   },
+  requireTLS: true,
   tls: {
-    // Do not fail on invalid certs
-    rejectUnauthorized: process.env.NODE_ENV === 'production'
-  },
-  debug: true, // Enable debug logs
-  logger: true  // Enable logger
+    minVersion: 'TLSv1.2',
+    rejectUnauthorized: true
+  }
 });
 
 // Verify transporter configuration on startup
@@ -26,7 +25,7 @@ transporter.verify(function(error, success) {
       command: error.command,
       stack: error.stack,
       host: process.env.SMTP_SERVER,
-      port: process.env.SMTP_PORT,
+      port: 465,
       username: process.env.SMTP_USERNAME
     });
   } else {
@@ -87,7 +86,7 @@ export async function sendVerificationEmail(email, token) {
   try {
     console.log('Attempting to send email with config:', {
       host: process.env.SMTP_SERVER,
-      port: process.env.SMTP_PORT,
+      port: 465,
       username: process.env.SMTP_USERNAME,
       to: email,
       verificationUrl
@@ -111,7 +110,7 @@ export async function sendVerificationEmail(email, token) {
       stack: error.stack,
       config: {
         host: process.env.SMTP_SERVER,
-        port: process.env.SMTP_PORT,
+        port: 465,
         username: process.env.SMTP_USERNAME
       }
     });
