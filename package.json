@@ -10,7 +10,7 @@
     "build": "tsc -p tsconfig.node.json && tsc && vite build",
     "build:prod": "tsc -p tsconfig.node.json && tsc && cross-env NODE_ENV=production vite build",
     "preview": "vite preview",
-    "start:server": "cd server && npm run dev",
+    "start:server": "cd server && npm start",
     "start:all": "concurrently \"npm run dev\" \"npm run start:server\""
   },
   "dependencies": {

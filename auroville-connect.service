@@ -10,12 +10,16 @@ Environment=NODE_ENV=production
 Environment=VITE_API_URL=https://api.auroville.social
 Environment=VITE_APP_URL=https://auroville.social
 
-# Install dependencies and build frontend
+# Install dependencies for both frontend and server
 ExecStartPre=/usr/bin/npm install
+ExecStartPre=/bin/bash -c 'cd server && /usr/bin/npm install'
+
+# Build frontend
 ExecStartPre=/usr/bin/npm run build:prod
 
 # Start the server
-ExecStart=/usr/bin/npm run start:server
+WorkingDirectory=/root/AurovilleConnect/server
+ExecStart=/usr/bin/npm start
 
 # Restart on failure
 Restart=always
