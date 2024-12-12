@@ -17,9 +17,12 @@
       }
       #root {
         min-height: 100vh;
+        background-color: #1A1A1A;
+      }
+      /* Layout styles for non-Welcome pages */
+      #root:not(.welcome-page) {
         display: grid;
         grid-template-columns: 256px 1fr;
-        background-color: #1A1A1A;
       }
       /* Prevent layout shift */
       .layout-container {
@@ -49,6 +52,11 @@
         position: relative;
         margin: 0;
         padding: 0;
+      }
+      /* Welcome page specific styles */
+      .welcome-page {
+        display: block !important;
+        width: 100% !important;
       }
     </style>
   </head>

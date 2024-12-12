@@ -35,9 +35,33 @@ const carouselImages = [
   }
 ];
 
+// Override default layout styles for Welcome page
+if (typeof document !== 'undefined') {
+  document.getElementById('root')?.classList.add('!block', '!w-full');
+}
+
 export default function Welcome() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    // Override layout styles when component mounts
+    const root = document.getElementById('root');
+    if (root) {
+      root.style.display = 'block';
+      root.style.width = '100%';
+      root.style.gridTemplateColumns = 'none';
+    }
+
+    // Cleanup when component unmounts
+    return () => {
+      if (root) {
+        root.style.display = '';
+        root.style.width = '';
+        root.style.gridTemplateColumns = '';
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -64,11 +88,11 @@ export default function Welcome() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1E1E1E]">
+    <div className="min-h-screen bg-[#1E1E1E] w-full">
       {/* Hero Section with Carousel */}
       <div className="relative h-screen">
         {/* Logo Header */}
-        <div className="absolute top-0 left-0 z-10 p-4">
+        <div className="absolute top-6 left-0 z-20 p-4">
           <img
             src="/logodark.png"
             alt="Auroville Logo"
@@ -90,7 +114,7 @@ export default function Welcome() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30">
               <div className="container mx-auto px-6 h-full flex flex-col justify-center items-center text-center">
-                <h1 className="text-6xl font-bold text-white mb-6">
+                <h1 className="text-6xl font-bold text-white mb-6 mt-12">
                   {image.title}
                 </h1>
                 <p className="text-2xl text-white/90 mb-8">
@@ -289,4 +313,4 @@ export default function Welcome() {
       </footer>
     </div>
   );
-} 
+}
