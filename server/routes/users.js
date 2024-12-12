@@ -14,25 +14,28 @@ router.put('/profile', authenticate, async (req, res, next) => {
       userId: req.user?.id
     });
 
-    const { name, email } = req.body;
+    const { name, email, bio } = req.body;
     const userId = req.user.id;
 
     console.log('Updating user with data:', {
       userId,
       name,
-      email
+      email,
+      bio
     });
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
         name,
-        email
+        email,
+        bio
       },
       select: {
         id: true,
         name: true,
         email: true,
+        bio: true,
         profilePicture: true,
         createdAt: true
       }
@@ -81,6 +84,7 @@ router.post('/profile/picture', authenticate, upload.single('profilePicture'), a
         id: true,
         name: true,
         email: true,
+        bio: true,
         profilePicture: true,
         createdAt: true
       }

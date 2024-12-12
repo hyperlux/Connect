@@ -13,6 +13,7 @@ model User {
   email             String          @unique
   password          String
   name              String
+  bio               String?         // Added bio field
   role              String          @default("USER")
   emailVerified     Boolean         @default(false)
   verificationToken String?
