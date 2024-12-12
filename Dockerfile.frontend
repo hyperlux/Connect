@@ -10,7 +10,8 @@ WORKDIR /app
 # Install dependencies and ensure typescript is available globally
 COPY package*.json ./
 RUN npm install && \
-    npm install -g typescript
+    npm install -g typescript && \
+    npm install -D @types/node vite @vitejs/plugin-react
 
 # Copy source files
 COPY . .
