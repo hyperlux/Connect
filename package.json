@@ -7,8 +7,8 @@
     "dev": "vite",
     "dev:local": "cross-env VITE_API_URL=http://localhost:5000 VITE_APP_URL=http://localhost:5173 vite",
     "dev:prod": "cross-env VITE_API_URL=https://api.auroville.social VITE_APP_URL=https://auroville.social vite",
-    "build": "tsc && vite build",
-    "build:prod": "tsc && cross-env NODE_ENV=production vite build",
+    "build": "tsc -p tsconfig.node.json && tsc && vite build",
+    "build:prod": "tsc -p tsconfig.node.json && tsc && cross-env NODE_ENV=production vite build",
     "preview": "vite preview",
     "start:server": "cd server && npm run dev",
     "start:all": "concurrently \"npm run dev\" \"npm run start:server\""
