@@ -325,7 +325,13 @@ const useCalendarStore = create<CalendarState>()(
         searchQuery: state.searchQuery,
         sidebarSearchQuery: state.sidebarSearchQuery,
         selectedCategory: state.selectedCategory
-      })
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Convert the ISO string back to a Date object
+          state.selectedDate = new Date(state.selectedDate);
+        }
+      }
     }
   )
 );

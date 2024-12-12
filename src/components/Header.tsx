@@ -1,16 +1,18 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Users, Menu } from 'lucide-react';
+import { Search, Users, Menu, X } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import ThemeToggle from './ThemeToggle';
 import { NotificationsPopover } from './NotificationsPopover';
 import { useState } from 'react';
 import { useTheme } from '../lib/theme';
+import { useSidebar } from '../lib/sidebar';
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
+  const { isOpen, toggle } = useSidebar();
 
   const handleLogout = async () => {
     try {
@@ -30,12 +32,17 @@ export default function Header() {
     <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-screen-2xl mx-auto px-4 py-2">
         <div className="flex items-center justify-between gap-4">
-          {/* Mobile Menu Button */}
+          {/* Hamburger Menu Button */}
           <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            onClick={toggle}
+            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
           >
-            <Menu className="h-5 w-5" />
+            {isOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </button>
 
           {/* Search and Visitor Count */}

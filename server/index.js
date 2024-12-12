@@ -38,9 +38,9 @@ app.use(cors({
 // Handle preflight requests
 app.options('*', cors());
 
-// Parse JSON bodies
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Parse JSON bodies with increased limit (50MB)
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Log all requests
 app.use((req, res, next) => {

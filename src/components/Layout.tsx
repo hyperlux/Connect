@@ -3,9 +3,11 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import { useTheme } from '../lib/theme';
 import { useEffect } from 'react';
+import { useSidebar } from '../lib/sidebar';
 
 export default function Layout() {
   const { theme } = useTheme();
+  const { isOpen, toggle } = useSidebar();
 
   useEffect(() => {
     // Apply theme to root element
@@ -15,15 +17,29 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex bg-gray-50 dark:bg-[#1a1a1a]">
-      {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0">
-        <Sidebar />
-      </aside>
+      {/* Sidebar with overlay for mobile */}
+      <div className="relative lg:static">
+        <aside 
+          className={`fixed lg:relative h-screen w-64 transition-all duration-300 ease-in-out transform ${
+            isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          } bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-30`}
+        >
+          <Sidebar />
+        </aside>
+        
+        {/* Mobile overlay */}
+        {isOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+            onClick={toggle}
+          />
+        )}
+      </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         <Header />
-        <main className="flex-1">
+        <main className="flex-1 p-4">
           <Outlet />
         </main>
       </div>

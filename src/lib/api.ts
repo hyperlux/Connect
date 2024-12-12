@@ -2,10 +2,8 @@
 
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
-// Configure base URL based on environment
-const baseURL = import.meta.env.MODE === 'production' 
-  ? '/api'  // In production, use /api which nginx will proxy
-  : import.meta.env.VITE_API_URL || 'http://localhost:5000/api';  // In development, use env var or default
+// Configure base URL to always use relative path, letting Vite handle proxying
+const baseURL = '/api';
 
 // Create axios instance with default config
 export const api = axios.create({
