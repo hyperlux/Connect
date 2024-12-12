@@ -9,7 +9,7 @@ WorkingDirectory=/root/AurovilleConnect
 Environment=NODE_ENV=production
 Environment=PORT=5000
 Environment=HOST=0.0.0.0
-Environment=DATABASE_URL=postgresql://postgres:postgres@db:5432/auroville
+Environment=DATABASE_URL=postgresql://postgres:postgres@localhost:5432/auroville
 Environment=VITE_API_URL=https://api.auroville.social
 Environment=VITE_APP_URL=https://auroville.social
 Environment=FRONTEND_URL=https://auroville.social
