@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth.tsx';
 import { useTheme } from '../lib/theme';
 import { 
@@ -13,9 +13,18 @@ import {
 } from 'lucide-react';
 
 export default function Sidebar() {
-  const location = useLocation();
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const { theme } = useTheme();
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/');
+    }
+  };
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -25,13 +34,13 @@ export default function Sidebar() {
     <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
       {/* Logo */}
       <div className="p-4">
-        <Link to="/" className="block">
+        <a href="#" onClick={handleLogoClick} className="block">
           <img 
             src={theme === 'dark' ? "/logodark.png" : "/logolight.png"}
             alt="Auroville" 
             className="h-12 w-auto object-contain mx-auto"
           />
-        </Link>
+        </a>
       </div>
 
       {/* Main Navigation */}
@@ -40,7 +49,7 @@ export default function Sidebar() {
           to="/dashboard"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/dashboard')
-              ? 'bg-orange-500 text-white'
+              ? 'bg-auroville-primary text-white'
               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
@@ -52,7 +61,7 @@ export default function Sidebar() {
           to="/forums"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/forums')
-              ? 'bg-orange-500 text-white'
+              ? 'bg-auroville-primary text-white'
               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
@@ -64,7 +73,7 @@ export default function Sidebar() {
           to="/events"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/events')
-              ? 'bg-orange-500 text-white'
+              ? 'bg-auroville-primary text-white'
               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
@@ -76,7 +85,7 @@ export default function Sidebar() {
           to="/bazaar"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/bazaar')
-              ? 'bg-orange-500 text-white'
+              ? 'bg-auroville-primary text-white'
               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
@@ -88,7 +97,7 @@ export default function Sidebar() {
           to="/services"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/services')
-              ? 'bg-orange-500 text-white'
+              ? 'bg-auroville-primary text-white'
               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
@@ -100,7 +109,7 @@ export default function Sidebar() {
           to="/resources"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/resources')
-              ? 'bg-orange-500 text-white'
+              ? 'bg-auroville-primary text-white'
               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
@@ -112,7 +121,7 @@ export default function Sidebar() {
           to="/settings"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/settings')
-              ? 'bg-orange-500 text-white'
+              ? 'bg-auroville-primary text-white'
               : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
@@ -187,7 +196,7 @@ export default function Sidebar() {
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             <img
-              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff`}
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=FF8C00&color=fff`}
               alt={user.name}
               className="w-8 h-8 rounded-full"
             />

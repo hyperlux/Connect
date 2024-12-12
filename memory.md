@@ -45,6 +45,41 @@
    - View counts displayed properly
    - Maintained all existing functionality
 
+### Forum Post Sorting Fix (December 12, 2024)
+
+1. Issue: 500 Internal Server Error when sorting forum posts
+   - Error: Invalid orderBy syntax when sorting by 'hot' or 'top'
+   - Prisma was rejecting the orderBy object format for multiple sort criteria
+
+2. Root Cause Analysis:
+   - Prisma expects an array of orderBy objects for multiple sort criteria
+   - We were using an object with multiple fields instead
+
+3. Solution:
+   - Updated orderBy syntax to use array format for multiple sort criteria
+   - Maintained single object format for single sort criterion
+
+4. Changes Made:
+   ```js
+   // Before (incorrect)
+   orderBy = {
+     score: 'desc',
+     createdAt: 'desc'
+   };
+
+   // After (correct)
+   orderBy = [
+     { score: 'desc' },
+     { createdAt: 'desc' }
+   ];
+   ```
+
+5. Results:
+   - Hot sorting works correctly (score + recency)
+   - Top sorting works correctly (score only)
+   - New sorting works correctly (recency only)
+   - Posts are properly ordered in all sort modes
+
 ## Layout and API Endpoint Fixes (December 13, 2024)
 
 ### Issues Fixed

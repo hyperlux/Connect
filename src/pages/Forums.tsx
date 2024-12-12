@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { MessageSquare, Plus, Filter, Search } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { api } from '../lib/api';
@@ -19,25 +19,61 @@ const categories = [
   'Marketplace',
 ];
 
+const sortOptions = [
+  { value: 'hot', label: 'Hot' },
+  { value: 'new', label: 'New' },
+  { value: 'top', label: 'Top' },
+];
+
+interface ForumPost {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  createdAt: string;
+  score: number;
+  _count?: {
+    comments?: number;
+    votes?: number;
+  };
+}
+
 export default function Forums() {
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [sortBy, setSortBy] = React.useState('hot');
   const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
 
-  const { data: posts, isLoading, error } = useQuery({
-    queryKey: ['forum-posts', selectedCategory],
+  const { data: posts = [], isLoading, error } = useQuery<ForumPost[]>({
+    queryKey: ['forum-posts', selectedCategory, sortBy],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (selectedCategory) params.append('category', selectedCategory);
+      params.append('sort', sortBy);
       const response = await api.get(`/forums/posts?${params.toString()}`);
       return response.data;
     },
   });
 
+  const handleVote = (postId: string, newScore: number) => {
+    queryClient.setQueryData<ForumPost[]>(['forum-posts', selectedCategory, sortBy], (oldPosts) => {
+      if (!oldPosts) return [];
+      return oldPosts.map(post => 
+        post.id === postId ? { ...post, score: newScore } : post
+      );
+    });
+  };
+
   const filteredPosts = React.useMemo(() => {
-    if (!posts) return [];
-    return posts.filter((post: any) =>
+    return posts.filter(post =>
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.content.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -98,10 +134,17 @@ export default function Forums() {
                     />
                     <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                   </div>
-                  <button className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-dark-secondary hover:bg-gray-100 dark:hover:bg-dark-lighter rounded-lg">
-                    <Filter className="h-5 w-5" />
-                    Filter
-                  </button>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="px-4 py-2 rounded-lg border dark:border-dark dark:bg-dark-lighter dark:text-dark-primary"
+                  >
+                    {sortOptions.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -119,8 +162,12 @@ export default function Forums() {
                 </div>
               ) : (
                 <div className="divide-y dark:divide-dark">
-                  {filteredPosts.map((post: any) => (
-                    <ForumPostCard key={post.id} post={post} />
+                  {filteredPosts.map((post) => (
+                    <ForumPostCard 
+                      key={post.id} 
+                      post={post} 
+                      onVote={handleVote}
+                    />
                   ))}
                 </div>
               )}

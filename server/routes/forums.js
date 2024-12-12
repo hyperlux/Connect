@@ -1,6 +1,7 @@
 import express from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
+import { createNotification } from './notifications.js';
 
 const router = express.Router();
 
@@ -10,11 +11,33 @@ const postSchema = z.object({
   category: z.string()
 });
 
+const voteSchema = z.object({
+  value: z.number().min(-1).max(1)
+});
+
 router.get('/posts', async (req, res) => {
   try {
     console.log('Fetching forum posts with query:', req.query);
-    const { category } = req.query;
+    const { category, sort = 'new' } = req.query;
     const where = category && category !== 'All' ? { category } : {};
+
+    let orderBy = [];
+    switch (sort) {
+      case 'hot':
+        // For hot posts, order by score and recency
+        orderBy = [
+          { score: 'desc' },
+          { createdAt: 'desc' }
+        ];
+        break;
+      case 'top':
+        // For top posts, order by score only
+        orderBy = [{ score: 'desc' }];
+        break;
+      case 'new':
+      default:
+        orderBy = [{ createdAt: 'desc' }];
+    }
 
     console.log('Prisma query where clause:', where);
     const posts = await prisma.forumPost.findMany({
@@ -24,18 +47,18 @@ router.get('/posts', async (req, res) => {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            profilePicture: true
           }
         },
         _count: {
           select: {
-            comments: true
+            comments: true,
+            votes: true
           }
         }
       },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      orderBy
     });
 
     console.log(`Found ${posts.length} posts`);
@@ -48,9 +71,13 @@ router.get('/posts', async (req, res) => {
       author: {
         id: post.author.id,
         name: post.author.name,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}`
+        avatar: post.author.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}`
       },
-      replies: post._count.comments,
+      score: post.score || 0,
+      _count: {
+        comments: post._count.comments,
+        votes: post._count.votes
+      },
       views: post.views,
       createdAt: post.createdAt,
       lastActivity: post.updatedAt
@@ -80,7 +107,8 @@ router.get('/posts/:id', async (req, res) => {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            profilePicture: true
           }
         },
         comments: {
@@ -88,7 +116,8 @@ router.get('/posts/:id', async (req, res) => {
             author: {
               select: {
                 id: true,
-                name: true
+                name: true,
+                profilePicture: true
               }
             }
           },
@@ -98,7 +127,8 @@ router.get('/posts/:id', async (req, res) => {
         },
         _count: {
           select: {
-            comments: true
+            comments: true,
+            votes: true
           }
         }
       }
@@ -122,7 +152,7 @@ router.get('/posts/:id', async (req, res) => {
       author: {
         id: post.author.id,
         name: post.author.name,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}`
+        avatar: post.author.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}`
       },
       comments: post.comments.map(comment => ({
         id: comment.id,
@@ -130,11 +160,15 @@ router.get('/posts/:id', async (req, res) => {
         author: {
           id: comment.author.id,
           name: comment.author.name,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author.name)}`
+          avatar: comment.author.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author.name)}`
         },
         createdAt: comment.createdAt
       })),
-      commentsCount: post._count.comments,
+      score: post.score || 0,
+      _count: {
+        comments: post._count.comments,
+        votes: post._count.votes
+      },
       views: post.views + 1,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt
@@ -167,7 +201,14 @@ router.post('/posts', async (req, res) => {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            profilePicture: true
+          }
+        },
+        _count: {
+          select: {
+            comments: true,
+            votes: true
           }
         }
       }
@@ -183,10 +224,111 @@ router.post('/posts', async (req, res) => {
   }
 });
 
+// Vote on post
+router.post('/posts/:id/vote', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { value } = voteSchema.parse(req.body);
+    
+    // Check if post exists
+    const post = await prisma.forumPost.findUnique({
+      where: { id }
+    });
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check for existing vote
+    const existingVote = await prisma.postVote.findUnique({
+      where: {
+        postId_userId: {
+          postId: id,
+          userId: req.user.id
+        }
+      }
+    });
+
+    // Handle vote logic
+    if (existingVote) {
+      if (value === 0) {
+        // Remove vote
+        await prisma.postVote.delete({
+          where: {
+            postId_userId: {
+              postId: id,
+              userId: req.user.id
+            }
+          }
+        });
+      } else {
+        // Update vote
+        await prisma.postVote.update({
+          where: {
+            postId_userId: {
+              postId: id,
+              userId: req.user.id
+            }
+          },
+          data: { value }
+        });
+      }
+    } else if (value !== 0) {
+      // Create new vote
+      await prisma.postVote.create({
+        data: {
+          postId: id,
+          userId: req.user.id,
+          value
+        }
+      });
+    }
+
+    // Update post score
+    const votes = await prisma.postVote.findMany({
+      where: { postId: id }
+    });
+    
+    const newScore = votes.reduce((sum, vote) => sum + vote.value, 0);
+    
+    const updatedPost = await prisma.forumPost.update({
+      where: { id },
+      data: { score: newScore },
+      include: {
+        _count: {
+          select: {
+            comments: true,
+            votes: true
+          }
+        }
+      }
+    });
+
+    res.json(updatedPost);
+  } catch (error) {
+    console.error('Error voting on post:', error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ message: error.errors[0].message });
+    }
+    res.status(500).json({ message: 'Failed to vote on post' });
+  }
+});
+
 router.post('/posts/:id/comments', async (req, res) => {
   try {
     const { id } = req.params;
     const { content } = req.body;
+
+    const post = await prisma.forumPost.findUnique({
+      where: { id },
+      include: {
+        author: true
+      }
+    });
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
 
     const comment = await prisma.forumComment.create({
       data: {
@@ -198,11 +340,23 @@ router.post('/posts/:id/comments', async (req, res) => {
         author: {
           select: {
             id: true,
-            name: true
+            name: true,
+            profilePicture: true
           }
         }
       }
     });
+
+    // Notify the post author
+    if (post.authorId !== req.user.id) {
+      await createNotification(
+        post.authorId,
+        'forum',
+        'New Comment',
+        `${req.user.name} commented on your post: ${post.title}`,
+        `/forum/posts/${post.id}`
+      );
+    }
 
     res.status(201).json(comment);
   } catch (error) {

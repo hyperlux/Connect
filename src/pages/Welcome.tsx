@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Info, MapPin, Calendar, Book, Users, Leaf, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useAuth } from '../lib/auth';
 
 const carouselImages = [
   {
@@ -43,8 +44,16 @@ if (typeof document !== 'undefined') {
 export default function Welcome() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Redirect to dashboard if user is authenticated
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+      return;
+    }
+
     // Override layout styles when component mounts
     const root = document.getElementById('root');
     if (root) {
@@ -61,7 +70,7 @@ export default function Welcome() {
         root.style.gridTemplateColumns = '';
       }
     };
-  }, []);
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     const timer = setInterval(() => {

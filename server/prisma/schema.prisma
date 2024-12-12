@@ -27,6 +27,8 @@ model User {
   comments          ForumComment[]
   posts             ForumPost[]
   notifications     Notification[]
+  postVotes         PostVote[]
+  commentVotes      CommentVote[]
 
   @@index([email])
 }
@@ -68,9 +70,11 @@ model ForumPost {
   category  String
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
-  views     Int            @default(0)
+  views     Int           @default(0)
+  score     Int           @default(0)
   authorId  String
   comments  ForumComment[]
+  votes     PostVote[]
   author    User           @relation(fields: [authorId], references: [id])
 
   @@index([authorId])
@@ -79,18 +83,44 @@ model ForumPost {
 }
 
 model ForumComment {
-  id        String    @id @default(uuid())
+  id        String       @id @default(uuid())
   content   String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  score     Int         @default(0)
   authorId  String
   postId    String
-  author    User      @relation(fields: [authorId], references: [id])
-  post      ForumPost @relation(fields: [postId], references: [id])
+  votes     CommentVote[]
+  author    User         @relation(fields: [authorId], references: [id])
+  post      ForumPost    @relation(fields: [postId], references: [id])
 
   @@index([authorId])
   @@index([postId])
   @@index([createdAt])
+}
+
+model PostVote {
+  id        String    @id @default(uuid())
+  value     Int       // 1 for upvote, -1 for downvote
+  post      ForumPost @relation(fields: [postId], references: [id])
+  postId    String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime  @default(now())
+
+  @@unique([postId, userId])
+}
+
+model CommentVote {
+  id        String       @id @default(uuid())
+  value     Int         // 1 for upvote, -1 for downvote
+  comment   ForumComment @relation(fields: [commentId], references: [id])
+  commentId String
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime    @default(now())
+
+  @@unique([commentId, userId])
 }
 
 model CityService {

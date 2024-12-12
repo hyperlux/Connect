@@ -1,147 +1,84 @@
-generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "linux-musl"]
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                String      @id @default(uuid())
-  email             String      @unique
-  password          String
-  name              String
-  role              Role        @default(USER)
-  emailVerified     Boolean     @default(false)
-  verificationToken String?
-  resetToken        String?     @unique
-  resetTokenExpiry  DateTime?
-  profilePicture    String?
-  bio               String?
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-
-  // Relations
-  notifications     Notification[]
-  posts            ForumPost[]
-  comments         ForumComment[]
-  events           Event[]        @relation("OrganizedEvents")
-  attending        EventAttendee[]
-  cityServices     CityService[]
-
-  @@index([email])
+generator client {
+  provider = "prisma-client-js"
 }
 
-model Notification {
-  id        String   @id @default(uuid())
-  type      String   // e.g., 'event', 'forum', 'system'
-  title     String
-  message   String
-  read      Boolean  @default(false)
-  link      String?  // Optional link to related content
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model User {
+  id                String         @id @default(uuid())
+  email            String         @unique
+  name             String
+  password         String
+  role             Role           @default(USER)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  posts            ForumPost[]
+  comments         ForumComment[]
+  postVotes        PostVote[]
+  commentVotes     CommentVote[]
+  emailVerified    Boolean        @default(false)
+  verificationCode String?        @map("verificationToken")
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  profilePicture   String?
+}
 
-  // Relations
-  user      User     @relation(fields: [userId], references: [id])
+model ForumPost {
+  id            String         @id @default(uuid())
+  title         String
+  content       String
+  category      String
+  author        User          @relation(fields: [authorId], references: [id])
+  authorId      String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  comments      ForumComment[]
+  votes         PostVote[]
+  score         Int           @default(0)
+  views         Int           @default(0)
+}
+
+model ForumComment {
+  id        String         @id @default(uuid())
+  content   String
+  post      ForumPost     @relation(fields: [postId], references: [id])
+  postId    String
+  author    User          @relation(fields: [authorId], references: [id])
+  authorId  String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  votes     CommentVote[]
+  score     Int           @default(0)
+}
+
+model PostVote {
+  id        String    @id @default(uuid())
+  value     Int       // 1 for upvote, -1 for downvote
+  post      ForumPost @relation(fields: [postId], references: [id])
+  postId    String
+  user      User      @relation(fields: [userId], references: [id])
   userId    String
+  createdAt DateTime  @default(now())
 
-  @@index([userId])
-  @@index([createdAt])
+  @@unique([postId, userId])
+}
+
+model CommentVote {
+  id        String       @id @default(uuid())
+  value     Int         // 1 for upvote, -1 for downvote
+  comment   ForumComment @relation(fields: [commentId], references: [id])
+  commentId String
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime    @default(now())
+
+  @@unique([commentId, userId])
 }
 
 enum Role {
   USER
   ADMIN
-  MODERATOR
-}
-
-model Event {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  date        DateTime
-  location    String
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  organizer   User           @relation("OrganizedEvents", fields: [organizerId], references: [id])
-  organizerId String
-  attendees   EventAttendee[]
-
-  @@index([organizerId])
-  @@index([date])
-}
-
-model EventAttendee {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-
-  // Relations
-  event     Event    @relation(fields: [eventId], references: [id])
-  eventId   String
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-
-  @@unique([eventId, userId])
-  @@index([eventId])
-  @@index([userId])
-}
-
-model ForumPost {
-  id        String   @id @default(uuid())
-  title     String
-  content   String
-  category  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  views     Int      @default(0)
-
-  // Relations
-  author     User          @relation(fields: [authorId], references: [id])
-  authorId   String
-  comments   ForumComment[]
-
-  @@index([authorId])
-  @@index([category])
-  @@index([createdAt])
-}
-
-model ForumComment {
-  id        String   @id @default(uuid())
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  author   User      @relation(fields: [authorId], references: [id])
-  authorId String
-  post     ForumPost @relation(fields: [postId], references: [id])
-  postId   String
-
-  @@index([authorId])
-  @@index([postId])
-  @@index([createdAt])
-}
-
-model CityService {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  category    String
-  contactInfo String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  provider   User     @relation(fields: [providerId], references: [id])
-  providerId String
-
-  @@index([providerId])
-  @@index([category])
 }

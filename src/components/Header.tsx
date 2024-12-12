@@ -44,13 +44,13 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-full pl-9 pr-4 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                className="w-full pl-9 pr-4 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-auroville-primary focus:border-auroville-primary text-sm"
               />
               <Search className="absolute left-2.5 top-2 h-4 w-4 text-gray-400" />
             </div>
             <div className="mt-0.5 hidden sm:flex items-center gap-1 text-xs">
-              <Users className="h-3.5 w-3.5 text-indigo-500" />
-              <span className="text-indigo-500 font-medium">1,247</span>
+              <Users className="h-3.5 w-3.5 text-auroville-primary" />
+              <span className="text-auroville-primary font-medium">1,247</span>
               <span className="text-gray-500 dark:text-gray-400">visitors today</span>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default function Header() {
                 <NotificationsPopover />
                 <Link to="/profile" className="flex items-center gap-2">
                   <img
-                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=6366F1&color=fff`}
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`}
                     alt="Profile"
                     className="w-7 h-7 rounded-full"
                   />
@@ -94,7 +94,7 @@ export default function Header() {
                 </Link>
                 <Link
                   to="/signup"
-                  className="text-xs text-white bg-indigo-500 hover:bg-indigo-600 px-3 py-1 rounded transition-colors"
+                  className="text-xs text-white bg-auroville-primary hover:bg-auroville-primary/90 px-3 py-1 rounded transition-colors"
                 >
                   Sign Up
                 </Link>
@@ -108,7 +108,7 @@ export default function Header() {
             {isAuthenticated && user ? (
               <Link to="/profile">
                 <img
-                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=6366F1&color=fff`}
+                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`}
                   alt="Profile"
                   className="w-7 h-7 rounded-full"
                 />
@@ -116,7 +116,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
-                className="text-xs text-white bg-indigo-500 hover:bg-indigo-600 px-3 py-1 rounded transition-colors"
+                className="text-xs text-white bg-auroville-primary hover:bg-auroville-primary/90 px-3 py-1 rounded transition-colors"
               >
                 Sign In
               </Link>
@@ -140,7 +140,7 @@ export default function Header() {
                 <>
                   <div className="flex items-center gap-3 p-2">
                     <img
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=6366F1&color=fff`}
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`}
                       alt="Profile"
                       className="w-10 h-10 rounded-full"
                     />
@@ -171,7 +171,7 @@ export default function Header() {
                   </Link>
                   <Link
                     to="/signup"
-                    className="block text-sm text-white bg-indigo-500 hover:bg-indigo-600 p-2 rounded transition-colors"
+                    className="block text-sm text-white bg-auroville-primary hover:bg-auroville-primary/90 p-2 rounded transition-colors"
                   >
                     Sign Up
                   </Link>
