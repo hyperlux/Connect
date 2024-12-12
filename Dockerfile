@@ -2,10 +2,24 @@
 FROM node:18-alpine AS build
 
 WORKDIR /app
+
+# Install global dependencies
+RUN npm install -g typescript
+
+# Copy package files
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
+
+# Copy source files
 COPY . .
-RUN npm run build
+
+# Build the application
+RUN echo "Starting build process..." && \
+    npm run build:prod && \
+    echo "Build complete. Contents of dist:" && \
+    ls -la dist/
 
 # Production stage
 FROM nginx:alpine

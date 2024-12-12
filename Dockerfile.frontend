@@ -7,9 +7,10 @@ ENV NODE_ENV=production
 
 WORKDIR /app
 
-# Install dependencies
+# Install dependencies and ensure typescript is available globally
 COPY package*.json ./
-RUN npm install
+RUN npm install && \
+    npm install -g typescript
 
 # Copy source files
 COPY . .

@@ -22,7 +22,7 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="h-full bg-[#1a1a1a] text-gray-400">
+    <div className="fixed top-0 left-0 h-screen w-64 bg-[#1a1a1a] text-gray-400 z-10 border-r border-gray-800">
       {/* Logo */}
       <div className="py-4">
         <Link to="/" className="block">

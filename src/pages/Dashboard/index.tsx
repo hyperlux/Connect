@@ -17,48 +17,46 @@ const stats = [
 
 export default function Dashboard() {
   return (
-    <div className="flex-1 overflow-auto bg-[#1E1E1E]">
-      <div className="ml-52 max-w-full">
-        <div className="px-4 py-4 space-y-4">
-          {/* Priority 1: Critical Announcements */}
-          <div className="max-w-[calc(100vw-240px)]">
-            <CriticalAnnouncements />
+    <div className="w-full h-full overflow-auto bg-[#1E1E1E]">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
+        {/* Priority 1: Critical Announcements */}
+        <div className="mb-6">
+          <CriticalAnnouncements />
+        </div>
+
+        {/* Priority 2: Events and Posts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Left Column - Events */}
+          <div>
+            <TodayEvents />
           </div>
 
-          {/* Priority 2: Events and Posts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-[calc(100vw-240px)]">
-            {/* Left Column - Events */}
-            <div>
-              <TodayEvents />
-            </div>
+          {/* Right Column - Posts */}
+          <div>
+            <LatestPosts />
+          </div>
+        </div>
 
-            {/* Right Column - Posts */}
-            <div>
-              <LatestPosts />
-            </div>
+        {/* Priority 3: Resources and Services */}
+        <div className="mb-6">
+          <ResourcesAndServices />
+        </div>
+
+        {/* Priority 4: Marketplace */}
+        <div className="mb-6">
+          <Bazaar />
+        </div>
+
+        {/* Priority 5: Additional Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column */}
+          <div>
+            <CommunityHighlights />
           </div>
 
-          {/* Priority 3: Resources and Services */}
-          <div className="max-w-[calc(100vw-240px)]">
-            <ResourcesAndServices />
-          </div>
-
-          {/* Priority 4: Marketplace */}
-          <div className="max-w-[calc(100vw-240px)]">
-            <Bazaar />
-          </div>
-
-          {/* Priority 5: Additional Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-[calc(100vw-240px)]">
-            {/* Left Column */}
-            <div>
-              <CommunityHighlights />
-            </div>
-
-            {/* Right Column */}
-            <div>
-              <StatsGrid stats={stats} />
-            </div>
+          {/* Right Column */}
+          <div>
+            <StatsGrid stats={stats} />
           </div>
         </div>
       </div>

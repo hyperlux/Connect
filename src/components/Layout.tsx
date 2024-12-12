@@ -14,16 +14,14 @@ export default function Layout() {
   }, [theme]);
 
   return (
-    <div className="layout-container">
+    <div className="flex h-screen bg-gray-50 dark:bg-[#1a1a1a]">
       {/* Sidebar */}
-      <aside className="layout-sidebar-container">
-        <Sidebar />
-      </aside>
+      <Sidebar />
 
-      {/* Main Content */}
-      <div className="layout-main-container">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0">
         <Header />
-        <main className="layout-content">
+        <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>
