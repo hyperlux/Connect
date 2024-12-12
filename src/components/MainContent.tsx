@@ -2,9 +2,9 @@ import React, { PropsWithChildren } from 'react';
 
 const MainContent: React.FC<PropsWithChildren> = ({ children }) => {
   return (
-    <div className="flex-1 pr-6 py-6 bg-[#1a1a1a] text-white min-w-0 overflow-y-auto">
+    <main className="flex-1 w-full bg-gray-50 dark:bg-[#1a1a1a] text-gray-900 dark:text-white">
       {children}
-    </div>
+    </main>
   );
 };
 

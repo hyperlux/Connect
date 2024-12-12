@@ -17,15 +17,15 @@ const stats = [
 
 export default function Dashboard() {
   return (
-    <div className="w-full h-full overflow-auto bg-[#1E1E1E]">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
+    <div className="w-full">
+      <div className="max-w-screen-2xl mx-auto px-4 py-6">
         {/* Priority 1: Critical Announcements */}
         <div className="mb-6">
           <CriticalAnnouncements />
         </div>
 
         {/* Priority 2: Events and Posts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
           {/* Left Column - Events */}
           <div>
             <TodayEvents />
@@ -48,7 +48,7 @@ export default function Dashboard() {
         </div>
 
         {/* Priority 5: Additional Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left Column */}
           <div>
             <CommunityHighlights />

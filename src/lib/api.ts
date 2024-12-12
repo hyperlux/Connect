@@ -1,24 +1,11 @@
 /// <reference types="vite/client" />
 
-// Type declarations for environment variables
-declare global {
-  interface ImportMetaEnv {
-    readonly VITE_API_URL: string
-    readonly VITE_APP_URL: string
-    // Add other env variables as needed
-  }
-
-  interface ImportMeta {
-    readonly env: ImportMetaEnv
-  }
-}
-
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 
 // Configure base URL based on environment
-const baseURL = process.env.NODE_ENV === 'production' 
+const baseURL = import.meta.env.MODE === 'production' 
   ? '/api'  // In production, use /api which nginx will proxy
-  : 'http://localhost:5000/api';  // In development, include /api in the base URL
+  : import.meta.env.VITE_API_URL || 'http://localhost:5000/api';  // In development, use env var or default
 
 // Create axios instance with default config
 export const api = axios.create({
@@ -40,7 +27,7 @@ api.interceptors.request.use(
     }
     
     // Log outgoing requests in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       console.log('Request:', {
         url: config.url,
         method: config.method,

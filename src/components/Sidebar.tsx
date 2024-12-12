@@ -22,26 +22,26 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="fixed top-0 left-0 h-screen w-64 bg-[#1a1a1a] text-gray-400 z-10 border-r border-gray-800">
+    <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
       {/* Logo */}
-      <div className="py-4">
+      <div className="p-4">
         <Link to="/" className="block">
           <img 
             src={theme === 'dark' ? "/logodark.png" : "/logolight.png"}
             alt="Auroville" 
-            className="h-10 w-auto object-contain mx-auto"
+            className="h-12 w-auto object-contain mx-auto"
           />
         </Link>
       </div>
 
       {/* Main Navigation */}
-      <nav className="mt-2 px-2">
+      <nav className="px-3 py-2">
         <Link
           to="/dashboard"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/dashboard')
-              ? 'bg-[#E27B58] text-white'
-              : 'hover:bg-[#2a2a2a] hover:text-white'
+              ? 'bg-orange-500 text-white'
+              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
           <LayoutGrid className="h-5 w-5" />
@@ -52,8 +52,8 @@ export default function Sidebar() {
           to="/forums"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/forums')
-              ? 'bg-[#E27B58] text-white'
-              : 'hover:bg-[#2a2a2a] hover:text-white'
+              ? 'bg-orange-500 text-white'
+              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
           <MessageSquare className="h-5 w-5" />
@@ -64,8 +64,8 @@ export default function Sidebar() {
           to="/events"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/events')
-              ? 'bg-[#E27B58] text-white'
-              : 'hover:bg-[#2a2a2a] hover:text-white'
+              ? 'bg-orange-500 text-white'
+              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
           <Calendar className="h-5 w-5" />
@@ -76,8 +76,8 @@ export default function Sidebar() {
           to="/bazaar"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/bazaar')
-              ? 'bg-[#E27B58] text-white'
-              : 'hover:bg-[#2a2a2a] hover:text-white'
+              ? 'bg-orange-500 text-white'
+              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
           <ShoppingBag className="h-5 w-5" />
@@ -88,8 +88,8 @@ export default function Sidebar() {
           to="/services"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/services')
-              ? 'bg-[#E27B58] text-white'
-              : 'hover:bg-[#2a2a2a] hover:text-white'
+              ? 'bg-orange-500 text-white'
+              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
           <Building2 className="h-5 w-5" />
@@ -100,8 +100,8 @@ export default function Sidebar() {
           to="/resources"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/resources')
-              ? 'bg-[#E27B58] text-white'
-              : 'hover:bg-[#2a2a2a] hover:text-white'
+              ? 'bg-orange-500 text-white'
+              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
           <FileText className="h-5 w-5" />
@@ -112,8 +112,8 @@ export default function Sidebar() {
           to="/settings"
           className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
             isActive('/settings')
-              ? 'bg-[#E27B58] text-white'
-              : 'hover:bg-[#2a2a2a] hover:text-white'
+              ? 'bg-orange-500 text-white'
+              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
         >
           <Settings className="h-5 w-5" />
@@ -122,19 +122,19 @@ export default function Sidebar() {
       </nav>
 
       {/* External Resources */}
-      <div className="mt-6 px-4">
-        <h3 className="text-xs font-medium text-gray-400 px-2 mb-2">EXTERNAL RESOURCES</h3>
+      <div className="mt-4 px-3">
+        <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 px-3 mb-2">EXTERNAL RESOURCES</h3>
         <nav className="space-y-1">
           <a
             href="https://auroville.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             <ExternalLink className="h-4 w-4" />
             <div>
               <div>Auroville Foundation</div>
-              <div className="text-xs text-gray-500">Official Foundation Website</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Official Foundation Website</div>
             </div>
           </a>
 
@@ -142,12 +142,12 @@ export default function Sidebar() {
             href="https://directory.auroville.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             <ExternalLink className="h-4 w-4" />
             <div>
               <div>Directory</div>
-              <div className="text-xs text-gray-500">Community Directory</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Community Directory</div>
             </div>
           </a>
 
@@ -155,12 +155,12 @@ export default function Sidebar() {
             href="https://news.auroville.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             <ExternalLink className="h-4 w-4" />
             <div>
               <div>Media Portal</div>
-              <div className="text-xs text-gray-500">News and Media</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">News and Media</div>
             </div>
           </a>
 
@@ -168,12 +168,12 @@ export default function Sidebar() {
             href="https://wiki.auroville.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-[#2a2a2a] hover:text-white transition-colors"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             <ExternalLink className="h-4 w-4" />
             <div>
               <div>Wiki</div>
-              <div className="text-xs text-gray-500">Community Knowledge Base</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Community Knowledge Base</div>
             </div>
           </a>
         </nav>
@@ -181,20 +181,23 @@ export default function Sidebar() {
 
       {/* User Profile */}
       {user && (
-        <div className="mt-6 px-4">
-          <Link to="/profile" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#2a2a2a] transition-colors">
+        <div className="mt-4 px-3">
+          <Link 
+            to="/profile" 
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
             <img
-              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=E27B58&color=fff`}
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366F1&color=fff`}
               alt={user.name}
               className="w-8 h-8 rounded-full"
             />
             <div>
-              <div className="text-sm font-medium text-white">{user.name}</div>
-              <div className="text-xs text-gray-400">Community Member</div>
+              <div className="text-sm font-medium">{user.name}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Community Member</div>
             </div>
           </Link>
         </div>
       )}
-    </div>
+    </aside>
   );
 }

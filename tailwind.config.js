@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        'auroville-primary': '#FF6B6B',
+        'auroville-primary': '#FF8C00',
         'dark': {
           'primary': '#E4E6EB',
           'secondary': '#B0B3B8',

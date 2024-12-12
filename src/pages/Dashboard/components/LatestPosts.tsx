@@ -1,4 +1,5 @@
-import { MessageSquare, Heart, Share2 } from 'lucide-react';
+import { MessageSquare, Heart, Share2, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const posts = [
   {
@@ -29,14 +30,23 @@ const posts = [
 
 export default function LatestPosts() {
   return (
-    <div className="bg-white dark:bg-dark-card rounded-xl shadow-sm p-6">
-      <div className="p-4 border-b dark:border-gray-700">
-        <h2 className="font-semibold text-gray-900 dark:text-dark-primary">Latest Community Posts</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+      <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-gray-900 dark:text-white">Latest Community Posts</h2>
+          <Link 
+            to="/forums"
+            className="flex items-center gap-1 text-sm text-auroville-primary hover:text-auroville-primary/80 transition-colors"
+          >
+            <span>View All</span>
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </div>
 
-      <div className="divide-y dark:divide-gray-700">
+      <div className="divide-y divide-gray-100 dark:divide-gray-700">
         {posts.map((post) => (
-          <div key={post.id} className="p-4">
+          <div key={post.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
             <div className="flex items-center gap-3 mb-3">
               <img
                 src={post.author.avatar}
@@ -44,12 +54,12 @@ export default function LatestPosts() {
                 className="w-10 h-10 rounded-full"
               />
               <div>
-                <h3 className="font-medium text-gray-900 dark:text-dark-primary">{post.author.name}</h3>
-                <p className="text-sm text-gray-500 dark:text-dark-secondary">{post.time}</p>
+                <h3 className="font-medium text-gray-900 dark:text-white">{post.author.name}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{post.time}</p>
               </div>
             </div>
 
-            <p className="text-gray-600 dark:text-dark-secondary mb-3">{post.content}</p>
+            <p className="text-gray-700 dark:text-gray-300 mb-3">{post.content}</p>
             
             {post.image && (
               <img
@@ -59,16 +69,16 @@ export default function LatestPosts() {
               />
             )}
 
-            <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-dark-secondary">
-              <button className="flex items-center gap-1 hover:text-auroville-primary">
+            <div className="flex items-center gap-6 text-sm">
+              <button className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-auroville-primary dark:hover:text-auroville-primary transition-colors">
                 <Heart className="h-4 w-4" />
                 <span>{post.likes}</span>
               </button>
-              <button className="flex items-center gap-1 hover:text-auroville-primary">
+              <button className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-auroville-primary dark:hover:text-auroville-primary transition-colors">
                 <MessageSquare className="h-4 w-4" />
                 <span>{post.comments}</span>
               </button>
-              <button className="flex items-center gap-1 hover:text-auroville-primary">
+              <button className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-auroville-primary dark:hover:text-auroville-primary transition-colors">
                 <Share2 className="h-4 w-4" />
                 <span>Share</span>
               </button>
