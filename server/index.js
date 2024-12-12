@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import path from 'path';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
 import { forumsRouter } from './routes/forums.js';
@@ -41,6 +42,9 @@ app.options('*', cors());
 // Parse JSON bodies with increased limit (50MB)
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Serve uploaded files
+app.use('/api/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Log all requests
 app.use((req, res, next) => {

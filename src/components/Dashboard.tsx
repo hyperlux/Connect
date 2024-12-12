@@ -61,47 +61,11 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-          {/* Community Engagement */}
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-              <h2 className="text-lg font-semibold mb-4">Community Engagement</h2>
-              <div className="h-48 bg-gray-50 dark:bg-gray-700 rounded"></div>
-            </div>
-          </div>
-
-          {/* Upcoming Events */}
-          <div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">Upcoming Events</h2>
-                <Link 
-                  to="/events"
-                  className="flex items-center gap-1 text-indigo-500 hover:text-indigo-600"
-                  onClick={handleNavigateToEvents}
-                >
-                  <span className="text-sm">View All</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-              <div className="space-y-4">
-                {recentEvents.map((event) => (
-                  <div key={event.title} className="flex items-center gap-3">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-12 h-12 rounded object-cover"
-                    />
-                    <div>
-                      <h3 className="font-medium">{event.title}</h3>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{event.date}</p>
-                      <p className="text-xs text-gray-500">{event.attendees} attending</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+        {/* Community Engagement Section */}
+        <div className="mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+            <h2 className="text-lg font-semibold mb-4">Community Engagement</h2>
+            <div className="h-48 bg-gray-50 dark:bg-gray-700 rounded"></div>
           </div>
         </div>
 
@@ -128,20 +92,31 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Active Members */}
+          {/* Upcoming Events */}
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">Active Members</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex items-center gap-3">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Upcoming Events</h2>
+              <Link 
+                to="/events"
+                className="flex items-center gap-1 text-indigo-500 hover:text-indigo-600"
+                onClick={handleNavigateToEvents}
+              >
+                <span className="text-sm">View All</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {recentEvents.map((event) => (
+                <div key={event.title} className="flex items-center gap-3">
                   <img
-                    src={`https://images.unsplash.com/photo-${1492633423870 + i}-4f9aeb10bb8f?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80`}
-                    alt="Member"
-                    className="w-8 h-8 rounded-full"
+                    src={event.image}
+                    alt={event.title}
+                    className="w-12 h-12 rounded object-cover"
                   />
                   <div>
-                    <h3 className="font-medium text-sm">Alex Johnson</h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">Local Business Owner</p>
+                    <h3 className="font-medium">{event.title}</h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">{event.date}</p>
+                    <p className="text-xs text-gray-500">{event.attendees} attending</p>
                   </div>
                 </div>
               ))}

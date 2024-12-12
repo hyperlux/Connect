@@ -1,0 +1,25 @@
+[Unit]
+Description=Auroville Connect Platform
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/AurovilleConnect
+Environment=NODE_ENV=production
+Environment=VITE_API_URL=https://api.auroville.social
+Environment=VITE_APP_URL=https://auroville.social
+
+# Install dependencies and build frontend
+ExecStartPre=/usr/bin/npm install
+ExecStartPre=/usr/bin/npm run build:prod
+
+# Start the server
+ExecStart=/usr/bin/npm run start:server
+
+# Restart on failure
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

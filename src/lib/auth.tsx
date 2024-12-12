@@ -11,7 +11,6 @@ export interface User {
   name: string;
   email: string;
   profilePicture?: string;
-  bio?: string;
   createdAt: string;
 }
 
@@ -30,16 +29,17 @@ export interface AuthContextType {
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  withCredentials: true
 });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+  // Don't set Content-Type for FormData
+  if (!(config.data instanceof FormData)) {
+    config.headers['Content-Type'] = 'application/json';
   }
   return config;
 });

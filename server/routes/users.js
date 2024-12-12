@@ -14,28 +14,25 @@ router.put('/profile', authenticate, async (req, res, next) => {
       userId: req.user?.id
     });
 
-    const { name, email, bio } = req.body;
+    const { name, email } = req.body;
     const userId = req.user.id;
 
     console.log('Updating user with data:', {
       userId,
       name,
-      email,
-      bio
+      email
     });
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
         name,
-        email,
-        bio
+        email
       },
       select: {
         id: true,
         name: true,
         email: true,
-        bio: true,
         profilePicture: true,
         createdAt: true
       }
@@ -64,8 +61,8 @@ router.post('/profile/picture', authenticate, upload.single('profilePicture'), a
     }
 
     const userId = req.user.id;
-    // Use relative path for storage in database
-    const filePath = `/uploads/${path.basename(req.file.path)}`;
+    // Update path format to match static file serving URL
+    const filePath = `/api/uploads/${path.basename(req.file.path)}`;
 
     console.log('Updating user profile picture:', {
       userId,
@@ -84,7 +81,6 @@ router.post('/profile/picture', authenticate, upload.single('profilePicture'), a
         id: true,
         name: true,
         email: true,
-        bio: true,
         profilePicture: true,
         createdAt: true
       }
@@ -97,8 +93,5 @@ router.post('/profile/picture', authenticate, upload.single('profilePicture'), a
     next(error);
   }
 });
-
-// Serve uploaded files
-router.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 export const usersRouter = router;

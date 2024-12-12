@@ -13,7 +13,7 @@ export function NotificationsPopover() {
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <button className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-          <Bell className="h-5 w-5" />
+          <Bell className="h-5 w-5 text-auroville-primary" />
           {/* Add notification badge here if needed */}
         </button>
       </DropdownMenuTrigger>

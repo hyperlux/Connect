@@ -38,16 +38,21 @@ model Event {
   title       String
   description String
   date        DateTime
+  time        String
+  endTime     String
   location    String
+  category    String
   imageUrl    String?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  maxSpots    Int            @default(100)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
   organizerId String
-  organizer   User            @relation("OrganizedEvents", fields: [organizerId], references: [id])
+  organizer   User           @relation("OrganizedEvents", fields: [organizerId], references: [id])
   attendees   EventAttendee[]
 
   @@index([organizerId])
   @@index([date])
+  @@index([category])
 }
 
 model EventAttendee {

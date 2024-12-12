@@ -1,9 +1,9 @@
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Users, Menu, X } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import ThemeToggle from './ThemeToggle';
 import { NotificationsPopover } from './NotificationsPopover';
-import { useState } from 'react';
 import { useTheme } from '../lib/theme';
 import { useSidebar } from '../lib/sidebar';
 
@@ -13,6 +13,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
   const { isOpen, toggle } = useSidebar();
+  const [avatarKey, setAvatarKey] = useState(0);
 
   const handleLogout = async () => {
     try {
@@ -24,18 +25,30 @@ export default function Header() {
     }
   };
 
+  // Update avatarKey when user or profilePicture changes
+  useEffect(() => {
+    setAvatarKey(prev => prev + 1);
+  }, [user?.profilePicture]);
+
+  const getProfileImage = () => {
+    if (user?.profilePicture) {
+      return `${user.profilePicture}?${avatarKey}`;
+    }
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`;
+  };
+
   if (typeof isAuthenticated === 'undefined') {
     return null;
   }
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-      <div className="max-w-screen-2xl mx-auto px-4 py-2">
-        <div className="flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="max-w-screen-2xl mx-auto px-4 py-4">
+        <div className="flex items-center gap-4">
           {/* Hamburger Menu Button */}
           <button 
             onClick={toggle}
-            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="relative z-50 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-auroville-primary"
             aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
           >
             {isOpen ? (
@@ -46,19 +59,19 @@ export default function Header() {
           </button>
 
           {/* Search and Visitor Count */}
-          <div className="flex-1 flex flex-col items-center max-w-xl mx-auto">
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full pl-9 pr-4 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-auroville-primary focus:border-auroville-primary text-sm"
-              />
-              <Search className="absolute left-2.5 top-2 h-4 w-4 text-gray-400" />
-            </div>
-            <div className="mt-0.5 hidden sm:flex items-center gap-1 text-xs">
+          <div className="flex-1 flex items-center justify-center gap-4">
+            <div className="flex items-center gap-1 text-xs">
               <Users className="h-3.5 w-3.5 text-auroville-primary" />
               <span className="text-auroville-primary font-medium">1,247</span>
               <span className="text-gray-500 dark:text-gray-400">visitors today</span>
+            </div>
+            <div className="relative w-full max-w-md">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full pl-9 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-auroville-primary focus:border-auroville-primary text-sm"
+              />
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
             </div>
           </div>
 
@@ -71,9 +84,16 @@ export default function Header() {
                 <NotificationsPopover />
                 <Link to="/profile" className="flex items-center gap-2">
                   <img
-                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`}
+                    key={avatarKey}
+                    src={getProfileImage()}
                     alt="Profile"
-                    className="w-7 h-7 rounded-full"
+                    className="w-7 h-7 rounded-full object-cover"
+                    onError={(e) => {
+                      const img = e.target as HTMLImageElement;
+                      if (!img.src.includes('ui-avatars')) {
+                        img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`;
+                      }
+                    }}
                   />
                   <div>
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -115,9 +135,16 @@ export default function Header() {
             {isAuthenticated && user ? (
               <Link to="/profile">
                 <img
-                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`}
+                  key={avatarKey}
+                  src={getProfileImage()}
                   alt="Profile"
-                  className="w-7 h-7 rounded-full"
+                  className="w-7 h-7 rounded-full object-cover"
+                  onError={(e) => {
+                    const img = e.target as HTMLImageElement;
+                    if (!img.src.includes('ui-avatars')) {
+                      img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`;
+                    }
+                  }}
                 />
               </Link>
             ) : (
@@ -147,9 +174,16 @@ export default function Header() {
                 <>
                   <div className="flex items-center gap-3 p-2">
                     <img
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`}
+                      key={avatarKey}
+                      src={getProfileImage()}
                       alt="Profile"
-                      className="w-10 h-10 rounded-full"
+                      className="w-10 h-10 rounded-full object-cover"
+                      onError={(e) => {
+                        const img = e.target as HTMLImageElement;
+                        if (!img.src.includes('ui-avatars')) {
+                          img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`;
+                        }
+                      }}
                     />
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
