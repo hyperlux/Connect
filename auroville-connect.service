@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-User=ubuntu
-WorkingDirectory=/home/ubuntu/AurovilleConnect
+User=root
+WorkingDirectory=/root/AurovilleConnect
 Environment=NODE_ENV=production
 Environment=VITE_API_URL=https://api.auroville.social
 Environment=VITE_APP_URL=https://auroville.social
