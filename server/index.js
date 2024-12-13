@@ -25,11 +25,19 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/auth', authRouter);
-app.use('/users', (await import('./routes/users.js')).default);
-app.use('/forums', (await import('./routes/forums.js')).default);
-app.use('/events', (await import('./routes/events.js')).default);
-app.use('/services', (await import('./routes/services.js')).default);
-app.use('/notifications', (await import('./routes/notifications.js')).default);
+
+// Import and use other routes
+const usersRouter = (await import('./routes/users.js')).default;
+const forumsRouter = (await import('./routes/forums.js')).default;
+const eventsRouter = (await import('./routes/events.js')).default;
+const servicesRouter = (await import('./routes/services.js')).default;
+const notificationsRouter = (await import('./routes/notifications.js')).default;
+
+app.use('/users', usersRouter);
+app.use('/forums', forumsRouter);
+app.use('/events', eventsRouter);
+app.use('/services', servicesRouter);
+app.use('/notifications', notificationsRouter);
 
 // Error handling
 app.use(errorHandler);
