@@ -43,26 +43,6 @@ router.put('/:id/read', async (req, res) => {
   }
 });
 
-// Create notification (internal use only)
-export async function createNotification(userId, type, title, message, link) {
-  try {
-    const notification = await prisma.notification.create({
-      data: {
-        userId,
-        type,
-        title,
-        message,
-        link,
-        read: false
-      }
-    });
-    return notification;
-  } catch (error) {
-    console.error('Error creating notification:', error);
-    throw error;
-  }
-}
-
 // Test email route
 router.post('/test-email', async (req, res) => {
   try {
@@ -78,4 +58,4 @@ router.post('/test-email', async (req, res) => {
   }
 });
 
-export const notificationsRouter = router; 
+export const notificationsRouter = router;

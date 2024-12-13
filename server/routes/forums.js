@@ -1,7 +1,7 @@
 import express from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
-import { createNotification } from './notifications.js';
+import { createNotification } from '../lib/notifications.js';
 
 const router = express.Router();
 
