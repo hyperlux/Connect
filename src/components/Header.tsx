@@ -120,7 +120,7 @@ export default function Header() {
                   Sign In
                 </Link>
                 <Link
-                  to="/signup"
+                  to="/register"
                   className="text-xs text-white bg-auroville-primary hover:bg-auroville-primary/90 px-3 py-1 rounded transition-colors"
                 >
                   Sign Up
@@ -211,7 +211,7 @@ export default function Header() {
                     Sign In
                   </Link>
                   <Link
-                    to="/signup"
+                    to="/register"
                     className="block text-sm text-white bg-auroville-primary hover:bg-auroville-primary/90 p-2 rounded transition-colors"
                   >
                     Sign Up

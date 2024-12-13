@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import cors from 'cors';
 import { errorHandler } from './middleware/errorHandler.js';
 import { authRouter } from './routes/auth.mjs';
 
@@ -9,6 +10,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+
+// CORS configuration
+app.use(cors({
+    origin: ['https://auroville.social', 'http://localhost:5173'],
+    credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
