@@ -23,14 +23,14 @@ export default function Sidebar() {
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate('/app/dashboard');
     } else {
       navigate('/');
     }
   };
 
   const isActive = (path: string) => {
-    return location.pathname === path;
+    return location.pathname === `/app${path}`;
   };
 
   return (
@@ -61,7 +61,7 @@ export default function Sidebar() {
         {/* Main Navigation */}
         <nav className="px-3 py-2">
           <Link
-            to="/dashboard"
+            to="/app/dashboard"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
               isActive('/dashboard')
                 ? 'bg-auroville-primary text-white'
@@ -73,7 +73,7 @@ export default function Sidebar() {
           </Link>
 
           <Link
-            to="/forums"
+            to="/app/forums"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
               isActive('/forums')
                 ? 'bg-auroville-primary text-white'
@@ -85,7 +85,7 @@ export default function Sidebar() {
           </Link>
 
           <Link
-            to="/events"
+            to="/app/events"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
               isActive('/events')
                 ? 'bg-auroville-primary text-white'
@@ -97,7 +97,7 @@ export default function Sidebar() {
           </Link>
 
           <Link
-            to="/bazaar"
+            to="/app/bazaar"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
               isActive('/bazaar')
                 ? 'bg-auroville-primary text-white'
@@ -109,7 +109,7 @@ export default function Sidebar() {
           </Link>
 
           <Link
-            to="/services"
+            to="/app/services"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
               isActive('/services')
                 ? 'bg-auroville-primary text-white'
@@ -121,7 +121,7 @@ export default function Sidebar() {
           </Link>
 
           <Link
-            to="/resources"
+            to="/app/resources"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
               isActive('/resources')
                 ? 'bg-auroville-primary text-white'
@@ -133,7 +133,7 @@ export default function Sidebar() {
           </Link>
 
           <Link
-            to="/users"
+            to="/app/users"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
               isActive('/users')
                 ? 'bg-auroville-primary text-white'
@@ -145,7 +145,7 @@ export default function Sidebar() {
           </Link>
 
           <Link
-            to="/settings"
+            to="/app/settings"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
               isActive('/settings')
                 ? 'bg-auroville-primary text-white'
@@ -219,7 +219,7 @@ export default function Sidebar() {
         {user && (
           <div className="mt-4 px-3">
             <Link 
-              to="/profile" 
+              to="/app/profile" 
               className="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               <div>

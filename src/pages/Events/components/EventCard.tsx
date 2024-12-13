@@ -22,7 +22,7 @@ export default function EventCard({ event, isDark, onEdit, onDelete, onJoin, isO
   });
 
   const handleClick = () => {
-    navigate(`/events/${event.id}`);
+    navigate(`/app/events/${event.id}`);
   };
 
   const handleJoin = (e: React.MouseEvent) => {

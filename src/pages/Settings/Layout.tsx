@@ -13,7 +13,7 @@ export default function SettingsLayout() {
         <div className="col-span-3">
           <nav className="space-y-1">
             <NavLink
-              to="/settings/profile"
+              to="/app/settings/profile"
               className={({ isActive }) =>
                 `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive
@@ -27,7 +27,7 @@ export default function SettingsLayout() {
             </NavLink>
 
             <NavLink
-              to="/settings/notifications"
+              to="/app/settings/notifications"
               className={({ isActive }) =>
                 `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive
@@ -41,7 +41,7 @@ export default function SettingsLayout() {
             </NavLink>
 
             <NavLink
-              to="/settings/privacy"
+              to="/app/settings/privacy"
               className={({ isActive }) =>
                 `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive
@@ -55,7 +55,7 @@ export default function SettingsLayout() {
             </NavLink>
 
             <NavLink
-              to="/settings/security"
+              to="/app/settings/security"
               className={({ isActive }) =>
                 `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive
@@ -79,4 +79,4 @@ export default function SettingsLayout() {
       </div>
     </div>
   );
-} 
+}

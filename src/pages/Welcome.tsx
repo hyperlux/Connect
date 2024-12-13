@@ -50,7 +50,7 @@ export default function Welcome() {
   useEffect(() => {
     // Redirect to dashboard if user is authenticated
     if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+      navigate('/app/dashboard', { replace: true });
       return;
     }
 

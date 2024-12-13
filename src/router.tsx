@@ -58,11 +58,15 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 const router = createBrowserRouter([
   {
     path: '/',
+    element: <Welcome />
+  },
+  {
+    path: '/app',
     element: <ProtectedRoute><Layout /></ProtectedRoute>,
     children: [
       {
         index: true,
-        element: <Welcome />
+        element: <Dashboard />
       },
       {
         path: 'dashboard',

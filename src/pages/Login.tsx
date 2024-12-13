@@ -20,7 +20,7 @@ export default function Login() {
       await login({ email, password });
       
       // Get the redirect path from location state or default to dashboard
-      const from = location.state?.from?.pathname || '/dashboard';
+      const from = location.state?.from?.pathname || '/app/dashboard';
       navigate(from, { replace: true });
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Login failed. Please try again.');
@@ -120,4 +120,4 @@ export default function Login() {
       </div>
     </div>
   );
-} 
+}

@@ -94,7 +94,7 @@ export default function Profile() {
                     </div>
                   </div>
                   <button 
-                    onClick={() => navigate('/settings/profile')}
+                    onClick={() => navigate('/app/settings/profile')}
                     className="text-auroville-primary hover:text-opacity-90"
                   >
                     Edit
@@ -110,7 +110,7 @@ export default function Profile() {
                     </div>
                   </div>
                   <button 
-                    onClick={() => navigate('/settings/notifications')}
+                    onClick={() => navigate('/app/settings/notifications')}
                     className="text-auroville-primary hover:text-opacity-90"
                   >
                     Configure
@@ -126,7 +126,7 @@ export default function Profile() {
                     </div>
                   </div>
                   <button 
-                    onClick={() => navigate('/settings/privacy')}
+                    onClick={() => navigate('/app/settings/privacy')}
                     className="text-auroville-primary hover:text-opacity-90"
                   >
                     Manage
@@ -142,7 +142,7 @@ export default function Profile() {
                     </div>
                   </div>
                   <button 
-                    onClick={() => navigate('/settings/security')}
+                    onClick={() => navigate('/app/settings/security')}
                     className="text-auroville-primary hover:text-opacity-90"
                   >
                     Change

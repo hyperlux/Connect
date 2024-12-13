@@ -32,7 +32,7 @@ class ErrorBoundary extends React.Component<
           <div className="text-center">
             <h2 className="text-xl font-semibold mb-2">Something went wrong</h2>
             <button
-              onClick={() => window.location.href = '/events'}
+              onClick={() => window.location.href = '/app/events'}
               className="text-auroville-primary hover:underline"
             >
               Back to Events
@@ -65,7 +65,7 @@ export default function EventDetails() {
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Event not found</h2>
           <button
-            onClick={() => navigate('/events')}
+            onClick={() => navigate('/app/events')}
             className="text-auroville-primary hover:underline"
           >
             Back to Events
@@ -118,7 +118,7 @@ export default function EventDetails() {
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <button
-              onClick={() => navigate('/events')}
+              onClick={() => navigate('/app/events')}
               className={`flex items-center gap-2 ${
                 isDark ? 'text-dark-primary hover:text-dark-secondary' : 'text-gray-600 hover:text-gray-800'
               }`}
@@ -297,4 +297,4 @@ export default function EventDetails() {
       </div>
     </ErrorBoundary>
   );
-} 
+}
