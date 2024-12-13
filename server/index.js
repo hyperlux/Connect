@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import errorHandler from './middleware/errorHandler.js';
+import { errorHandler } from './middleware/errorHandler.js';
 import { authRouter } from './routes/auth.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
