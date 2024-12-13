@@ -33,23 +33,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const HOST = '0.0.0.0';
 
-// Single CORS configuration
-const corsOptions = {
-  origin: function(origin, callback) {
-    const allowedOrigins = ['https://auroville.social', 'http://localhost:3000', 'http://localhost:5173'];
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+// Configure CORS
+app.use(cors({
+  origin: 'https://auroville.social',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-  optionsSuccessStatus: 204
-};
-
-app.use(cors(corsOptions));
+  credentials: true
+}));
 
 // Parse JSON bodies with increased limit (50MB)
 app.use(express.json({ limit: '50mb' }));
@@ -83,7 +73,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes with /api prefix to match frontend proxy configuration
+// Routes
 app.use('/api/auth', authRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/forums', authenticate, forumsRouter);
