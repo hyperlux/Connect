@@ -50,18 +50,17 @@ export default function Profile() {
             <div className="flex items-center gap-6">
               <div className="relative">
                 <img
-                  key={key} // Add key to force re-render
-                  src={`${user.profilePicture}?${key}`} // Add key as cache buster
+                  key={key}
+                  src={`${user.profilePicture}?${key}`}
                   alt={`${user.name}'s profile`}
                   className="w-24 h-24 rounded-full object-cover"
                   onError={(e) => {
-                    // Fallback to default image if profile picture fails to load
                     (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
                   }}
                 />
                 <button
                   onClick={triggerFileInput}
-                  className="absolute bottom-0 right-0 p-1.5 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition-colors"
+                  className="absolute bottom-0 right-0 p-1.5 bg-auroville-primary rounded-full text-white hover:bg-opacity-90 transition-colors"
                   title="Change profile picture"
                 >
                   <Camera className="h-4 w-4" />
@@ -75,76 +74,76 @@ export default function Profile() {
                 />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
-                <p className="text-gray-500">Community Member since {joinDate}</p>
-                <p className="text-gray-500">{user.email}</p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-dark-primary">{user.name}</h1>
+                <p className="text-gray-500 dark:text-dark-secondary">Community Member since {joinDate}</p>
+                <p className="text-gray-500 dark:text-dark-secondary">{user.email}</p>
               </div>
             </div>
           </div>
 
           <div className="p-6 sm:p-8 space-y-8">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Account Settings</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-primary mb-4">Account Settings</h2>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-lighter rounded-lg">
                   <div className="flex items-center gap-4">
-                    <Settings className="h-5 w-5 text-gray-600" />
+                    <Settings className="h-5 w-5 text-gray-600 dark:text-dark-secondary" />
                     <div>
-                      <h3 className="font-medium text-gray-900">General Settings</h3>
-                      <p className="text-sm text-gray-500">Update your profile information</p>
+                      <h3 className="font-medium text-gray-900 dark:text-dark-primary">General Settings</h3>
+                      <p className="text-sm text-gray-500 dark:text-dark-secondary">Update your profile information</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => navigate('/settings/profile')}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-auroville-primary hover:text-opacity-90"
                   >
                     Edit
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-lighter rounded-lg">
                   <div className="flex items-center gap-4">
-                    <Bell className="h-5 w-5 text-gray-600" />
+                    <Bell className="h-5 w-5 text-gray-600 dark:text-dark-secondary" />
                     <div>
-                      <h3 className="font-medium text-gray-900">Notifications</h3>
-                      <p className="text-sm text-gray-500">Manage your notification preferences</p>
+                      <h3 className="font-medium text-gray-900 dark:text-dark-primary">Notifications</h3>
+                      <p className="text-sm text-gray-500 dark:text-dark-secondary">Manage your notification preferences</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => navigate('/settings/notifications')}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-auroville-primary hover:text-opacity-90"
                   >
                     Configure
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-lighter rounded-lg">
                   <div className="flex items-center gap-4">
-                    <Shield className="h-5 w-5 text-gray-600" />
+                    <Shield className="h-5 w-5 text-gray-600 dark:text-dark-secondary" />
                     <div>
-                      <h3 className="font-medium text-gray-900">Privacy</h3>
-                      <p className="text-sm text-gray-500">Control your privacy settings</p>
+                      <h3 className="font-medium text-gray-900 dark:text-dark-primary">Privacy</h3>
+                      <p className="text-sm text-gray-500 dark:text-dark-secondary">Control your privacy settings</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => navigate('/settings/privacy')}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-auroville-primary hover:text-opacity-90"
                   >
                     Manage
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-lighter rounded-lg">
                   <div className="flex items-center gap-4">
-                    <Key className="h-5 w-5 text-gray-600" />
+                    <Key className="h-5 w-5 text-gray-600 dark:text-dark-secondary" />
                     <div>
-                      <h3 className="font-medium text-gray-900">Security</h3>
-                      <p className="text-sm text-gray-500">Update password and security settings</p>
+                      <h3 className="font-medium text-gray-900 dark:text-dark-primary">Security</h3>
+                      <p className="text-sm text-gray-500 dark:text-dark-secondary">Update password and security settings</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => navigate('/settings/security')}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-auroville-primary hover:text-opacity-90"
                   >
                     Change
                   </button>

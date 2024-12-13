@@ -27,6 +27,7 @@ import Register from './pages/Register';
 import Welcome from './pages/Welcome';
 import EmailSentPage from './pages/EmailSentPage';
 import EmailVerifiedPage from './pages/EmailVerifiedPage';
+import Users from './pages/Users';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -120,6 +121,10 @@ const router = createBrowserRouter([
       {
         path: 'community',
         element: <Community />
+      },
+      {
+        path: 'users',
+        element: <Users />
       },
       {
         path: 'profile',

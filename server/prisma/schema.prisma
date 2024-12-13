@@ -1,6 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  binaryTargets   = ["native", "linux-musl-openssl-3.0.x", "linux-musl"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "linux-musl"]
 }
 
 datasource db {
@@ -13,23 +13,23 @@ model User {
   email             String          @unique
   password          String
   name              String
-  bio               String?         // Added bio field
   role              String          @default("USER")
-  emailVerified     Boolean         @default(false)
-  verificationToken String?
-  resetToken        String?
-  resetTokenExpiry  DateTime?
-  profilePicture    String?         // URL to the stored profile picture
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+  emailVerified     Boolean         @default(false)
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  verificationToken String?
+  profilePicture    String?
+  bio               String?
   cityServices      CityService[]
+  commentVotes      CommentVote[]
   events            Event[]         @relation("OrganizedEvents")
   attending         EventAttendee[]
   comments          ForumComment[]
   posts             ForumPost[]
   notifications     Notification[]
   postVotes         PostVote[]
-  commentVotes      CommentVote[]
 
   @@index([email])
 }
@@ -39,16 +39,16 @@ model Event {
   title       String
   description String
   date        DateTime
-  time        String
-  endTime     String
   location    String
-  category    String
   imageUrl    String?
-  maxSpots    Int            @default(100)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   organizerId String
-  organizer   User           @relation("OrganizedEvents", fields: [organizerId], references: [id])
+  category    String
+  endTime     String
+  maxSpots    Int             @default(100)
+  time        String
+  organizer   User            @relation("OrganizedEvents", fields: [organizerId], references: [id])
   attendees   EventAttendee[]
 
   @@index([organizerId])
@@ -76,12 +76,12 @@ model ForumPost {
   category  String
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
-  views     Int           @default(0)
-  score     Int           @default(0)
+  views     Int            @default(0)
   authorId  String
+  score     Int            @default(0)
   comments  ForumComment[]
-  votes     PostVote[]
   author    User           @relation(fields: [authorId], references: [id])
+  votes     PostVote[]
 
   @@index([authorId])
   @@index([category])
@@ -89,16 +89,16 @@ model ForumPost {
 }
 
 model ForumComment {
-  id        String       @id @default(uuid())
+  id        String        @id @default(uuid())
   content   String
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  score     Int         @default(0)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
   authorId  String
   postId    String
+  score     Int           @default(0)
   votes     CommentVote[]
-  author    User         @relation(fields: [authorId], references: [id])
-  post      ForumPost    @relation(fields: [postId], references: [id])
+  author    User          @relation(fields: [authorId], references: [id])
+  post      ForumPost     @relation(fields: [postId], references: [id])
 
   @@index([authorId])
   @@index([postId])
@@ -107,24 +107,24 @@ model ForumComment {
 
 model PostVote {
   id        String    @id @default(uuid())
-  value     Int       // 1 for upvote, -1 for downvote
-  post      ForumPost @relation(fields: [postId], references: [id])
+  value     Int
   postId    String
-  user      User      @relation(fields: [userId], references: [id])
   userId    String
   createdAt DateTime  @default(now())
+  post      ForumPost @relation(fields: [postId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 
   @@unique([postId, userId])
 }
 
 model CommentVote {
   id        String       @id @default(uuid())
-  value     Int         // 1 for upvote, -1 for downvote
-  comment   ForumComment @relation(fields: [commentId], references: [id])
+  value     Int
   commentId String
-  user      User        @relation(fields: [userId], references: [id])
   userId    String
-  createdAt DateTime    @default(now())
+  createdAt DateTime     @default(now())
+  comment   ForumComment @relation(fields: [commentId], references: [id])
+  user      User         @relation(fields: [userId], references: [id])
 
   @@unique([commentId, userId])
 }
@@ -147,7 +147,7 @@ model CityService {
 model Notification {
   id        String   @id @default(cuid())
   userId    String
-  type      String   // 'event', 'attendance', 'forum'
+  type      String
   title     String
   message   String
   link      String

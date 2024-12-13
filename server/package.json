@@ -3,9 +3,13 @@
     "version": "1.0.0",
     "main": "index.js",
     "type": "module",
+    "prisma": {
+        "seed": "node prisma/seed.js"
+    },
     "scripts": {
         "start": "node index.js",
-        "dev": "nodemon --config nodemon.json index.js"
+        "dev": "nodemon --config nodemon.json index.js",
+        "seed": "node prisma/seed.js"
     },
     "dependencies": {
         "@prisma/client": "^5.10.2",

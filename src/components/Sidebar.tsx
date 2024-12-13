@@ -10,7 +10,8 @@ import {
   Building2, 
   FileText,
   Settings,
-  ExternalLink
+  ExternalLink,
+  Users
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -129,6 +130,18 @@ export default function Sidebar() {
           >
             <FileText className="h-5 w-5" />
             <span>Resources</span>
+          </Link>
+
+          <Link
+            to="/users"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+              isActive('/users')
+                ? 'bg-auroville-primary text-white'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            <Users className="h-5 w-5" />
+            <span>Residents</span>
           </Link>
 
           <Link

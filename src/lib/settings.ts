@@ -33,7 +33,7 @@ interface SettingsState extends UserSettings {
 }
 
 const defaultSettings: UserSettings = {
-  theme: 'light',
+  theme: 'dark',
   notifications: {
     email: true,
     push: true,

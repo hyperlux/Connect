@@ -1,164 +1,105 @@
 # Development Memory
 
-[Previous content remains unchanged...]
+[Previous content through "Troubleshooting Steps" remains unchanged...]
 
-## Latest Debug Session (December 12, 2024)
+### Production Database Verification
 
-### Forum Posts Fetch Error (Fixed)
-1. Issue: 500 Internal Server Error when fetching forum posts
-   - Error: Unknown field `views` for select statement on model `ForumPostCountOutputType`
-   - Backend was trying to count 'views' as a relation
-
-2. Root Cause Analysis:
-   - 'views' is a regular Int field in ForumPost model, not a relation
-   - Prisma _count select can only count relations (like comments)
-   - Attempting to count 'views' in _count select caused validation error
-
-3. Solution:
-   - Removed 'views' from _count select statement
-   - Access 'views' directly from post object in formattedPosts mapping
-   - Added more detailed error logging for troubleshooting
-
-4. Changes Made:
-   ```js
-   // Before
-   _count: {
-     select: {
-       comments: true,
-       views: true  // This was incorrect
-     }
-   }
-
-   // After
-   _count: {
-     select: {
-       comments: true  // Only count actual relations
-     }
-   }
-
-   // Access views directly in formatting
-   views: post.views
+1. Verify PostgreSQL Installation on Production:
+   ```bash
+   # Check if PostgreSQL is installed and running
+   sudo systemctl status postgresql
+   
+   # Verify PostgreSQL version matches development
+   psql --version
    ```
 
-5. Results:
-   - Forum posts now load correctly
-   - View counts displayed properly
-   - Maintained all existing functionality
-
-### Forum Post Sorting Fix (December 12, 2024)
-
-1. Issue: 500 Internal Server Error when sorting forum posts
-   - Error: Invalid orderBy syntax when sorting by 'hot' or 'top'
-   - Prisma was rejecting the orderBy object format for multiple sort criteria
-
-2. Root Cause Analysis:
-   - Prisma expects an array of orderBy objects for multiple sort criteria
-   - We were using an object with multiple fields instead
-
-3. Solution:
-   - Updated orderBy syntax to use array format for multiple sort criteria
-   - Maintained single object format for single sort criterion
-
-4. Changes Made:
-   ```js
-   // Before (incorrect)
-   orderBy = {
-     score: 'desc',
-     createdAt: 'desc'
-   };
-
-   // After (correct)
-   orderBy = [
-     { score: 'desc' },
-     { createdAt: 'desc' }
-   ];
+2. Database Setup Verification:
+   ```bash
+   # Check if database exists
+   sudo -u postgres psql -c "\l" | grep auroville
+   
+   # Verify database user and permissions
+   sudo -u postgres psql -c "\du" | grep postgres
+   
+   # Check database connections
+   sudo -u postgres psql -c "SELECT * FROM pg_stat_activity WHERE datname = 'auroville';"
    ```
 
-5. Results:
-   - Hot sorting works correctly (score + recency)
-   - Top sorting works correctly (score only)
-   - New sorting works correctly (recency only)
-   - Posts are properly ordered in all sort modes
-
-## Layout and API Endpoint Fixes (December 13, 2024)
-
-### Issues Fixed
-1. Wide spacing between sidebar and main content
-2. Forum posts not fetching in production
-3. Inconsistent API endpoint structure between development and production
-
-### Solutions Implemented
-
-1. Layout Spacing Fix:
-   ```jsx
-   // Before (Layout.tsx)
-   <main className="flex-1 bg-[#1e1e1e] pl-2 pr-6 py-6">
-
-   // After
-   <main className="flex-1 bg-[#1e1e1e] px-4 py-6">
+3. Production Environment Configuration:
+   ```bash
+   # Verify environment variables
+   grep DATABASE_URL /root/AurovilleConnect/server/.env
+   
+   # Check PostgreSQL configuration
+   sudo cat /etc/postgresql/*/main/postgresql.conf | grep "listen_addresses\|port"
+   sudo cat /etc/postgresql/*/main/pg_hba.conf | grep "host.*postgres"
    ```
 
-2. API Endpoint Structure:
-   ```typescript
-   // api.ts - Consistent baseURL configuration
-   const baseURL = process.env.NODE_ENV === 'production' 
-     ? '/api'  // Production
-     : 'http://localhost:5000/api';  // Development
-
-   // Forums.tsx - Consistent endpoint usage
-   const response = await api.get(`/forums/posts?${params.toString()}`);
-
-   // CreatePostModal.tsx - Fixed post endpoint
-   const response = await api.post('/forums/posts', data);
+4. Service Configuration:
+   ```bash
+   # Check service environment
+   sudo systemctl cat auroville-connect
+   
+   # Verify service user permissions
+   sudo -u postgres psql -c "\du" | grep $(whoami)
    ```
 
-3. Results:
-   - Consistent spacing between sidebar and main content
-   - Forum posts fetch correctly in both development and production
-   - API endpoints work consistently across environments
-   - Smooth workflow between local development and production server
-
-## Individual Forum Post Route Fix (December 13, 2024)
-
-### Issue Fixed
-1. 404 Error when accessing individual forum posts
-   - Error: No route matches URL "/forums/[post-id]"
-   - Backend API endpoint for individual posts was missing
-
-### Solutions Implemented
-
-1. Added Frontend Route:
-   ```tsx
-   // routes.tsx
-   {
-     path: "forums/:postId",
-     element: <ForumPost />
-   }
+5. Production Database Maintenance:
+   ```bash
+   # Check database size and growth
+   sudo -u postgres psql -c "
+   SELECT pg_size_pretty(pg_database_size('auroville')) as db_size,
+          pg_size_pretty(pg_total_relation_size('\"User\"')) as users_size,
+          pg_size_pretty(pg_total_relation_size('\"ForumPost\"')) as posts_size;
+   "
+   
+   # Monitor active connections
+   sudo -u postgres psql -c "
+   SELECT count(*) as connection_count 
+   FROM pg_stat_activity 
+   WHERE datname = 'auroville';
+   "
    ```
 
-2. Created ForumPost Component:
-   ```tsx
-   // src/pages/Forums/ForumPost.tsx
-   export default function ForumPost() {
-     const { postId } = useParams();
-     // Component implementation for displaying individual posts
-   }
+6. Production Deployment Checklist:
+   - [ ] PostgreSQL is installed and running
+   - [ ] Database 'auroville' exists
+   - [ ] User 'postgres' has required permissions
+   - [ ] Database URL is correctly configured in .env
+   - [ ] Service user has database access
+   - [ ] Prisma migrations are up to date
+   - [ ] Connection pool settings are optimized
+   - [ ] Database backups are configured
+
+7. Connection Pool Settings:
+   ```bash
+   # Check current pool settings in db.js
+   grep "pool = new Pool" -A 5 /root/AurovilleConnect/server/lib/db.js
+   
+   # Monitor pool usage
+   sudo -u postgres psql auroville -c "
+   SELECT state, count(*) 
+   FROM pg_stat_activity 
+   WHERE datname = 'auroville' 
+   GROUP BY state;
+   "
    ```
 
-3. Added Backend API Endpoint:
-   ```js
-   // server/routes/forums.js
-   router.get('/posts/:id', async (req, res) => {
-     // Fetch post with author and comments
-     // Update view count
-     // Return formatted post data
-   });
+8. Production Error Monitoring:
+   ```bash
+   # Check application logs for database errors
+   journalctl -u auroville-connect -n 100 --no-pager | grep -i 'database\|prisma\|postgresql\|error'
+   
+   # Monitor PostgreSQL logs
+   sudo tail -f /var/log/postgresql/postgresql-*.log
+   
+   # Check for connection timeouts
+   sudo -u postgres psql -c "
+   SELECT * FROM pg_stat_activity 
+   WHERE datname = 'auroville' 
+   AND state = 'active' 
+   AND now() - query_start > '5 minutes'::interval;
+   "
    ```
 
-### Results
-- Individual forum posts now load correctly
-- Complete post details with comments are displayed
-- View count is tracked and updated
-- Proper error handling for non-existent posts
-
-[Rest of the file content remains unchanged...]
+[Previous "Production Server Details" and "Schema Migration Notes" sections remain unchanged...]

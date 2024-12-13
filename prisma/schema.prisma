@@ -78,6 +78,38 @@ model CommentVote {
   @@unique([commentId, userId])
 }
 
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  startDate   DateTime
+  endDate     DateTime?
+  location    String?
+  contact     String?
+  website     String?
+  isRecurring Boolean  @default(false)
+  frequency   String?  // "weekly", "monthly", etc.
+  dayOfWeek   String?  // For recurring events
+  startTime   String?  // For recurring events
+  endTime     String?  // For recurring events
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  category    String   // e.g., "Health", "Education", "Utility"
+  hours       String
+  phone       String?
+  email       String?
+  location    String?
+  website     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 enum Role {
   USER
   ADMIN

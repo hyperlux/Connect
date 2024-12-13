@@ -1,246 +1,110 @@
 import express from 'express';
-import { z } from 'zod';
-import { prisma } from '../lib/prisma.js';
-import { authenticate, requireAdmin } from '../middleware/authenticate.js';
-import { createNotification } from './notifications.js';
-
+import { PrismaClient } from '@prisma/client';
 const router = express.Router();
-
-const eventSchema = z.object({
-  title: z.string().min(3),
-  description: z.string().min(10),
-  date: z.string().datetime(),
-  location: z.string(),
-  imageUrl: z.string().url().optional(),
-});
+const prisma = new PrismaClient();
 
 // Get all events
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
   try {
-    const { month, year } = req.query;
-    let where = {};
-    
-    if (month && year) {
-      const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month, 0);
-      where.date = {
-        gte: startDate,
-        lte: endDate
-      };
-    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(today);
+    endOfWeek.setDate(today.getDate() + 7);
 
     const events = await prisma.event.findMany({
-      where,
-      include: {
-        organizer: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        attendees: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true
-              }
-            }
-          }
+      where: {
+        startDate: {
+          gte: today,
+          lt: endOfWeek
         }
       },
-      orderBy: {
-        date: 'asc'
-      }
+      orderBy: { startDate: 'asc' }
     });
+
     res.json(events);
   } catch (error) {
-    next(error);
+    console.error('Error fetching events:', error);
+    res.status(500).json({ error: 'Failed to fetch events' });
   }
 });
 
-// Create event
-router.post('/', authenticate, async (req, res, next) => {
+// Create new event
+router.post('/', async (req, res) => {
   try {
-    const eventData = eventSchema.parse(req.body);
     const event = await prisma.event.create({
       data: {
-        ...eventData,
-        organizerId: req.user.id
-      },
-      include: {
-        organizer: {
-          select: {
-            name: true
-          }
-        }
+        title: req.body.title,
+        description: req.body.description,
+        startDate: new Date(req.body.startDate),
+        endDate: req.body.endDate ? new Date(req.body.endDate) : null,
+        location: req.body.location,
+        contact: req.body.contact,
+        website: req.body.website,
+        isRecurring: req.body.isRecurring || false,
+        frequency: req.body.frequency,
+        dayOfWeek: req.body.dayOfWeek,
+        startTime: req.body.startTime,
+        endTime: req.body.endTime
       }
     });
-
-    // Get all users except the organizer
-    const users = await prisma.user.findMany({
-      where: {
-        NOT: {
-          id: req.user.id
-        }
-      }
-    });
-
-    // Create notifications for all users
-    await Promise.all(users.map(user => 
-      createNotification(
-        user.id,
-        'event',
-        'New Event',
-        `${event.organizer.name} created a new event: ${event.title}`,
-        `/events/${event.id}`
-      )
-    ));
-
-    res.status(201).json(event);
+    res.json(event);
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: 'Failed to create event' });
   }
 });
 
-// Update event (admin or organizer only)
-router.put('/:id', authenticate, async (req, res, next) => {
+// Get single event
+router.get('/:id', async (req, res) => {
   try {
-    const { id } = req.params;
-    const eventData = eventSchema.parse(req.body);
-    
     const event = await prisma.event.findUnique({
-      where: { id },
-      include: { organizer: true }
+      where: { id: req.params.id }
     });
-
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({ error: 'Event not found' });
     }
-
-    // Check if user is admin or event organizer
-    if (req.user.role !== 'ADMIN' && event.organizerId !== req.user.id) {
-      return res.status(403).json({ message: 'Not authorized to update this event' });
-    }
-
-    const updatedEvent = await prisma.event.update({
-      where: { id },
-      data: eventData,
-      include: {
-        organizer: {
-          select: {
-            name: true
-          }
-        }
-      }
-    });
-
-    res.json(updatedEvent);
+    res.json(event);
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: 'Failed to fetch event' });
   }
 });
 
-// Delete event (admin or organizer only)
-router.delete('/:id', authenticate, async (req, res, next) => {
+// Update event
+router.put('/:id', async (req, res) => {
   try {
-    const { id } = req.params;
-    
-    const event = await prisma.event.findUnique({
-      where: { id },
-      include: { organizer: true }
+    const event = await prisma.event.update({
+      where: { id: req.params.id },
+      data: {
+        title: req.body.title,
+        description: req.body.description,
+        startDate: new Date(req.body.startDate),
+        endDate: req.body.endDate ? new Date(req.body.endDate) : null,
+        location: req.body.location,
+        contact: req.body.contact,
+        website: req.body.website,
+        isRecurring: req.body.isRecurring,
+        frequency: req.body.frequency,
+        dayOfWeek: req.body.dayOfWeek,
+        startTime: req.body.startTime,
+        endTime: req.body.endTime
+      }
     });
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update event' });
+  }
+});
 
-    if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
-
-    // Check if user is admin or event organizer
-    if (req.user.role !== 'ADMIN' && event.organizerId !== req.user.id) {
-      return res.status(403).json({ message: 'Not authorized to delete this event' });
-    }
-
-    // Delete all attendees first
-    await prisma.eventAttendee.deleteMany({
-      where: { eventId: id }
-    });
-
-    // Delete the event
+// Delete event
+router.delete('/:id', async (req, res) => {
+  try {
     await prisma.event.delete({
-      where: { id }
+      where: { id: req.params.id }
     });
-
     res.json({ message: 'Event deleted successfully' });
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: 'Failed to delete event' });
   }
 });
 
-// Admin: Delete any event
-router.delete('/:id/admin', authenticate, requireAdmin, async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    
-    const event = await prisma.event.findUnique({
-      where: { id }
-    });
-
-    if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
-
-    // Delete all attendees first
-    await prisma.eventAttendee.deleteMany({
-      where: { eventId: id }
-    });
-
-    // Delete the event
-    await prisma.event.delete({
-      where: { id }
-    });
-
-    res.json({ message: 'Event deleted successfully by admin' });
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.post('/:id/attend', authenticate, async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const event = await prisma.event.findUnique({
-      where: { id },
-      include: {
-        organizer: true
-      }
-    });
-
-    if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
-
-    await prisma.eventAttendee.create({
-      data: {
-        eventId: id,
-        userId: req.user.id
-      }
-    });
-
-    // Notify the event organizer
-    await createNotification(
-      event.organizerId,
-      'attendance',
-      'New Attendee',
-      `${req.user.name} is attending your event: ${event.title}`,
-      `/events/${event.id}`
-    );
-
-    res.json({ message: 'Successfully registered for event' });
-  } catch (error) {
-    next(error);
-  }
-});
-
-export const eventsRouter = router;
+export { router as eventsRouter };
