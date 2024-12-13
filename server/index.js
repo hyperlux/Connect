@@ -5,6 +5,8 @@ import { dirname } from 'path';
 import cors from 'cors';
 import { errorHandler } from './middleware/errorHandler.js';
 import { authRouter } from './routes/auth.mjs';
+import { forumsRouter } from './routes/forums.js';
+import { usersRouter } from './routes/users.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,16 +27,14 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/auth', authRouter);
-
-// Import and use other routes
-const usersRouter = (await import('./routes/users.js')).default;
-const forumsRouter = (await import('./routes/forums.js')).default;
-const eventsRouter = (await import('./routes/events.js')).default;
-const servicesRouter = (await import('./routes/services.js')).default;
-const notificationsRouter = (await import('./routes/notifications.js')).default;
-
 app.use('/users', usersRouter);
 app.use('/forums', forumsRouter);
+
+// Import and use other routes
+const { eventsRouter } = await import('./routes/events.js');
+const { servicesRouter } = await import('./routes/services.js');
+const { notificationsRouter } = await import('./routes/notifications.js');
+
 app.use('/events', eventsRouter);
 app.use('/services', servicesRouter);
 app.use('/notifications', notificationsRouter);
