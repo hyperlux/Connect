@@ -11,16 +11,15 @@ console.log('Environment variables loaded:', {
 // Create reusable transporter object using environment variables
 const transportConfig = {
   host: process.env.SMTP_SERVER,
-  port: parseInt(process.env.SMTP_PORT || '587', 10),
-  secure: false, // false for STARTTLS
+  port: parseInt(process.env.SMTP_PORT || '465', 10),
+  secure: true, // true for port 465 (implicit TLS)
   auth: {
     user: process.env.SMTP_USERNAME,
     pass: process.env.SMTP_PASSWORD
   },
   tls: {
     minVersion: 'TLSv1.2',
-    rejectUnauthorized: true,
-    ciphers: 'HIGH:MEDIUM:!aNULL:!eNULL:!NULL:!DH:!EDH:!EXP:!LOW:!SSLv2:!MD5',
+    rejectUnauthorized: true
   },
   debug: true,
   logger: true
