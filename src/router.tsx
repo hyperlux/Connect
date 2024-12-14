@@ -61,6 +61,11 @@ const router = createBrowserRouter([
     path: '/',
     element: <Welcome />
   },
+  // Redirect /dashboard to /app/dashboard
+  {
+    path: '/dashboard',
+    element: <Navigate to="/app/dashboard" replace />
+  },
   {
     path: '/app',
     element: <ProtectedRoute><Layout /></ProtectedRoute>,
