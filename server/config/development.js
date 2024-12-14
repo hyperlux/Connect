@@ -7,6 +7,6 @@ export default {
     allowedHeaders: ['Content-Type', 'Authorization']
   },
   db: {
-    url: process.env.DATABASE_URL
+    url: "postgresql://postgres:password@localhost:5432/auroville"
   }
 };
