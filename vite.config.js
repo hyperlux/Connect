@@ -18,9 +18,7 @@ export default defineConfig(function (_a) {
             },
             proxy: {
                 '/api': {
-                    target: process.env.NODE_ENV === 'production'
-                        ? 'https://api.auroville.social'
-                        : 'http://127.0.0.1:5000',
+                    target: 'http://127.0.0.1:5000',
                     changeOrigin: true
                 }
             }
