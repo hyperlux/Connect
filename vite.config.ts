@@ -1,55 +1,42 @@
-import { defineConfig, loadEnv, UserConfig } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-export default defineConfig(({ mode }: { mode: string }): UserConfig => {
-  const env = loadEnv(mode, process.cwd(), '');
+export default defineConfig(({ mode }) => {
   const isProd = mode === 'production';
-  
+
   return {
     plugins: [react()],
     server: {
-      host: '0.0.0.0',
       port: 5173,
-      strictPort: true,
-      hmr: false,
-      watch: {
-        usePolling: false,
-        ignored: ['**/*'],
-      },
+      host: true,
       proxy: {
         '/api': {
-          target: isProd ? 'https://auroville.social' : 'http://127.0.0.1:5000',
+          target: isProd ? 'https://api.auroville.social' : 'http://localhost:5000',
           changeOrigin: true,
-          secure: isProd
+          rewrite: (path) => path.replace(/^\/api/, '')
         }
       }
     },
     build: {
       outDir: 'dist',
-      assetsDir: 'assets',
-      sourcemap: false,
-      chunkSizeWarningLimit: 2000,
-      rollupOptions: {
-        output: {
-          manualChunks(id: string): string | undefined {
-            if (id.includes('node_modules')) {
-              return 'vendor';
-            }
-            return undefined;
-          }
-        }
-      }
+      sourcemap: isProd ? false : true,
+      minify: isProd ? 'terser' : false,
+      terserOptions: isProd ? {
+        compress: {
+          drop_console: true,
+        },
+      } : undefined,
     },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
       },
     },
-    preview: {
-      port: 80,
-      host: true,
-      strictPort: true,
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(mode),
+      'process.env.VITE_API_URL': JSON.stringify(isProd ? 'https://api.auroville.social' : 'http://localhost:5000'),
+      'process.env.VITE_APP_URL': JSON.stringify(isProd ? 'https://auroville.social' : 'http://localhost:5173')
     }
   };
 });

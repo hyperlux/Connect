@@ -8,17 +8,12 @@
     "npm": ">=9.0.0"
   },
   "scripts": {
-    "dev": "vite",
-    "dev:local": "NODE_ENV=development vite --config vite.config.dev.ts",
-    "build:dev": "tsc && NODE_ENV=development vite build --config vite.config.dev.ts",
-    "build:prod": "tsc && NODE_ENV=production vite build --config vite.config.prod.ts",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "dev": "NODE_ENV=development vite --config vite.config.dev.ts",
+    "build": "tsc && NODE_ENV=production vite build",
     "preview": "vite preview",
-    "start:server": "cd server && npm start",
-    "start:all": "npm run dev:local",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "verify:build": "npm run typecheck && npm run lint",
-    "predeploy": "npm run verify:build && npm run build:prod"
+    "verify": "npm run typecheck && npm run lint"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
