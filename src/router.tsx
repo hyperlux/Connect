@@ -61,6 +61,11 @@ const router = createBrowserRouter([
     path: '/',
     element: <Welcome />
   },
+  // Redirect /signup to /register
+  {
+    path: '/signup',
+    element: <Navigate to="/register" replace />
+  },
   // Redirect /dashboard to /app/dashboard
   {
     path: '/dashboard',
