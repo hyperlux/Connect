@@ -2,27 +2,31 @@ import nodemailer from 'nodemailer';
 
 // Create reusable transporter object using environment variables
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_SERVER,
+  host: process.env.SMTP_SERVER || 'smtp.ionos.com',
   port: parseInt(process.env.SMTP_PORT || '465', 10),
   secure: true,
   auth: {
-    user: process.env.SMTP_USERNAME,
+    user: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
     pass: process.env.SMTP_PASSWORD
   },
   requireTLS: true,
   tls: {
     minVersion: 'TLSv1.2',
     rejectUnauthorized: true
-  }
+  },
+  // Add explicit connection timeout and debug
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  debug: true
 });
 
 // Debug configuration
 console.log('SMTP Configuration:', {
-  host: process.env.SMTP_SERVER,
-  port: process.env.SMTP_PORT,
+  host: process.env.SMTP_SERVER || 'smtp.ionos.com',
+  port: process.env.SMTP_PORT || '465',
   secure: true,
   auth: {
-    user: process.env.SMTP_USERNAME,
+    user: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
     // Mask password for security
     pass: process.env.SMTP_PASSWORD ? '****' : undefined
   }
@@ -36,9 +40,9 @@ transporter.verify(function(error, success) {
       code: error.code,
       command: error.command,
       response: error.response,
-      host: process.env.SMTP_SERVER,
-      port: process.env.SMTP_PORT,
-      username: process.env.SMTP_USERNAME
+      host: process.env.SMTP_SERVER || 'smtp.ionos.com',
+      port: process.env.SMTP_PORT || '465',
+      username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'
     });
     
     // More specific error messages based on error codes
@@ -72,14 +76,10 @@ export async function sendVerificationEmail(email, token) {
   console.log('Verification URL:', verificationUrl);
   
   const mailOptions = {
-    from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
+    from: `"Auroville Community" <${process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'}>`,
     to: email,
     subject: 'Verify your email - Auroville Community',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #E27B58; text-align: center;">Welcome to Auroville Community!</h1>
-        <p style="font-size: 16px; line-height: 1.5;">Thank you for joining our community. Please verify your email address by clicking the button below:</p>
-        <div style="text-align: center; margin: 30px 0;">
           <a href="${verificationUrl}" 
              style="background-color: #E27B58; 
                     color: white; 

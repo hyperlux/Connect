@@ -4,13 +4,16 @@ import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
 import { dirname } from 'path';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler.js';
 import { authRouter } from './routes/auth.mjs';
 import { forumsRouter } from './routes/forums.js';
 import { usersRouter } from './routes/users.js';
 
+// Load environment variables from parent directory's .env
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 
