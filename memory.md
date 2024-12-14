@@ -16,7 +16,7 @@ This document outlines the complete workflow for developing and deploying the Au
 - Ubuntu Server 20.04 or later
 - bash shell
 - Node.js 18+ and npm
-- PostgreSQL
+- PostgreSQL 16+
 - nginx
 - PM2
 
@@ -26,7 +26,7 @@ This document outlines the complete workflow for developing and deploying the Au
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/AurovilleConnect.git
+git clone https://github.com/hyperlux/AurovilleConnect.git
 cd AurovilleConnect
 ```
 
@@ -126,6 +126,47 @@ git push origin feature/your-feature-name
 - Proper environment variables set
 - SSL certificates installed
 - PostgreSQL database running
+
+### Environment Configuration
+
+The production server requires specific environment variables. Create a `.env` file in the server directory with the following configuration:
+
+```bash
+# Email Configuration
+SMTP_SERVER=smtp.ionos.com
+SMTP_PORT=465
+SMTP_USERNAME=notifications@aurovillenetwork.us
+SMTP_PASSWORD=lovelightforever888!
+SMTP_FROM_NAME=Auroville Community
+SMTP_FROM_EMAIL=notifications@aurovillenetwork.us
+
+# Database Configuration
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=auroville
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/auroville"
+
+# Node Environment
+NODE_ENV=production
+
+# CORS Configuration
+CORS_ORIGIN=https://auroville.social
+```
+
+### Database Setup
+
+1. Create the database:
+```bash
+sudo -u postgres psql -c "CREATE DATABASE auroville;"
+```
+
+2. Apply migrations:
+```bash
+cd server
+npx prisma generate
+npx prisma migrate deploy
+cd ..
+```
 
 ### Deployment Process
 
@@ -283,9 +324,10 @@ npm install
 ```
 
 2. Database connection issues:
-- Check DATABASE_URL in .env
-- Verify PostgreSQL is running
-- Check database permissions
+- Check DATABASE_URL in .env matches the format: postgresql://[user]:[password]@localhost:5432/[dbname]
+- Verify PostgreSQL is running: `systemctl status postgresql`
+- Check database permissions: `sudo -u postgres psql -c "\du"`
+- Test connection: `psql -U postgres -d auroville -c "\conninfo"`
 
 3. Nginx issues:
 ```bash
@@ -305,6 +347,19 @@ pm2 logs
 pm2 restart all --log
 ```
 
+5. Prisma migration issues:
+```bash
+# Reset Prisma client
+rm -rf node_modules/.prisma
+npm install @prisma/client
+
+# Verify database connection
+npx prisma db pull
+
+# Force reset (if needed)
+npx prisma migrate reset --force
+```
+
 ### Shell Integration Issues
 
 If you encounter shell integration warnings in VSCode:
@@ -322,4 +377,4 @@ If you encounter shell integration warnings in VSCode:
 - Database Administrator: [Contact Info]
 - Project Lead: [Contact Info]
 
-Remember to keep this document updated as processes evolve. Last updated: [Date]
+Remember to keep this document updated as processes evolve. Last updated: December 14, 2024
