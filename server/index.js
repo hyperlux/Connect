@@ -42,24 +42,29 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes
-app.use('/auth', authRouter);
-app.use('/users', usersRouter);
-app.use('/forums', forumsRouter);
+// Routes with /api prefix
+app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/forums', forumsRouter);
 
 // Import and use other routes
 const { eventsRouter } = await import('./routes/events.js');
 const { servicesRouter } = await import('./routes/services.js');
 const { notificationsRouter } = await import('./routes/notifications.js');
 
-app.use('/events', eventsRouter);
-app.use('/services', servicesRouter);
-app.use('/notifications', notificationsRouter);
+app.use('/api/events', eventsRouter);
+app.use('/api/services', servicesRouter);
+app.use('/api/notifications', notificationsRouter);
 
 // Error handling
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`
+    🚀 Server is running in ${process.env.NODE_ENV} mode
+    🔊 Listening on ${process.env.HOST || '0.0.0.0'}:${PORT}
+    📱 API URL: ${process.env.API_URL}
+    🌐 Frontend URL: ${process.env.FRONTEND_URL}
+    `);
 });
