@@ -22,7 +22,7 @@ export default defineConfig({
   },
   define: {
     'process.env.NODE_ENV': '"production"',
-    'process.env.VITE_API_URL': '"https://api.auroville.social"',
-    'process.env.VITE_APP_URL': '"https://auroville.social"'
+    'process.env.VITE_API_URL': process.env.VITE_API_URL || '"https://api.auroville.social"',
+    'process.env.VITE_APP_URL': process.env.VITE_APP_URL || '"https://auroville.social"'
   }
 })
