@@ -30,7 +30,11 @@ export interface AuthContextType {
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
-  withCredentials: true
+  // Remove withCredentials to prevent ad blocker issues
+  headers: {
+    'Accept': 'application/json',
+    'Cache-Control': 'no-cache'
+  }
 });
 
 api.interceptors.request.use((config) => {
@@ -86,7 +90,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (userData: any) => {
     try {
       setError(null);
-      const response = await api.post('/auth/register', userData);
+      // Add custom headers for registration to avoid ad blocker
+      const response = await api.post('/auth/register', userData, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-Custom-Header': 'registration'
+        }
+      });
       const { user: registeredUser, token } = response.data;
       
       if (token) {
