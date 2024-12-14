@@ -2,6 +2,7 @@
 /// <reference types="react" />
 /// <reference types="react-dom" />
 
+// Declare module for various file types
 declare module '*.svg' {
   import * as React from 'react';
   const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
@@ -48,28 +49,41 @@ declare module '*.json' {
   export default value;
 }
 
+// React namespace augmentation
+declare namespace React {
+  // Add missing React types
+  export import useState = React.useState;
+  export import useEffect = React.useEffect;
+  export import useCallback = React.useCallback;
+  export import useMemo = React.useMemo;
+  export import useRef = React.useRef;
+  
+  interface FormEvent<T = Element> extends SyntheticEvent<T> {
+    readonly target: EventTarget & T;
+  }
+  
+  interface ChangeEvent<T = Element> extends SyntheticEvent<T> {
+    readonly target: EventTarget & T;
+  }
+  
+  type ReactNode = 
+    | React.ReactChild
+    | React.ReactFragment
+    | React.ReactPortal
+    | boolean
+    | null
+    | undefined;
+}
+
+// Window interface augmentation
 declare interface Window {
   __INITIAL_STATE__?: any;
 }
 
-declare module 'react' {
-  interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
-    // Add custom attributes here
-    css?: any;
-  }
-  
-  interface JSX {
-    IntrinsicElements: {
-      [elemName: string]: any;
-    }
-  }
-}
-
-// Vite-specific environment variables
+// Vite environment variables
 interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string;
   readonly VITE_API_URL: string;
-  // Add other env variables here
   [key: string]: any;
 }
 
