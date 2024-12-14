@@ -1,12 +1,20 @@
 import nodemailer from 'nodemailer';
 
+// Debug the environment variables
+console.log('Environment variables loaded:', {
+  SMTP_SERVER: process.env.SMTP_SERVER,
+  SMTP_PORT: process.env.SMTP_PORT,
+  SMTP_USERNAME: process.env.SMTP_USERNAME,
+  SMTP_PASSWORD: process.env.SMTP_PASSWORD ? 'set' : 'not set'
+});
+
 // Create reusable transporter object using environment variables
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-  port: 587, // Try using port 587 (STARTTLS) instead of 465 (SSL)
+const transportConfig = {
+  host: process.env.SMTP_SERVER,
+  port: parseInt(process.env.SMTP_PORT || '587', 10),
   secure: false, // false for STARTTLS
   auth: {
-    user: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
+    user: process.env.SMTP_USERNAME,
     pass: process.env.SMTP_PASSWORD
   },
   tls: {
@@ -16,19 +24,17 @@ const transporter = nodemailer.createTransport({
   },
   debug: true,
   logger: true
-});
+};
 
-// Debug configuration
-console.log('SMTP Configuration:', {
-  host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-  port: '587',
-  secure: false,
+console.log('Creating transport with config:', {
+  ...transportConfig,
   auth: {
-    user: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
-    // Mask password for security
-    pass: process.env.SMTP_PASSWORD ? '****' : undefined
+    ...transportConfig.auth,
+    pass: transportConfig.auth.pass ? '****' : undefined
   }
 });
+
+const transporter = nodemailer.createTransport(transportConfig);
 
 // Verify transporter configuration on startup
 transporter.verify(function(error, success) {
@@ -38,9 +44,9 @@ transporter.verify(function(error, success) {
       code: error.code,
       command: error.command,
       response: error.response,
-      host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-      port: '587',
-      username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'
+      host: process.env.SMTP_SERVER,
+      port: process.env.SMTP_PORT,
+      username: process.env.SMTP_USERNAME
     });
     
     // More specific error messages based on error codes
@@ -74,7 +80,7 @@ export async function sendVerificationEmail(email, token) {
   console.log('Verification URL:', verificationUrl);
   
   const mailOptions = {
-    from: `"Auroville Community" <${process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'}>`,
+    from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
     to: email,
     subject: 'Verify your email - Auroville Community',
     html: `
@@ -118,9 +124,9 @@ export async function sendVerificationEmail(email, token) {
 
   try {
     console.log('Attempting to send email with config:', {
-      host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-      port: '587',
-      username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
+      host: process.env.SMTP_SERVER,
+      port: process.env.SMTP_PORT,
+      username: process.env.SMTP_USERNAME,
       to: email,
       verificationUrl
     });
@@ -142,9 +148,9 @@ export async function sendVerificationEmail(email, token) {
       command: error.command,
       stack: error.stack,
       config: {
-        host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-        port: '587',
-        username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'
+        host: process.env.SMTP_SERVER,
+        port: process.env.SMTP_PORT,
+        username: process.env.SMTP_USERNAME
       }
     });
     
@@ -168,7 +174,7 @@ export async function sendVerificationEmail(email, token) {
 
 export async function sendNotificationEmail(email, notification) {
   const mailOptions = {
-    from: `"Auroville Community" <${process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'}>`,
+    from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
     to: email,
     subject: notification.title,
     html: `
