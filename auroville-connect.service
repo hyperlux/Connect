@@ -6,25 +6,33 @@ After=network.target postgresql.service
 Type=simple
 User=root
 WorkingDirectory=/root/AurovilleConnect
+
+# Environment variables
 Environment=NODE_ENV=production
 Environment=PORT=5000
 Environment=HOST=0.0.0.0
 Environment=DATABASE_URL=postgresql://postgres:postgres@localhost:5432/auroville
+Environment=JWT_SECRET=your_jwt_secret_here
 Environment=VITE_API_URL=https://api.auroville.social
 Environment=VITE_APP_URL=https://auroville.social
 Environment=FRONTEND_URL=https://auroville.social
 Environment=API_URL=https://api.auroville.social
 
-# Install dependencies for both frontend and server
+# Install dependencies and build frontend
 ExecStartPre=/usr/bin/npm install
+ExecStartPre=/usr/bin/npm run build
 ExecStartPre=/bin/bash -c 'cd server && /usr/bin/npm install'
 
-# Build frontend
-ExecStartPre=/usr/bin/npm run build
+# Create uploads directory
+ExecStartPre=/bin/mkdir -p /root/AurovilleConnect/server/uploads
+ExecStartPre=/bin/chmod 755 /root/AurovilleConnect/server/uploads
+
+# Copy built files to web root
+ExecStartPre=/bin/cp -r dist/* /var/www/html/
 
 # Start the server
 WorkingDirectory=/root/AurovilleConnect/server
-ExecStart=/usr/bin/npm start
+ExecStart=/usr/bin/node index.js
 
 # Restart on failure
 Restart=always
