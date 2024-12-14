@@ -1,16 +1,23 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// Load environment variables from parent directory's .env
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: join(__dirname, '..', '..', '.env') });
 
 // Create reusable transporter object using environment variables
 const transportConfig = {
-  host: process.env.SMTP_SERVER,
-  port: parseInt(process.env.SMTP_PORT || '465', 10),
-  secure: true, // true for port 465 (implicit TLS)
+  host: process.env.SMTP_SERVER || 'smtp.ionos.com',
+  port: parseInt(process.env.SMTP_PORT || '587', 10),
+  secure: false, // false for port 587 (STARTTLS)
   auth: {
-    user: process.env.SMTP_USERNAME,
+    user: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
     pass: process.env.SMTP_PASSWORD
   },
   tls: {
-    // Required for some SMTP servers
     rejectUnauthorized: true
   }
 };
@@ -34,9 +41,9 @@ transporter.verify(function(error, success) {
       code: error.code,
       command: error.command,
       response: error.response,
-      host: process.env.SMTP_SERVER,
-      port: process.env.SMTP_PORT,
-      username: process.env.SMTP_USERNAME
+      host: process.env.SMTP_SERVER || 'smtp.ionos.com',
+      port: process.env.SMTP_PORT || '587',
+      username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'
     });
   } else {
     console.log('SMTP server is ready to send emails');
@@ -51,7 +58,7 @@ export async function sendVerificationEmail(email, token) {
   console.log('Verification URL:', verificationUrl);
   
   const mailOptions = {
-    from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
+    from: `"Auroville Community" <${process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'}>`,
     to: email,
     subject: 'Verify your email - Auroville Community',
     html: `
@@ -95,9 +102,9 @@ export async function sendVerificationEmail(email, token) {
 
   try {
     console.log('Attempting to send email with config:', {
-      host: process.env.SMTP_SERVER,
-      port: process.env.SMTP_PORT,
-      username: process.env.SMTP_USERNAME,
+      host: process.env.SMTP_SERVER || 'smtp.ionos.com',
+      port: process.env.SMTP_PORT || '587',
+      username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
       to: email,
       verificationUrl
     });
@@ -119,9 +126,9 @@ export async function sendVerificationEmail(email, token) {
       command: error.command,
       stack: error.stack,
       config: {
-        host: process.env.SMTP_SERVER,
-        port: process.env.SMTP_PORT,
-        username: process.env.SMTP_USERNAME
+        host: process.env.SMTP_SERVER || 'smtp.ionos.com',
+        port: process.env.SMTP_PORT || '587',
+        username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'
       }
     });
     throw error;
@@ -130,7 +137,7 @@ export async function sendVerificationEmail(email, token) {
 
 export async function sendNotificationEmail(email, notification) {
   const mailOptions = {
-    from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
+    from: `"Auroville Community" <${process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'}>`,
     to: email,
     subject: notification.title,
     html: `
