@@ -80,6 +80,10 @@ export async function sendVerificationEmail(email, token) {
     to: email,
     subject: 'Verify your email - Auroville Community',
     html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #E27B58; text-align: center;">Welcome to Auroville Community!</h1>
+        <p style="font-size: 16px; line-height: 1.5;">Thank you for joining our community. Please verify your email address by clicking the button below:</p>
+        <div style="text-align: center; margin: 30px 0;">
           <a href="${verificationUrl}" 
              style="background-color: #E27B58; 
                     color: white; 
@@ -116,9 +120,9 @@ export async function sendVerificationEmail(email, token) {
 
   try {
     console.log('Attempting to send email with config:', {
-      host: process.env.SMTP_SERVER,
-      port: process.env.SMTP_PORT,
-      username: process.env.SMTP_USERNAME,
+      host: process.env.SMTP_SERVER || 'smtp.ionos.com',
+      port: process.env.SMTP_PORT || '465',
+      username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
       to: email,
       verificationUrl
     });
@@ -140,9 +144,9 @@ export async function sendVerificationEmail(email, token) {
       command: error.command,
       stack: error.stack,
       config: {
-        host: process.env.SMTP_SERVER,
-        port: process.env.SMTP_PORT,
-        username: process.env.SMTP_USERNAME
+        host: process.env.SMTP_SERVER || 'smtp.ionos.com',
+        port: process.env.SMTP_PORT || '465',
+        username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'
       }
     });
     
@@ -166,7 +170,7 @@ export async function sendVerificationEmail(email, token) {
 
 export async function sendNotificationEmail(email, notification) {
   const mailOptions = {
-    from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
+    from: `"Auroville Community" <${process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'}>`,
     to: email,
     subject: notification.title,
     html: `
