@@ -3,28 +3,26 @@ import nodemailer from 'nodemailer';
 // Create reusable transporter object using environment variables
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-  port: parseInt(process.env.SMTP_PORT || '465', 10),
-  secure: true,
+  port: 587, // Try using port 587 (STARTTLS) instead of 465 (SSL)
+  secure: false, // false for STARTTLS
   auth: {
     user: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
     pass: process.env.SMTP_PASSWORD
   },
-  requireTLS: true,
   tls: {
     minVersion: 'TLSv1.2',
-    rejectUnauthorized: true
+    rejectUnauthorized: true,
+    ciphers: 'HIGH:MEDIUM:!aNULL:!eNULL:!NULL:!DH:!EDH:!EXP:!LOW:!SSLv2:!MD5',
   },
-  // Add explicit connection timeout and debug
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  debug: true
+  debug: true,
+  logger: true
 });
 
 // Debug configuration
 console.log('SMTP Configuration:', {
   host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-  port: process.env.SMTP_PORT || '465',
-  secure: true,
+  port: '587',
+  secure: false,
   auth: {
     user: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
     // Mask password for security
@@ -41,7 +39,7 @@ transporter.verify(function(error, success) {
       command: error.command,
       response: error.response,
       host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-      port: process.env.SMTP_PORT || '465',
+      port: '587',
       username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'
     });
     
@@ -121,7 +119,7 @@ export async function sendVerificationEmail(email, token) {
   try {
     console.log('Attempting to send email with config:', {
       host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-      port: process.env.SMTP_PORT || '465',
+      port: '587',
       username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
       to: email,
       verificationUrl
@@ -145,7 +143,7 @@ export async function sendVerificationEmail(email, token) {
       stack: error.stack,
       config: {
         host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-        port: process.env.SMTP_PORT || '465',
+        port: '587',
         username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'
       }
     });
