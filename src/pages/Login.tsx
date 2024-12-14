@@ -109,7 +109,7 @@ export default function Login() {
             <span className="text-sm text-gray-600 dark:text-gray-400">
               Don't have an account?{' '}
               <Link
-                to="/signup"
+                to="/register"
                 className="font-medium text-auroville-primary hover:text-auroville-secondary"
               >
                 Sign up
