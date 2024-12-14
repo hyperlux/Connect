@@ -1,80 +1,272 @@
-# Deployment Workflow
+# Development and Deployment Workflow
 
-## Server Setup
-- Ubuntu server running at auroville.social
-- Docker and Docker Compose installed
-- SSL certificates in /etc/letsencrypt
+This document outlines the workflow for developing locally on Mac and deploying to Ubuntu production server.
 
-## Development Workflow
+## Initial Setup
 
-1. Make changes and push to git:
+1. Install dependencies:
 ```bash
-git add .
-git commit -m "Your changes"
-git push
+# Install all dependencies including dev dependencies
+npm install
+
+# Install backend dependencies
+cd server && npm install && cd ..
 ```
 
-2. Deploy on server:
+2. Install TypeScript type definitions:
 ```bash
+# Ensure all type definitions are installed
+npm install --save-dev @types/react-query @tanstack/eslint-plugin-query
+```
+
+## Local Development (Mac)
+
+1. Start local development server:
+```bash
+# Start backend
+npm run start:server
+
+# In a new terminal, start frontend with hot reload
+npm run dev:local
+```
+
+2. Type checking and linting:
+```bash
+# Run type checking
+npm run typecheck
+
+# Run linting
+npm run lint
+
+# Run both
+npm run verify:build
+```
+
+3. Test production build locally:
+```bash
+# Build for production
+npm run build:prod
+
+# Preview production build
+npm run preview
+```
+
+## TypeScript Development Guidelines
+
+1. Type Declarations
+- All types are declared in `src/types/global.d.ts`
+- Use strict type checking
+- Avoid using `any` type
+- Define interfaces for all data structures
+
+2. Common Type Issues and Solutions:
+```typescript
+// For React Query
+const { data, isLoading, error } = useQuery<ForumPost[]>({
+  queryKey: ['posts'],
+  queryFn: fetchPosts
+});
+
+// For Lucide Icons
+import { Icon } from 'lucide-react';
+const IconComponent: LucideIcon = Icon;
+
+// For form data
+interface FormData {
+  title: string;
+  content: string;
+}
+```
+
+3. Type Checking:
+```bash
+# Check types before commit
+npm run typecheck
+
+# Fix common type issues
+npm run lint --fix
+```
+
+## Production Deployment (Ubuntu)
+
+1. On local machine, prepare for deployment:
+```bash
+# Verify and build
+npm run predeploy
+```
+
+2. Deploy to production server:
+```bash
+# SSH into server
+ssh user@auroville.social
+
+# Navigate to project
+cd /root/AurovilleConnect
+
+# Pull latest changes
 git pull origin main
-docker compose down
-docker compose build
-docker compose up -d
-docker compose logs -f
+
+# Install dependencies if needed
+npm install
+cd server && npm install && cd ..
+
+# Apply database migrations
+cd server && npx prisma migrate deploy && cd ..
+
+# Build the application
+npm run build:prod
+
+# Restart the application
+pm2 restart all
 ```
 
-3. Check logs if needed:
+## Environment-Specific Configurations
+
+### Development (Mac)
+- Uses `vite.config.dev.ts`
+- Development server: `http://localhost:5173`
+- API server: `http://localhost:5000`
+- Source maps enabled
+- Hot module replacement enabled
+
+### Production (Ubuntu)
+- Uses `vite.config.prod.ts`
+- Production URL: `https://auroville.social`
+- API URL: `https://api.auroville.social`
+- Source maps disabled
+- Optimized build
+
+## Troubleshooting Common Issues
+
+### TypeScript Errors
+
+1. Missing type definitions:
 ```bash
-docker compose logs -f
+# Install missing type definitions
+npm install --save-dev @types/missing-package
 ```
 
-## SSL Certificates
-- Managed by Let's Encrypt
-- Auto-renewal configured
-- Mounted at /etc/letsencrypt
-
-## Important Notes
-- All development happens directly on the server
-- Single docker-compose.yml for simplicity
-- Production environment variables in .env
-
-## Development and Deployment Workflow
-
-## Local Development
-1. Make changes locally in Cursor IDE
-2. Test changes locally
-3. Commit and push to git
-
-## Server Deployment
-1. SSH into server
-2. Pull latest changes: `git pull`
-3. Rebuild and restart services: `docker-compose down && docker-compose up --build -d`
-
-## Domain Configuration
-The application uses two domains:
-- `auroville.social` - Frontend application
-- `api.auroville.social` - Backend API
-
-The nginx configuration (`nginx.conf`) handles:
-- SSL termination for both domains
-- Serving static frontend files from `/usr/share/nginx/html`
-- Proxying API requests to the backend service
-- HTTP to HTTPS redirection
-- CORS headers for API requests
-
-## SSL Certificates
-SSL certificates from Let's Encrypt are mounted from:
-```
-/etc/letsencrypt/live/auroville.social/fullchain.pem
-/etc/letsencrypt/live/auroville.social/privkey.pem
+2. Implicit any errors:
+```typescript
+// Add type annotations
+function processData(data: unknown) {
+  if (typeof data === 'string') {
+    // Now TypeScript knows data is a string
+    return data.toUpperCase();
+  }
+  throw new Error('Invalid data type');
+}
 ```
 
-## Container Architecture
-- Frontend: Nginx serving static files + handling SSL
-- Backend: Node.js API service
-- Database: PostgreSQL
+3. React Query type errors:
+```typescript
+// Properly type queries
+const { data } = useQuery<YourDataType>({
+  queryKey: ['key'],
+  queryFn: () => fetchData()
+});
+```
 
-## Important Files
-- `nginx.conf` - Nginx configuration for both domains
-- `docker-compose.yml` - Container orchestration
-- `.env` - Environment variables (keep secure)
+### Build Issues
+
+1. TypeScript build failures:
+```bash
+# Clear TypeScript cache
+rm -rf node_modules/.cache/typescript
+
+# Rebuild
+npm run build:prod
+```
+
+2. Vite build issues:
+```bash
+# Clear Vite cache
+rm -rf node_modules/.vite
+
+# Rebuild
+npm run build:prod
+```
+
+3. Node modules issues:
+```bash
+# Clean install
+rm -rf node_modules
+npm install
+```
+
+### Runtime Issues
+
+1. Environment variables:
+- Check `.env` files match environment
+- Verify `vite.config.dev.ts` and `vite.config.prod.ts`
+
+2. API connection issues:
+- Verify API URLs in config files
+- Check CORS settings
+- Verify proxy settings
+
+3. Database issues:
+- Check connection strings
+- Verify migrations are up to date
+- Check database permissions
+
+## Continuous Integration
+
+For automated deployments, use GitHub Actions:
+
+```yaml
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Type check
+        run: npm run typecheck
+      
+      - name: Lint
+        run: npm run lint
+      
+      - name: Build
+        run: npm run build:prod
+```
+
+## Best Practices
+
+1. Before Starting Development:
+- Pull latest changes
+- Install/update dependencies
+- Run type checking
+- Check environment variables
+
+2. During Development:
+- Use TypeScript strictly
+- Run type checking frequently
+- Test in both environments
+- Document type changes
+
+3. Before Deployment:
+- Run full verification
+- Test production build locally
+- Update documentation
+- Create backup if needed
+
+4. After Deployment:
+- Verify application status
+- Check for type errors in console
+- Monitor performance
+- Test critical features
+
+Remember to regularly update dependencies and apply security patches to maintain a healthy development environment.
