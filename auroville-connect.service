@@ -3,7 +3,7 @@ Description=Auroville Connect Platform
 After=network.target postgresql.service
 
 [Service]
-Type=simple
+Type=forking
 User=root
 WorkingDirectory=/root/AurovilleConnect
 
@@ -17,6 +17,7 @@ Environment=VITE_API_URL=https://api.auroville.social
 Environment=VITE_APP_URL=https://auroville.social
 Environment=FRONTEND_URL=https://auroville.social
 Environment=API_URL=https://api.auroville.social
+Environment=PM2_HOME=/root/.pm2
 
 # Install dependencies and build frontend
 ExecStartPre=/usr/bin/npm install
@@ -30,9 +31,10 @@ ExecStartPre=/bin/chmod 755 /root/AurovilleConnect/server/uploads
 # Copy built files to web root
 ExecStartPre=/bin/cp -r dist/* /var/www/html/
 
-# Start the server
-WorkingDirectory=/root/AurovilleConnect/server
-ExecStart=/usr/bin/node index.js
+# Start the server using PM2
+ExecStart=/usr/local/bin/pm2 start /root/AurovilleConnect/server/index.js --name "auroville-connect"
+ExecStop=/usr/local/bin/pm2 stop auroville-connect
+ExecReload=/usr/local/bin/pm2 reload auroville-connect
 
 # Restart on failure
 Restart=always
