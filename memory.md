@@ -1,6 +1,19 @@
 # Development Memory
 
-[Previous content through "TypeScript Configuration and Common Issues" section remains unchanged...]
+[Previous content through "Troubleshooting Steps" remains unchanged...]
+
+### Production Database Verification
+
+1. Verify PostgreSQL Installation on Production:
+   ```bash
+   # Check if PostgreSQL is installed and running
+   sudo systemctl status postgresql
+   
+   # Verify PostgreSQL version matches development
+   psql --version
+   ```
+
+[Previous database verification content through "Schema Migration Notes" remains unchanged...]
 
 ### TypeScript Configuration and Common Issues
 
@@ -148,5 +161,41 @@
    - Check tsconfig paths match project structure
    - Verify type declarations in vite-env.d.ts and jsx.d.ts
    - Ensure React namespace augmentations are properly defined
+
+10. Production Build Issues:
+    - Problem: Type definition errors on production server
+      ```bash
+      error TS2688: Cannot find type definition file for 'react'.
+      error TS2688: Cannot find type definition file for 'react-dom'.
+      error TS2688: Cannot find type definition file for 'vite/client'.
+      ```
+    
+    - Solution: Remove explicit types from tsconfig.json and rely on typeRoots
+      ```json
+      // tsconfig.json
+      {
+        "compilerOptions": {
+          // Remove "types" array and use typeRoots instead
+          "typeRoots": ["./node_modules/@types", "./src/types"],
+          // Other settings remain unchanged...
+        }
+      }
+      ```
+    
+    - Alternative Solutions:
+      1. Install type definitions on production:
+         ```bash
+         npm install --save-dev @types/react @types/react-dom
+         ```
+      2. Move type packages to regular dependencies:
+         ```bash
+         npm install @types/react @types/react-dom
+         ```
+      3. Use skipLibCheck: true in tsconfig.json to bypass strict type checking
+
+    - Best Practice:
+      - Keep development and production environments consistent
+      - Include type packages in package.json dependencies if needed in production
+      - Document any environment-specific TypeScript configurations
 
 [Previous "Production Server Details" and other sections remain unchanged...]
