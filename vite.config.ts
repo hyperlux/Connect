@@ -19,8 +19,9 @@ export default defineConfig(({ mode }: { mode: string }): UserConfig => {
       },
       proxy: {
         '/api': {
-          target: 'http://127.0.0.1:5000',
-          changeOrigin: true
+          target: isProd ? 'https://auroville.social' : 'http://127.0.0.1:5000',
+          changeOrigin: true,
+          secure: isProd
         }
       }
     },

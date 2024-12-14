@@ -103,3 +103,69 @@
    ```
 
 [Previous "Production Server Details" and "Schema Migration Notes" sections remain unchanged...]
+
+### TypeScript Configuration and Common Issues
+
+1. Required Dependencies:
+   ```bash
+   # Core TypeScript dependencies
+   npm install --save-dev typescript @types/react @types/react-dom
+
+   # Check versions are installed
+   npm list typescript @types/react @types/react-dom
+   ```
+
+2. TypeScript Configuration:
+   ```json
+   // tsconfig.json
+   {
+     "compilerOptions": {
+       "jsx": "react-jsx",
+       "esModuleInterop": true,
+       "skipLibCheck": true,
+       "lib": ["DOM", "DOM.Iterable", "ESNext"],
+       "moduleResolution": "node",
+       "resolveJsonModule": true,
+       "isolatedModules": true,
+       "noEmit": true,
+       "strict": true
+     },
+     "include": ["src"],
+     "references": [{ "path": "./tsconfig.node.json" }]
+   }
+   ```
+
+3. Common TypeScript Issues:
+   - JSX namespace missing: Import React in files using JSX
+   - Missing type definitions: Install @types packages
+   - Implicit any types: Use proper type annotations
+   - JSX.IntrinsicElements errors: Ensure proper React types
+
+4. Development Best Practices:
+   ```bash
+   # Check for type errors before commit
+   tsc --noEmit
+
+   # Update all @types packages
+   npm update @types/*
+   ```
+
+5. IDE Configuration:
+   - Use VS Code with TypeScript support
+   - Enable "TypeScript > Suggest: Enabled" setting
+   - Install ESLint and Prettier extensions
+
+6. Pre-commit Checks:
+   ```bash
+   # Add to package.json scripts
+   "scripts": {
+     "typecheck": "tsc --noEmit",
+     "lint": "eslint src --ext .ts,.tsx"
+   }
+   ```
+
+7. Troubleshooting Steps:
+   - Clear TypeScript cache: `rm -rf node_modules/.cache/typescript`
+   - Rebuild node_modules: `rm -rf node_modules && npm install`
+   - Update TypeScript: `npm install typescript@latest`
+   - Check tsconfig paths match project structure
