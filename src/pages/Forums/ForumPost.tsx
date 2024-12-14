@@ -40,7 +40,7 @@ export default function ForumPost() {
     <div className="flex-1 bg-gray-50 dark:bg-dark-lighter">
       <div className="max-w-4xl mx-auto px-4 py-6">
         <button
-          onClick={() => navigate('/forums')}
+          onClick={() => navigate('/app/forums')}
           className="flex items-center gap-2 text-gray-600 dark:text-dark-secondary hover:text-gray-900 dark:hover:text-dark-primary mb-6"
         >
           <ArrowLeft className="h-5 w-5" />

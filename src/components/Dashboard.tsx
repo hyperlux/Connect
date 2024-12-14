@@ -69,7 +69,7 @@ export default function Dashboard() {
   const handleNavigateToEvents = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate('/events');
+    navigate('/app/events');
   };
 
   const formatDate = (dateString: string) => {
@@ -161,7 +161,7 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-600 dark:text-gray-400">{getCurrentWeekRange()}</p>
               </div>
               <Link 
-                to="/events"
+                to="/app/events"
                 className="flex items-center gap-1 text-indigo-500 hover:text-indigo-600"
                 onClick={handleNavigateToEvents}
               >

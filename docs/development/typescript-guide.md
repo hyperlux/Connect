@@ -61,6 +61,8 @@
    - Implicit any types: Use proper type annotations
    - JSX.IntrinsicElements errors: Ensure proper React types
    - React hooks type errors: Ensure proper React type declarations in vite-env.d.ts
+   - Theme and styling type errors: Define proper theme type declarations
+   - Component library type errors: Add proper type definitions for UI libraries
 
 4. Type Declaration Files:
    ```typescript
@@ -130,6 +132,17 @@
        // ... other hooks
      }
      ```
+   - Add theme type declarations:
+     ```typescript
+     // theme.d.ts
+     declare module 'tailwind-theme' {
+       interface ThemeColors {
+         'dark-card': string;
+         'dark-primary': string;
+         // ... other theme colors
+       }
+     }
+     ```
 
 6. Development Best Practices:
    ```bash
@@ -161,6 +174,8 @@
    - Check tsconfig paths match project structure
    - Verify type declarations in vite-env.d.ts and jsx.d.ts
    - Ensure React namespace augmentations are properly defined
+   - Check theme type definitions match Tailwind configuration
+   - Verify component library type definitions are up to date
 
 10. Production Build Issues:
     - Problem: Type definition errors on production server
@@ -197,5 +212,6 @@
       - Keep development and production environments consistent
       - Include type packages in package.json dependencies if needed in production
       - Document any environment-specific TypeScript configurations
+      - Maintain comprehensive theme and component type definitions
 
 [Previous "Production Server Details" and other sections remain unchanged...]

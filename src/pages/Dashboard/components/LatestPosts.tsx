@@ -35,7 +35,7 @@ export default function LatestPosts() {
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-gray-900 dark:text-white">Latest Community Posts</h2>
           <Link 
-            to="/forums"
+            to="/app/forums"
             className="flex items-center gap-1 text-sm text-auroville-primary hover:text-auroville-primary/80 transition-colors"
           >
             <span>View All</span>

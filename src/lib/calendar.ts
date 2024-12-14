@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import { persist, PersistOptions } from 'zustand/middleware';
-import { StateCreator } from 'zustand';
+import { persist } from 'zustand/middleware';
 import axios from './axios';
 import { format, addDays } from 'date-fns';
 
@@ -112,11 +111,6 @@ interface CalendarState {
   addComment: (eventId: string, comment: string) => Promise<void>;
 }
 
-type CalendarStorePersist = (
-  config: StateCreator<CalendarState>,
-  options: PersistOptions<CalendarState>
-) => StateCreator<CalendarState>;
-
 const useCalendarStore = create<CalendarState>()(
   persist(
     (set, get) => ({
@@ -145,7 +139,7 @@ const useCalendarStore = create<CalendarState>()(
           const currentDate = get().selectedDate;
           
           try {
-            const response = await axios.get('/events', {
+            const response = await axios.get<CalendarEvent[]>('/events', {
               params: {
                 month: month ?? currentDate.getMonth() + 1,
                 year: year ?? currentDate.getFullYear()
@@ -166,8 +160,8 @@ const useCalendarStore = create<CalendarState>()(
               set({ events: storedEvents, isLoading: false });
             }
           }
-        } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'An error occurred', isLoading: false });
         }
       },
 
@@ -175,7 +169,7 @@ const useCalendarStore = create<CalendarState>()(
         try {
           set({ isLoading: true, error: null });
           try {
-            await axios.post('/events', event);
+            await axios.post<CalendarEvent>('/events', event);
             await get().fetchEvents();
           } catch (apiError) {
             console.log('Storing event locally:', apiError);
@@ -186,13 +180,13 @@ const useCalendarStore = create<CalendarState>()(
               isJoined: false,
               attendees: 0
             };
-            set((state) => ({ 
+            set((state: CalendarState) => ({ 
               events: [...state.events, newEvent],
               isLoading: false
             }));
           }
-        } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'An error occurred', isLoading: false });
           throw error;
         }
       },
@@ -201,17 +195,17 @@ const useCalendarStore = create<CalendarState>()(
         try {
           set({ isLoading: true, error: null });
           try {
-            await axios.put(`/events/${id}`, event);
+            await axios.put<CalendarEvent>(`/events/${id}`, event);
             await get().fetchEvents();
           } catch (apiError) {
             console.log('Updating event locally:', apiError);
-            set((state) => ({
-              events: state.events.map((e) => e.id === id ? { ...e, ...event } : e),
+            set((state: CalendarState) => ({
+              events: state.events.map((e: CalendarEvent) => e.id === id ? { ...e, ...event } : e),
               isLoading: false
             }));
           }
-        } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'An error occurred', isLoading: false });
           throw error;
         }
       },
@@ -221,19 +215,19 @@ const useCalendarStore = create<CalendarState>()(
           set({ isLoading: true, error: null });
           try {
             await axios.delete(`/events/${id}`);
-            set((state) => ({
-              events: state.events.filter((e) => e.id !== id),
+            set((state: CalendarState) => ({
+              events: state.events.filter((e: CalendarEvent) => e.id !== id),
               isLoading: false
             }));
           } catch (apiError) {
             console.log('Deleting event locally:', apiError);
-            set((state) => ({
-              events: state.events.filter((e) => e.id !== id),
+            set((state: CalendarState) => ({
+              events: state.events.filter((e: CalendarEvent) => e.id !== id),
               isLoading: false
             }));
           }
-        } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'An error occurred', isLoading: false });
           throw error;
         }
       },
@@ -246,8 +240,8 @@ const useCalendarStore = create<CalendarState>()(
             await get().fetchEvents();
           } catch (apiError) {
             console.log('Updating join status locally:', apiError);
-            set((state) => ({
-              events: state.events.map((e) => 
+            set((state: CalendarState) => ({
+              events: state.events.map((e: CalendarEvent) => 
                 e.id === eventId 
                   ? { ...e, attendees: e.attendees + 1, isJoined: true }
                   : e
@@ -255,8 +249,8 @@ const useCalendarStore = create<CalendarState>()(
               isLoading: false
             }));
           }
-        } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'An error occurred', isLoading: false });
           throw error;
         }
       },
@@ -269,8 +263,8 @@ const useCalendarStore = create<CalendarState>()(
             await get().fetchEvents();
           } catch (apiError) {
             console.log('Updating leave status locally:', apiError);
-            set((state) => ({
-              events: state.events.map((e) => 
+            set((state: CalendarState) => ({
+              events: state.events.map((e: CalendarEvent) => 
                 e.id === eventId 
                   ? { ...e, attendees: Math.max(0, e.attendees - 1), isJoined: false }
                   : e
@@ -278,8 +272,8 @@ const useCalendarStore = create<CalendarState>()(
               isLoading: false
             }));
           }
-        } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'An error occurred', isLoading: false });
           throw error;
         }
       },
@@ -301,8 +295,8 @@ const useCalendarStore = create<CalendarState>()(
                 name: "John Doe"
               }
             };
-            set((state) => ({
-              events: state.events.map((e) => 
+            set((state: CalendarState) => ({
+              events: state.events.map((e: CalendarEvent) => 
                 e.id === eventId 
                   ? { ...e, comments: [...e.comments, newComment] }
                   : e
@@ -310,8 +304,8 @@ const useCalendarStore = create<CalendarState>()(
               isLoading: false
             }));
           }
-        } catch (error: any) {
-          set({ error: error.message, isLoading: false });
+        } catch (error) {
+          set({ error: error instanceof Error ? error.message : 'An error occurred', isLoading: false });
           throw error;
         }
       },
@@ -328,7 +322,6 @@ const useCalendarStore = create<CalendarState>()(
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
-          // Convert the ISO string back to a Date object
           state.selectedDate = new Date(state.selectedDate);
         }
       }

@@ -38,7 +38,7 @@ export default function TodayEvents() {
             <h2 className="font-semibold text-gray-900 dark:text-white">Today's Events</h2>
           </div>
           <Link 
-            to="/events"
+            to="/app/events"
             className="flex items-center gap-1 text-sm text-auroville-primary hover:text-auroville-primary/80 transition-colors"
           >
             <span>View All</span>
