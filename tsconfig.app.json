@@ -18,7 +18,15 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Type Declarations */
+    "types": [
+      "node",
+      "react",
+      "react-dom",
+      "vite/client"
+    ]
   },
-  "include": ["src", "server/routes/routes", "server/index.js", "server/routes/auth.js", "server/routes/events.js", "server/routes/forums.js", "server/routes/services.js", "server/routes/users.js", "server/middleware/errorHandler.js"]
+  "include": ["src"]
 }
