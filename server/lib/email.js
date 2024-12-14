@@ -1,13 +1,5 @@
 import nodemailer from 'nodemailer';
 
-// Debug the environment variables
-console.log('Environment variables loaded:', {
-  SMTP_SERVER: process.env.SMTP_SERVER,
-  SMTP_PORT: process.env.SMTP_PORT,
-  SMTP_USERNAME: process.env.SMTP_USERNAME,
-  SMTP_PASSWORD: process.env.SMTP_PASSWORD ? 'set' : 'not set'
-});
-
 // Create reusable transporter object using environment variables
 const transportConfig = {
   host: process.env.SMTP_SERVER,
@@ -18,14 +10,13 @@ const transportConfig = {
     pass: process.env.SMTP_PASSWORD
   },
   tls: {
-    minVersion: 'TLSv1.2',
+    // Required for some SMTP servers
     rejectUnauthorized: true
-  },
-  debug: true,
-  logger: true
+  }
 };
 
-console.log('Creating transport with config:', {
+// Debug configuration
+console.log('SMTP Configuration:', {
   ...transportConfig,
   auth: {
     ...transportConfig.auth,
@@ -47,25 +38,6 @@ transporter.verify(function(error, success) {
       port: process.env.SMTP_PORT,
       username: process.env.SMTP_USERNAME
     });
-    
-    // More specific error messages based on error codes
-    switch(error.code) {
-      case 'ECONNECTION':
-      case 'ETIMEDOUT':
-        console.error('Could not connect to SMTP server. Please check if the server is accessible.');
-        break;
-      case 'EAUTH':
-        console.error('Authentication failed. Please verify these items:');
-        console.error('1. Check if SMTP_USERNAME and SMTP_PASSWORD are correct');
-        console.error('2. Ensure SMTP_SERVER supports TLS');
-        console.error('3. Verify if 2FA is enabled and requires app-specific password');
-        break;
-      case 'ESOCKET':
-        console.error('Socket error occurred. Please check if SMTP port is correct and accessible.');
-        break;
-      default:
-        console.error('An unexpected SMTP error occurred:', error.message);
-    }
   } else {
     console.log('SMTP server is ready to send emails');
   }
@@ -152,22 +124,7 @@ export async function sendVerificationEmail(email, token) {
         username: process.env.SMTP_USERNAME
       }
     });
-    
-    // Enhanced error handling with more specific messages
-    switch(error.code) {
-      case 'ECONNREFUSED':
-        throw new Error('Could not connect to email server. Please check if SMTP server is accessible.');
-      case 'EAUTH':
-        throw new Error('Email authentication failed. Please verify SMTP credentials and ensure 2FA settings are properly configured if enabled.');
-      case 'ESOCKET':
-        throw new Error('Socket error occurred. Please check SMTP port and server accessibility.');
-      case 'ETIMEDOUT':
-        throw new Error('Connection timed out. Please check SMTP server and network connectivity.');
-      case error.responseCode >= 500:
-        throw new Error('Email server error. Please try again later.');
-      default:
-        throw error;
-    }
+    throw error;
   }
 }
 
