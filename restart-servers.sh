@@ -44,7 +44,7 @@ else
     pm2 kill
 fi
 
-check_port 3001
+check_port 5000
 if [ $? -eq 0 ]; then
     log_message "Port 3001 is available"
 else
