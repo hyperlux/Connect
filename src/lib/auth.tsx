@@ -42,7 +42,6 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  // Don't set Content-Type for FormData
   if (!(config.data instanceof FormData)) {
     config.headers['Content-Type'] = 'application/json';
   }
@@ -60,18 +59,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Initialize auth state
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Verify token and get user data
+        const response = await api.get('/auth/verify');
+        const userData = response.data;
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+      } catch (err) {
+        // If token is invalid, clear storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (credentials: LoginCredentials) => {
     try {
       setError(null);
+      setIsLoading(true);
       const response = await api.post('/auth/login', credentials);
       const { user: userData, token } = response.data;
       
@@ -84,13 +103,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const errorMessage = err.response?.data?.message || 'Login failed';
       setError(errorMessage);
       throw new Error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const register = async (userData: any) => {
     try {
       setError(null);
-      // Add custom headers for registration to avoid ad blocker
+      setIsLoading(true);
       const response = await api.post('/auth/register', userData, {
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
@@ -110,6 +131,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const errorMessage = err.response?.data?.message || 'Registration failed';
       setError(errorMessage);
       throw new Error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -123,6 +146,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const updateProfile = async (data: Partial<User>) => {
     try {
+      setIsLoading(true);
       const response = await api.put('/users/profile', data);
       const updatedUser = response.data;
       setUser(updatedUser);
@@ -132,11 +156,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const errorMessage = err.response?.data?.message || 'Profile update failed';
       setError(errorMessage);
       throw new Error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const uploadProfilePicture = async (file: File) => {
     try {
+      setIsLoading(true);
       const formData = new FormData();
       formData.append('profilePicture', file);
       const response = await api.post('/users/profile/picture', formData);
@@ -148,6 +175,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const errorMessage = err.response?.data?.message || 'Profile picture upload failed';
       setError(errorMessage);
       throw new Error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 

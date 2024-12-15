@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBrowserRouter, Navigate, useLocation } from 'react-router-dom';
+import { createBrowserRouter, Navigate, useLocation, redirect } from 'react-router-dom';
 import { useAuth } from './lib/auth';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -56,136 +56,214 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   return <>{children}</>;
 }
 
+// Error Boundary Component
+function ErrorBoundary() {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  if (!isAuthenticated && location.pathname !== '/login') {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h2 className="text-xl font-semibold mb-2">Oops! Something went wrong</h2>
+        <p className="text-gray-600 mb-4">We're sorry, but there was an error loading this page.</p>
+        <button 
+          onClick={() => window.location.href = isAuthenticated ? '/app/dashboard' : '/'}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Return Home
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Auth checker for protected routes
+async function authLoader() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return redirect('/login');
+  }
+  return null;
+}
+
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Welcome />
+    element: <Welcome />,
+    errorElement: <ErrorBoundary />
   },
-  // Redirect /signup to /register
+  // Redirect root profile to app profile
+  {
+    path: '/profile',
+    loader: authLoader,
+    element: <Navigate to="/app/profile" replace />,
+    errorElement: <ErrorBoundary />
+  },
   {
     path: '/signup',
-    element: <Navigate to="/register" replace />
+    element: <Navigate to="/register" replace />,
+    errorElement: <ErrorBoundary />
   },
-  // Redirect /dashboard to /app/dashboard
   {
     path: '/dashboard',
-    element: <Navigate to="/app/dashboard" replace />
+    loader: authLoader,
+    element: <Navigate to="/app/dashboard" replace />,
+    errorElement: <ErrorBoundary />
   },
   {
     path: '/app',
     element: <ProtectedRoute><Layout /></ProtectedRoute>,
+    loader: authLoader,
+    errorElement: <ErrorBoundary />,
     children: [
       {
         index: true,
-        element: <Dashboard />
+        element: <Dashboard />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'dashboard',
-        element: <Dashboard />
+        element: <Dashboard />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'events',
-        element: <Events />
+        element: <Events />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'events/:eventId',
-        element: <EventDetails />
+        element: <EventDetails />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'forums',
-        element: <Forums />
+        element: <Forums />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'forums/:postId',
-        element: <ForumPost />
+        element: <ForumPost />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'bazaar',
-        element: <Bazaar />
+        element: <Bazaar />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'services',
-        element: <Services />
+        element: <Services />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'resources',
-        element: <Resources />
+        element: <Resources />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'settings',
         element: <SettingsLayout />,
+        errorElement: <ErrorBoundary />,
         children: [
           {
             path: 'profile',
-            element: <ProfileSettings />
+            element: <ProfileSettings />,
+            errorElement: <ErrorBoundary />
           },
           {
             path: 'notifications',
-            element: <NotificationSettings />
+            element: <NotificationSettings />,
+            errorElement: <ErrorBoundary />
           },
           {
             path: 'privacy',
-            element: <PrivacySettings />
+            element: <PrivacySettings />,
+            errorElement: <ErrorBoundary />
           },
           {
             path: 'security',
-            element: <SecuritySettings />
+            element: <SecuritySettings />,
+            errorElement: <ErrorBoundary />
           }
         ]
       },
       {
         path: 'community',
-        element: <Community />
+        element: <Community />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'users',
-        element: <Users />
+        element: <Users />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'profile',
-        element: <Profile />
+        element: <Profile />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'map',
-        element: <LocalMap />
+        element: <LocalMap />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'decisions',
-        element: <Decisions />
+        element: <Decisions />,
+        errorElement: <ErrorBoundary />
       },
       {
         path: 'discover',
-        element: <Discover />
+        element: <Discover />,
+        errorElement: <ErrorBoundary />
       }
     ]
   },
   {
     path: '/login',
-    element: <Login />
+    element: <Login />,
+    errorElement: <ErrorBoundary />
   },
   {
     path: '/register',
-    element: <Register />
+    element: <Register />,
+    errorElement: <ErrorBoundary />
   },
   {
     path: '/verify-email',
-    element: <VerifyEmail />
+    element: <VerifyEmail />,
+    errorElement: <ErrorBoundary />
   },
   {
     path: '/email-sent',
-    element: <EmailSentPage />
+    element: <EmailSentPage />,
+    errorElement: <ErrorBoundary />
   },
   {
     path: '/email-verified',
-    element: <EmailVerifiedPage />
+    element: <EmailVerifiedPage />,
+    errorElement: <ErrorBoundary />
   },
   {
     path: '/forgot-password',
-    element: <ForgotPassword />
+    element: <ForgotPassword />,
+    errorElement: <ErrorBoundary />
   },
   {
     path: '/reset-password',
-    element: <ResetPassword />
+    element: <ResetPassword />,
+    errorElement: <ErrorBoundary />
+  },
+  // Catch all route for unmatched paths
+  {
+    path: '*',
+    element: <Navigate to="/" replace />,
+    errorElement: <ErrorBoundary />
   }
 ], {
   future: {

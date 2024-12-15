@@ -5,8 +5,15 @@ import ThemeProvider from './lib/theme';
 import { AuthProvider } from './lib/auth';
 import { SidebarProvider } from './lib/sidebar';
 
-// Create a client
-const queryClient = new QueryClient();
+// Create a client with default options
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   return (
@@ -14,7 +21,9 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <SidebarProvider>
-            <RouterProvider router={router} />
+            <RouterProvider 
+              router={router} 
+            />
           </SidebarProvider>
         </AuthProvider>
       </ThemeProvider>
