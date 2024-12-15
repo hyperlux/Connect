@@ -104,7 +104,7 @@ log_message "Verifying services..."
 
 # Check if API is responding
 sleep 5  # Give the API a moment to start
-curl -f http://localhost:5000/health >/dev/null 2>&1
+curl -f http://localhost:3001/health >/dev/null 2>&1
 if [ $? -eq 0 ]; then
     log_message "API is responding"
 else
