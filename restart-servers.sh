@@ -44,6 +44,16 @@ else
     pm2 kill
 fi
 
+check_port 3001
+if [ $? -eq 0 ]; then
+    log_message "Port 3001 is available"
+else
+    log_message "Port 3001 is in use. Will attempt to free it."
+    pm2 delete all
+    pm2 kill
+fi
+
+
 # Install/update dependencies
 log_message "Installing dependencies..."
 export NODE_OPTIONS="--max-old-space-size=4096"
