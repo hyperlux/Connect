@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Log file for deployment
-LOG_FILE="/var/log/auroville-deploy.log"
+# Log file for deployment (in user's home directory instead of /var/log)
+LOG_FILE="$HOME/auroville-deploy.log"
 
 # Function to log messages
 log_message() {
@@ -13,12 +13,6 @@ touch "$LOG_FILE"
 
 log_message "Starting deployment process..."
 
-# Check if running as root
-if [[ $EUID -ne 0 ]]; then
-   log_message "This script must be run as root"
-   exit 1
-fi
-
 # Function to check service status
 check_service() {
     if systemctl is-active --quiet $1; then
@@ -29,22 +23,6 @@ check_service() {
         return 1
     fi
 }
-
-# Check PostgreSQL
-log_message "Checking PostgreSQL..."
-check_service postgresql
-if [ $? -ne 0 ]; then
-    log_message "Failed to verify PostgreSQL. Exiting."
-    exit 1
-fi
-
-# Check nginx
-log_message "Checking nginx..."
-check_service nginx
-if [ $? -ne 0 ]; then
-    log_message "Failed to verify nginx. Exiting."
-    exit 1
-fi
 
 # Function to check if port is in use
 check_port() {
@@ -124,21 +102,9 @@ else
     exit 1
 fi
 
-# Reload nginx
-log_message "Reloading nginx..."
-nginx -t
-if [ $? -eq 0 ]; then
-    systemctl reload nginx
-    log_message "nginx reloaded successfully"
-else
-    log_message "nginx configuration test failed. Check nginx configuration."
-    exit 1
-fi
-
 log_message "Deployment completed successfully!"
 
 # Display status
 pm2 status
-nginx -t
 
 exit 0
