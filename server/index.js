@@ -79,7 +79,18 @@ app.use(cors(config.cors));
 if (process.env.NODE_ENV === 'production') {
   app.use(rateLimit({
     windowMs: config.security.timeWindow,
-    max: config.security.maxRequests
+    max: config.security.maxRequests,
+    // Configure rate limiter for proxy setup
+    trustProxy: true,
+    handler: (req, res) => {
+      logger.warn('Rate limit exceeded:', {
+        ip: req.ip,
+        path: req.path
+      });
+      res.status(429).json({
+        error: 'Too many requests, please try again later'
+      });
+    }
   }));
 }
 

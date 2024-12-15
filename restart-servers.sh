@@ -33,7 +33,7 @@ check_port() {
     return 0
 }
 
-# Check required ports
+# Check required port
 log_message "Checking ports..."
 check_port 5000
 if [ $? -eq 0 ]; then
@@ -43,16 +43,6 @@ else
     pm2 delete all
     pm2 kill
 fi
-
-check_port 5000
-if [ $? -eq 0 ]; then
-    log_message "Port 3001 is available"
-else
-    log_message "Port 3001 is in use. Will attempt to free it."
-    pm2 delete all
-    pm2 kill
-fi
-
 
 # Install/update dependencies
 log_message "Installing dependencies..."
@@ -89,22 +79,20 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Start backend with PM2
+# Start backend with PM2 using ecosystem config
 log_message "Starting backend service..."
-cd server
-NODE_ENV=production pm2 start index.js --name "backend"
+pm2 start ecosystem.config.js
 if [ $? -ne 0 ]; then
     log_message "Failed to start backend service. Exiting."
     exit 1
 fi
-cd ..
 
 # Verify services are running
 log_message "Verifying services..."
 
 # Check if API is responding
 sleep 5  # Give the API a moment to start
-curl -f http://localhost:3001/health >/dev/null 2>&1
+curl -f http://localhost:5000/health >/dev/null 2>&1
 if [ $? -eq 0 ]; then
     log_message "API is responding"
 else
