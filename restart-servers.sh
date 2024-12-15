@@ -108,4 +108,3 @@ log_message "Deployment completed successfully!"
 pm2 status
 
 exit 0
-t
