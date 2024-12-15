@@ -63,10 +63,12 @@ if [ $? -eq 0 ]; then
 else
     log_message "Port 5000 is in use. Will attempt to free it."
     pm2 delete all
+    pm2 kill
 fi
 
 # Install/update dependencies
 log_message "Installing dependencies..."
+export NODE_OPTIONS="--max-old-space-size=4096"
 npm install
 if [ $? -ne 0 ]; then
     log_message "Failed to install frontend dependencies. Exiting."
@@ -93,25 +95,27 @@ cd ..
 
 # Build frontend
 log_message "Building frontend..."
-NODE_ENV=production NODE_OPTIONS="--max-old-space-size=4096" npm run build
+NODE_ENV=production npm run build
 if [ $? -ne 0 ]; then
     log_message "Frontend build failed. Exiting."
     exit 1
 fi
 
-# Restart PM2 processes
-log_message "Restarting PM2 processes..."
-pm2 delete all
-NODE_ENV=production pm2 start server/index.js --name "auroville-api"
+# Start backend with PM2
+log_message "Starting backend service..."
+cd server
+NODE_ENV=production pm2 start index.js --name "backend"
 if [ $? -ne 0 ]; then
-    log_message "Failed to start PM2 processes. Exiting."
+    log_message "Failed to start backend service. Exiting."
     exit 1
 fi
+cd ..
 
 # Verify services are running
 log_message "Verifying services..."
 
 # Check if API is responding
+sleep 5  # Give the API a moment to start
 curl -f http://localhost:5000/health >/dev/null 2>&1
 if [ $? -eq 0 ]; then
     log_message "API is responding"
