@@ -9,6 +9,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { authRouter } from './routes/auth.mjs';
 import { forumsRouter } from './routes/forums.js';
 import { usersRouter } from './routes/users.js';
+import winston from 'winston';
 
 // Load environment variables from parent directory's .env
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +28,16 @@ const config = (process.env.NODE_ENV === 'production')
       allowedHeaders: ['Content-Type', 'Authorization', 'cache-control', 'x-custom-header']
     }
   };
+
+// Winston logger configuration
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' }),
+  ],
+});
 
 // CORS configuration
 app.use(cors(config.cors));
@@ -53,15 +64,15 @@ app.use((req, res, next) => {
 
 // Debug logging for file requests
 app.use('/api/uploads', (req, res, next) => {
-  console.log('File request:', req.path);
-  console.log('Full URL:', req.url);
-  console.log('Absolute path:', path.join(__dirname, 'uploads', req.path));
+  logger.info('File request:', req.path);
+  logger.info('Full URL:', req.url);
+  logger.info('Absolute path:', path.join(__dirname, 'uploads', req.path));
   next();
 });
 
 // Serve static files from uploads directory with absolute path
 const uploadsPath = path.join(__dirname, 'uploads');
-console.log('Uploads directory path:', uploadsPath);
+logger.info('Uploads directory path:', uploadsPath);
 app.use('/api/uploads', express.static(uploadsPath, {
   setHeaders: (res) => {
     res.set('Cache-Control', 'public, max-age=31536000');
@@ -86,11 +97,34 @@ app.use('/api/notifications', notificationsRouter);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`
+const server = app.listen(PORT, () => {
+    logger.info(`
     🚀 Server is running in ${process.env.NODE_ENV} mode
     🔊 Listening on ${process.env.HOST || '0.0.0.0'}:${PORT}
     📱 API URL: ${process.env.API_URL}
     🌐 Frontend URL: ${process.env.FRONTEND_URL}
     `);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  server.close(() => {
+    logger.info('Server closed gracefully');
+  });
+});
+
+process.on('SIGINT', () => {
+  server.close(() => {
+    logger.info('Server closed gracefully');
+  });
+});
+
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught exception:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled rejection:', reason);
+  process.exit(1);
 });
