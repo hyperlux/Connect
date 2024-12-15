@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_URL } from './environment';
 
 export interface LoginCredentials {
   email: string;
@@ -29,8 +30,7 @@ export interface AuthContextType {
 }
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
-  // Remove withCredentials to prevent ad blocker issues
+  baseURL: API_URL,
   headers: {
     'Accept': 'application/json',
     'Cache-Control': 'no-cache'
