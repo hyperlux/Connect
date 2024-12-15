@@ -136,7 +136,7 @@ app.use('/api/notifications', notificationsRouter);
 // Error handling
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, '0.0.0.0', () => {
     logger.info(`
     🚀 Server is running in ${process.env.NODE_ENV} mode
