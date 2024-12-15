@@ -54,10 +54,10 @@ try {
     : {
         port: 3001,
         cors: {
-          origin: ['http://localhost:5173'],
+          origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000'],
           credentials: true,
           methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-          allowedHeaders: ['Content-Type', 'Authorization', 'cache-control', 'x-custom-header']
+          allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'X-Requested-With', 'X-Custom-Header']
         }
       };
 
