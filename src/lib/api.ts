@@ -3,16 +3,14 @@
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { getFromCacheWithExpiry, saveToCache } from './cache';
 
-// Configure base URL to always use relative path, letting Vite handle proxying
-const baseURL = '/api';
-
 // Create axios instance with default config
 export const api = axios.create({
-  baseURL,
+  baseURL: '/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    'Accept': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
   },
   timeout: 30000, // Increase timeout for slower connections
 });
