@@ -93,7 +93,7 @@ cd ..
 
 # Build frontend
 log_message "Building frontend..."
-npm run build:prod
+NODE_ENV=production NODE_OPTIONS="--max-old-space-size=4096" npm run build
 if [ $? -ne 0 ]; then
     log_message "Frontend build failed. Exiting."
     exit 1
@@ -102,7 +102,7 @@ fi
 # Restart PM2 processes
 log_message "Restarting PM2 processes..."
 pm2 delete all
-pm2 start server/index.js --name "auroville-api"
+NODE_ENV=production pm2 start server/index.js --name "auroville-api"
 if [ $? -ne 0 ]; then
     log_message "Failed to start PM2 processes. Exiting."
     exit 1
