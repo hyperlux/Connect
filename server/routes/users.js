@@ -64,8 +64,8 @@ router.post('/profile/picture', authenticate, upload.single('profilePicture'), a
     }
 
     const userId = req.user.id;
-    // Update path format to match static file serving URL
-    const filePath = `/uploads/${path.basename(req.file.path)}`;
+    // Update path to include /api prefix to match static file serving route
+    const filePath = `/api/uploads/${path.basename(req.file.path)}`;
 
     console.log('Updating user profile picture:', {
       userId,

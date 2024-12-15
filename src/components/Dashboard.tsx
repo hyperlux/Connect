@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Users, Calendar, MessageSquare, TrendingUp, Activity, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../lib/theme';
-import { api } from '../lib/api';
+import { api, withCache } from '../lib/api';
 
 interface Event {
   id: string;
@@ -15,55 +15,97 @@ interface Event {
   endTime: string | null;
 }
 
-const stats = [
-  { label: 'Active Members', value: '12,345', icon: Users, trend: '+15%' },
-  { label: 'Upcoming Events', value: '48', icon: Calendar, trend: '+5%' },
-  { label: 'Forum Posts', value: '1,234', icon: MessageSquare, trend: '+25%' },
-  { label: 'City Services', value: '89', icon: Activity, trend: '+10%' },
+interface DashboardStats {
+  activeMembers: number;
+  upcomingEvents: number;
+  forumPosts: number;
+  cityServices: number;
+}
+
+const STATS_CONFIG = [
+  { label: 'Active Members', key: 'activeMembers' as const, icon: Users, trend: '+15%' },
+  { label: 'Upcoming Events', key: 'upcomingEvents' as const, icon: Calendar, trend: '+5%' },
+  { label: 'Forum Posts', key: 'forumPosts' as const, icon: MessageSquare, trend: '+25%' },
+  { label: 'City Services', key: 'cityServices' as const, icon: Activity, trend: '+10%' },
 ];
+
+// Cache durations
+const EVENTS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const STATS_CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const [events, setEvents] = useState<Event[]>([]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isStale, setIsStale] = useState(false);
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchDashboardData = async () => {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const apiWithCache = withCache(token);
+
         // Get current week's start and end dates
         const today = new Date();
         const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - today.getDay()); // Start from Sunday
+        startOfWeek.setDate(today.getDate() - today.getDay());
         startOfWeek.setHours(0, 0, 0, 0);
         
         const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6); // End on Saturday
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
         endOfWeek.setHours(23, 59, 59, 999);
 
         // Format dates for API
         const startDate = startOfWeek.toISOString().split('T')[0];
         const endDate = endOfWeek.toISOString().split('T')[0];
         
-        const response = await api.get(`/events?startDate=${startDate}&endDate=${endDate}`);
+        // Fetch events with caching
+        const { data: eventsData, fromCache: eventsFromCache } = await apiWithCache.get<Event[]>(
+          `/events?startDate=${startDate}&endDate=${endDate}`,
+          undefined,
+          { 
+            enabled: true,
+            duration: EVENTS_CACHE_DURATION,
+            key: `dashboard:events:${startDate}:${endDate}`
+          }
+        );
         
         // Sort events by date and time
-        const sortedEvents = response.data.sort((a: Event, b: Event) => {
+        const sortedEvents = eventsData.sort((a: Event, b: Event) => {
           const dateA = new Date(`${a.startDate}T${a.startTime || '00:00'}`);
           const dateB = new Date(`${b.startDate}T${b.startTime || '00:00'}`);
           return dateA.getTime() - dateB.getTime();
         });
         
         setEvents(sortedEvents);
+        setIsStale(eventsFromCache);
+
+        // Fetch dashboard stats with caching
+        const { data: statsData } = await apiWithCache.get<DashboardStats>(
+          '/dashboard/stats',
+          undefined,
+          {
+            enabled: true,
+            duration: STATS_CACHE_DURATION,
+            key: 'dashboard:stats'
+          }
+        );
+        
+        setStats(statsData);
+        
       } catch (error) {
-        console.error('Failed to fetch events:', error);
+        console.error('Failed to fetch dashboard data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEvents();
+    fetchDashboardData();
   }, []);
 
   const handleNavigateToEvents = (e: React.MouseEvent) => {
@@ -106,17 +148,26 @@ export default function Dashboard() {
   return (
     <div className="w-full h-full">
       <div className="max-w-screen-2xl mx-auto px-4">
-        <h1 className="text-2xl font-bold mb-6">Community Dashboard</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Community Dashboard</h1>
+          {isStale && (
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              ⚡ Using cached data
+            </span>
+          )}
+        </div>
         
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {stats.map((stat) => (
+          {STATS_CONFIG.map((stat) => (
             <div key={stat.label} className="bg-white dark:bg-gray-800 p-4 rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <stat.icon className="h-6 w-6 text-indigo-500" />
                 <span className="text-green-500 text-sm font-medium">{stat.trend}</span>
               </div>
-              <h3 className="text-xl font-bold mb-1">{stat.value}</h3>
+              <h3 className="text-xl font-bold mb-1">
+                {stats ? stats[stat.key].toLocaleString() : '-'}
+              </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</p>
             </div>
           ))}

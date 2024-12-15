@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
+import { getFromCacheWithExpiry, saveToCache } from './cache';
 
 // Configure base URL to always use relative path, letting Vite handle proxying
 const baseURL = '/api';
@@ -87,8 +88,27 @@ api.interceptors.response.use(
   }
 );
 
-// Helper function to make authenticated requests
-export const withAuth = (token: string) => {
+export interface CacheConfig {
+  enabled: boolean;
+  duration?: number; // Duration in milliseconds
+  key?: string; // Custom cache key
+}
+
+const DEFAULT_CACHE_DURATION = 3600000; // 1 hour
+
+// Helper function to generate cache key
+const generateCacheKey = (url: string, params?: any): string => {
+  const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
+  return `api:${url}${queryString}`;
+};
+
+interface CachedResponse<T> {
+  data: T;
+  fromCache: boolean;
+}
+
+// Helper function to make authenticated and cached requests
+export const withCache = (token: string) => {
   const config: AxiosRequestConfig = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -97,12 +117,41 @@ export const withAuth = (token: string) => {
   };
 
   return {
-    get: <T>(url: string) => api.get<T>(url, config),
+    get: async <T>(
+      url: string, 
+      params?: any, 
+      cacheConfig: CacheConfig = { enabled: false }
+    ): Promise<CachedResponse<T>> => {
+      if (cacheConfig.enabled) {
+        const cacheKey = cacheConfig.key || generateCacheKey(url, params);
+        const cacheDuration = cacheConfig.duration || DEFAULT_CACHE_DURATION;
+        
+        // Try to get from cache first
+        const cachedData = getFromCacheWithExpiry<T>(cacheKey, cacheDuration);
+        if (cachedData) {
+          return { data: cachedData, fromCache: true };
+        }
+
+        // If not in cache or expired, fetch fresh data
+        const response = await api.get<T>(url, { ...config, params });
+        saveToCache(cacheKey, response.data);
+        return { data: response.data, fromCache: false };
+      }
+      
+      // If caching is disabled, just make the request
+      const response = await api.get<T>(url, { ...config, params });
+      return { data: response.data, fromCache: false };
+    },
     post: <T>(url: string, data?: any) => api.post<T>(url, data, config),
     put: <T>(url: string, data?: any) => api.put<T>(url, data, config),
     delete: <T>(url: string) => api.delete<T>(url, config),
   };
-}; 
+};
+
+// Helper function to make authenticated requests without caching
+export const withAuth = (token: string) => {
+  return withCache(token);
+};
 
 interface LoginCredentials {
   email: string;

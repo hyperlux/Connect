@@ -24,7 +24,7 @@ const config = (process.env.NODE_ENV === 'production')
       origin: ['http://localhost:5173'],
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization']
+      allowedHeaders: ['Content-Type', 'Authorization', 'cache-control', 'x-custom-header']
     }
   };
 
@@ -42,8 +42,31 @@ if (process.env.NODE_ENV === 'production') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from uploads directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Basic CORS headers for all routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
+// Debug logging for file requests
+app.use('/api/uploads', (req, res, next) => {
+  console.log('File request:', req.path);
+  console.log('Full URL:', req.url);
+  console.log('Absolute path:', path.join(__dirname, 'uploads', req.path));
+  next();
+});
+
+// Serve static files from uploads directory with absolute path
+const uploadsPath = path.join(__dirname, 'uploads');
+console.log('Uploads directory path:', uploadsPath);
+app.use('/api/uploads', express.static(uploadsPath, {
+  setHeaders: (res) => {
+    res.set('Cache-Control', 'public, max-age=31536000');
+  }
+}));
 
 // Routes with /api prefix
 app.use('/api/auth', authRouter);
