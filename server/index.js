@@ -1,14 +1,8 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import rateLimit from 'express-rate-limit';
 import { dirname } from 'path';
-import cors from 'cors';
 import dotenv from 'dotenv';
-import { errorHandler } from './middleware/errorHandler.js';
-import { authRouter } from './routes/auth.mjs';
-import { forumsRouter } from './routes/forums.js';
-import { usersRouter } from './routes/users.js';
 import winston from 'winston';
 import fs from 'fs';
 
@@ -62,79 +56,6 @@ const logger = winston.createLogger({
     })
   ],
 });
-
-// Load configuration based on environment
-let config;
-try {
-  config = (process.env.NODE_ENV === 'production')
-    ? (await import('./config/production.js')).default
-    : {
-        port: 3001,
-        cors: {
-          origin: ['http://localhost:5173'],
-          credentials: true,
-          methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-          allowedHeaders: ['Content-Type', 'Authorization', 'cache-control', 'x-custom-header']
-        }
-      };
-
-  logger.info('Loaded configuration:', { 
-    env: process.env.NODE_ENV,
-    port: config.port,
-    cors: config.cors.origin 
-  });
-} catch (error) {
-  logger.error('Failed to load configuration:', error);
-  process.exit(1);
-}
-
-// CORS configuration
-app.use(cors(config.cors));
-
-// Rate limiting in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(rateLimit({
-    windowMs: config.security.timeWindow,
-    max: config.security.maxRequests
-  }));
-}
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Debug logging for file requests
-app.use('/api/uploads', (req, res, next) => {
-  logger.info('File request:', req.path);
-  logger.info('Full URL:', req.url);
-  logger.info('Absolute path:', path.join(__dirname, 'uploads', req.path));
-  next();
-});
-
-// Serve static files from uploads directory with absolute path
-const uploadsPath = path.join(__dirname, 'uploads');
-logger.info('Uploads directory path:', uploadsPath);
-app.use('/api/uploads', express.static(uploadsPath, {
-  setHeaders: (res) => {
-    res.set('Cache-Control', 'public, max-age=31536000');
-  }
-}));
-
-// Routes with /api prefix
-app.use('/api/auth', authRouter);
-app.use('/api/users', usersRouter);
-app.use('/api/forums', forumsRouter);
-
-// Import and use other routes
-const { eventsRouter } = await import('./routes/events.js');
-const { servicesRouter } = await import('./routes/services.js');
-const { notificationsRouter } = await import('./routes/notifications.js');
-
-app.use('/api/events', eventsRouter);
-app.use('/api/services', servicesRouter);
-app.use('/api/notifications', notificationsRouter);
-
-// Error handling
-app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {
