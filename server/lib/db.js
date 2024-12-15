@@ -1,13 +1,13 @@
 import pg from 'pg';
 import format from 'pg-format';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const { Pool } = pg;
 
 export const pool = new Pool({
-  host: 'localhost',
-  port: 5432,
-  database: 'auroville',
-  user: 'postgres',
-  password: 'postgres'
+  connectionString: process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5432/auroville"
 });
 
 // Helper for transactions
@@ -38,4 +38,4 @@ export async function query(text, params) {
     console.error('Database query error:', error);
     throw error;
   }
-} 
+}
