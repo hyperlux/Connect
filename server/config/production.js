@@ -1,4 +1,4 @@
-ls -export default {
+export default {
   port: process.env.PORT || 5000,
   cors: {
     origin: [

@@ -53,7 +53,7 @@ try {
   config = (process.env.NODE_ENV === 'production')
     ? (await import('./config/production.js')).default
     : {
-        port: 3001,
+        port: 5000,
         cors: {
           origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000'],
           credentials: true,
