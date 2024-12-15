@@ -93,7 +93,7 @@ cd ..
 
 # Build frontend
 log_message "Building frontend..."
-npm run build:prod
+NODE_ENV=production npm run build
 if [ $? -ne 0 ]; then
     log_message "Frontend build failed. Exiting."
     exit 1
