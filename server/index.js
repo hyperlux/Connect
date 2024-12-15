@@ -10,6 +10,7 @@ import { authRouter } from './routes/auth.mjs';
 import { forumsRouter } from './routes/forums.js';
 import { usersRouter } from './routes/users.js';
 import winston from 'winston';
+import fs from 'fs';
 
 // Load environment variables from parent directory's .env
 const __filename = fileURLToPath(import.meta.url);
@@ -18,26 +19,74 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 
-// Load configuration based on environment
-const config = (process.env.NODE_ENV === 'production')
-  ? (await import('./config/production.js')).default
-  : { port: 3001, cors: {
-      origin: ['http://localhost:5173'],
-      credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'cache-control', 'x-custom-header']
-    }
-  };
+// Health check endpoint - placing it before any middleware
+app.get('/health', (req, res) => {
+  try {
+    res.status(200).json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      env: process.env.NODE_ENV,
+      uptime: process.uptime()
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: error.message
+    });
+  }
+});
+
+// Ensure logs directory exists
+const logsDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir);
+}
 
 // Winston logger configuration
 const logger = winston.createLogger({
   level: 'info',
-  format: winston.format.json(),
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
   transports: [
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' }),
+    new winston.transports.File({ 
+      filename: path.join(logsDir, 'error.log'), 
+      level: 'error' 
+    }),
+    new winston.transports.File({ 
+      filename: path.join(logsDir, 'combined.log')
+    }),
+    new winston.transports.Console({
+      format: winston.format.simple()
+    })
   ],
 });
+
+// Load configuration based on environment
+let config;
+try {
+  config = (process.env.NODE_ENV === 'production')
+    ? (await import('./config/production.js')).default
+    : {
+        port: 3001,
+        cors: {
+          origin: ['http://localhost:5173'],
+          credentials: true,
+          methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+          allowedHeaders: ['Content-Type', 'Authorization', 'cache-control', 'x-custom-header']
+        }
+      };
+
+  logger.info('Loaded configuration:', { 
+    env: process.env.NODE_ENV,
+    port: config.port,
+    cors: config.cors.origin 
+  });
+} catch (error) {
+  logger.error('Failed to load configuration:', error);
+  process.exit(1);
+}
 
 // CORS configuration
 app.use(cors(config.cors));
@@ -52,15 +101,6 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Basic CORS headers for all routes
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
 
 // Debug logging for file requests
 app.use('/api/uploads', (req, res, next) => {
