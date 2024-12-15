@@ -18,6 +18,7 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
+app.set('trust proxy', true);
 
 // Ensure logs directory exists
 const logsDir = path.join(__dirname, 'logs');
