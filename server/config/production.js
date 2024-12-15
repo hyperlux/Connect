@@ -1,5 +1,5 @@
-export default {
-  port: process.env.PORT || 3001,
+ls -export default {
+  port: process.env.PORT || 5000,
   cors: {
     origin: [
       'https://auroville.social',

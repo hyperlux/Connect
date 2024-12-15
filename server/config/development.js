@@ -1,5 +1,5 @@
 export default {
-  port: process.env.PORT || 3001,
+  port: process.env.PORT || 5000,
   cors: {
     origin: ['http://localhost:5173'],
     credentials: true,
