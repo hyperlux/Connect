@@ -97,11 +97,15 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Restart backend with PM2 using ecosystem config
-log_message "Restarting backend service..."
-NODE_ENV=production pm2 restart auroville-connect
+# Start/Restart backend with PM2 using ecosystem config
+log_message "Starting/Restarting backend service..."
+if pm2 describe auroville-connect > /dev/null; then
+    NODE_ENV=production pm2 restart auroville-connect --update-env
+else
+    NODE_ENV=production pm2 start ecosystem.config.js
+fi
 if [ $? -ne 0 ]; then
-    log_message "Failed to restart backend service. Exiting."
+    log_message "Failed to start/restart backend service. Exiting."
     exit 1
 fi
 
