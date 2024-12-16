@@ -89,7 +89,9 @@ cd ..
 
 # Build frontend
 log_message "Building frontend..."
-npx dotenv -e .env npm run build
+export $(grep -v '^#' .env | xargs)
+echo "VITE_API_URL: $VITE_API_URL"
+NODE_ENV=production npm run build
 if [ $? -ne 0 ]; then
     log_message "Frontend build failed. Exiting."
     exit 1
