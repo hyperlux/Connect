@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         input: {
           main: 'index.html',
-          'service-worker': 'service-worker.js'
+          // 'service-worker': 'service-worker.js'
         }
       }
     },
