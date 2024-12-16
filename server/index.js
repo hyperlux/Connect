@@ -51,16 +51,8 @@ const logger = winston.createLogger({
 let config;
 try {
   config = (process.env.NODE_ENV === 'production')
-    ? (await import('./config/production.js')).default
-    : {
-        port: 5000,
-        cors: {
-          origin: process.env.CORS_ORIGIN,
-          credentials: true,
-          methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-          allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'X-Requested-With', 'X-Custom-Header']
-        }
-      };
+    ? require('./config/production.cjs')
+    : require('./config/development.cjs');
 
   logger.info('Loaded configuration:', { 
     env: process.env.NODE_ENV,
