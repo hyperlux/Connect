@@ -121,5 +121,5 @@ log_message "Deployment completed successfully!"
 
 # Display status
 pm2 status
-
+1
 exit 0
