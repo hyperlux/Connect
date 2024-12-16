@@ -22,6 +22,13 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: "dist",
       sourcemap: false, // Disable source maps
+      assetsInlineLimit: 0, // Serve all assets as files
+      rollupOptions: {
+        input: {
+          main: 'index.html',
+          'service-worker': 'service-worker.js'
+        }
+      }
     },
   };
 });
