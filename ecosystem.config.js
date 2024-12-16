@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   apps: [{
     name: 'auroville-connect',
     cwd: './server',

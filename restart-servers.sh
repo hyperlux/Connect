@@ -102,7 +102,7 @@ log_message "Starting/Restarting backend service..."
 if pm2 describe auroville-connect > /dev/null; then
     NODE_ENV=production pm2 restart auroville-connect --update-env
 else
-    NODE_ENV=production pm2 start ecosystem.config.js
+    NODE_ENV=production pm2 start ecosystem.config.js --experimental-json
 fi
 if [ $? -ne 0 ]; then
     log_message "Failed to start/restart backend service. Exiting."
