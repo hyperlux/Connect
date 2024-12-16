@@ -97,7 +97,7 @@ fi
 
 # Restart backend with PM2 using ecosystem config
 log_message "Restarting backend service..."
-pm2 restart auroville-connect
+NODE_ENV=production pm2 restart auroville-connect
 if [ $? -ne 0 ]; then
     log_message "Failed to restart backend service. Exiting."
     exit 1
