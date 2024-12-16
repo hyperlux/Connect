@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   port: process.env.PORT || 5000,
   cors: {
     origin: ['https://auroville.social', 'http://localhost:5173', 'http://localhost:5000'],

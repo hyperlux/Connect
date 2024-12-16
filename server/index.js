@@ -81,7 +81,7 @@ if (process.env.NODE_ENV === 'production') {
     windowMs: config.security.timeWindow,
     max: config.security.maxRequests,
     // Configure rate limiter for proxy setup
-    trustProxy: true,
+    trustProxy: process.env.NODE_ENV === 'production',
     handler: (req, res) => {
       logger.warn('Rate limit exceeded:', {
         ip: req.ip,
@@ -151,11 +151,12 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, '0.0.0.0', () => {
     logger.info(`
-    🚀 Server is running in ${process.env.NODE_ENV} mode
-    🔊 Listening on 0.0.0.0:${PORT}
-    📱 API URL: ${process.env.API_URL}
-    🌐 Frontend URL: ${process.env.FRONTEND_URL}
-    `);
+      🚀 Server is running in ${process.env.NODE_ENV || 'undefined'} mode
+      🔊 Listening on 0.0.0.0:${PORT}
+      📱 API URL: ${process.env.API_URL}
+      🌐 Frontend URL: ${process.env.FRONTEND_URL}
+      `);
+    logger.info('NODE_ENV:', process.env.NODE_ENV);
 });
 
 // Graceful shutdown
