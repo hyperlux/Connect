@@ -44,6 +44,22 @@ else
     pm2 kill
 fi
 
+# Check PostgreSQL service
+log_message "Checking PostgreSQL service..."
+check_service postgresql
+if [ $? -ne 0 ]; then
+    log_message "PostgreSQL service is not running. Exiting."
+    exit 1
+fi
+
+# Check Nginx service
+log_message "Checking Nginx service..."
+check_service nginx
+if [ $? -ne 0 ]; then
+    log_message "Nginx service is not running. Exiting."
+    exit 1
+fi
+
 # Install/update dependencies
 log_message "Installing dependencies..."
 export NODE_OPTIONS="--max-old-space-size=4096"

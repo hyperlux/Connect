@@ -55,7 +55,7 @@ try {
     : {
         port: 5000,
         cors: {
-          origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000'],
+          origin: process.env.CORS_ORIGIN,
           credentials: true,
           methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
           allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'X-Requested-With', 'X-Custom-Header']
