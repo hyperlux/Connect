@@ -7,7 +7,15 @@ module.exports = {
       env: {
         NODE_ENV: process.env.NODE_ENV || 'development',
         PORT: process.env.PORT || 5000,
-        HOST: '0.0.0.0'
+        HOST: '0.0.0.0',
+        DATABASE_URL: process.env.DATABASE_URL || "postgresql://postgres:newpassword123@localhost:5432/auroville",
+        JWT_SECRET: process.env.JWT_SECRET || "ea21a8d798aa16aacce7fbcff1cde5dfbe50a294d5c7d14aee0ee4f6a6d2a5a7a",
+        SMTP_SERVER: process.env.SMTP_SERVER || "smtp.ionos.com",
+        SMTP_PORT: process.env.SMTP_PORT || 587,
+        SMTP_USERNAME: process.env.SMTP_USERNAME || "notifications@aurovillenetwork.us",
+        SMTP_PASSWORD: process.env.SMTP_PASSWORD || "lovelightforever888!",
+        SMTP_AUTH: process.env.SMTP_AUTH || "plain",
+        SMTP_DOMAIN: process.env.SMTP_DOMAIN || "aurovillenetwork.us"
       },
       error_file: 'logs/error.log',
       out_file: 'logs/out.log',

@@ -83,6 +83,7 @@ cd ..
 
 # Run database migrations
 log_message "Running database migrations..."
+export $(grep -v '^#' .env | xargs)
 cd server
 npx prisma migrate deploy
 if [ $? -ne 0 ]; then
