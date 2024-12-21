@@ -83,7 +83,7 @@ cd ..
 
 # Run database migrations
 log_message "Running database migrations..."
-export $(grep -v '^#' .env | xargs)
+export $(grep -v '^#' /Users/love/Downloads/AurovilleConnect/.env | xargs)
 cd server
 DATABASE_URL="$DATABASE_URL" npx prisma migrate deploy
 if [ $? -ne 0 ]; then
@@ -94,7 +94,7 @@ cd ..
 
 # Build frontend
 log_message "Building frontend..."
-export $(grep -v '^#' .env | xargs)
+export $(grep -v '^#' /Users/love/Downloads/AurovilleConnect/.env | xargs)
 echo "VITE_API_URL: $VITE_API_URL"
 NODE_ENV=production npm run build
 if [ $? -ne 0 ]; then
