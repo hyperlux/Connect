@@ -85,7 +85,7 @@ cd ..
 log_message "Running database migrations..."
 export $(grep -v '^#' .env | xargs)
 cd server
-npx prisma migrate deploy
+DATABASE_URL="$DATABASE_URL" npx prisma migrate deploy
 if [ $? -ne 0 ]; then
     log_message "Failed to run database migrations. Exiting."
     exit 1
