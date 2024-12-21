@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "verify": "npm run typecheck && npm run lint"
+    "verify": "npm run typecheck && npm run lint",
+    "start:all": "pm2 start ecosystem.config.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",

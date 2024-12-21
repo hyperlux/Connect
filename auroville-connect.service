@@ -5,7 +5,7 @@ After=network.target postgresql.service
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/root/AurovilleConnect/server
+WorkingDirectory=/var/www/html/AurovilleConnect/server
 
 # Environment variables
 Environment=NODE_ENV=production
