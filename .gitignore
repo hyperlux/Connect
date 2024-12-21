@@ -63,3 +63,4 @@ ssl/
 *.log
 .aider*
 memory.md
+mem.md
