@@ -83,9 +83,9 @@ cd ..
 
 # Run database migrations
 log_message "Running database migrations..."
-export $(grep -v '^#' /Users/love/Downloads/AurovilleConnect/.env | xargs)
+source /Users/love/Downloads/AurovilleConnect/.env
 cd server
-DATABASE_URL="$DATABASE_URL" npx prisma migrate deploy
+npx prisma migrate deploy
 if [ $? -ne 0 ]; then
     log_message "Failed to run database migrations. Exiting."
     exit 1
@@ -94,7 +94,7 @@ cd ..
 
 # Build frontend
 log_message "Building frontend..."
-export $(grep -v '^#' /Users/love/Downloads/AurovilleConnect/.env | xargs)
+source /Users/love/Downloads/AurovilleConnect/.env
 echo "VITE_API_URL: $VITE_API_URL"
 NODE_ENV=production npm run build
 if [ $? -ne 0 ]; then
