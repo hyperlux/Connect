@@ -50,14 +50,15 @@ const logger = winston.createLogger({
 // Load configuration based on environment
 let config;
 try {
-  config = (process.env.NODE_ENV === 'production')
-    ? require('./config/production.cjs')
-    : require('./config/development.cjs');
-
-  logger.info('Loaded configuration:', { 
+  const configPath = process.env.NODE_ENV === 'production'
+    ? './config/production.cjs'
+    : './config/development.cjs';
+  const { default: loadedConfig } = await import(configPath);
+  config = loadedConfig;
+  logger.info('Loaded configuration:', {
     env: process.env.NODE_ENV,
     port: config.port,
-    cors: config.cors.origin 
+    cors: config.cors.origin
   });
 } catch (error) {
   logger.error('Failed to load configuration:', error);
