@@ -41,6 +41,17 @@ api.interceptors.request.use(
   }
 );
 
+// Add request interceptor to include auth token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
 // Add a response interceptor
 api.interceptors.response.use(
   (response) => response,
@@ -73,13 +84,11 @@ api.interceptors.response.use(
           break;
       }
     } else if (error.request) {
-      console.error('Network error - no response received:', {
-        request: error.request,
-        url: error.config?.url,
-        method: error.config?.method
-      });
+      // Request made but no response received
+      return Promise.reject(new Error('No response from server. Please try again.'));
     } else {
-      console.error('Error:', error.message);
+      // Error in request configuration
+      return Promise.reject(new Error('Request failed. Please try again.'));
     }
 
     return Promise.reject(error);
