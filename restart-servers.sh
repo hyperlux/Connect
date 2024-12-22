@@ -142,3 +142,5 @@ log_message "Deployment completed successfully!"
 # Display status
 pm2 status
 exit 0
+
+cd server && touch .env
