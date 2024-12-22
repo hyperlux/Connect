@@ -86,20 +86,7 @@ cd ..
 
 # Run database migrations
 log_message "Running database migrations..."
-# export DB_PASSWORD="correctpassword123"
-# export DATABASE_URL="postgresql://postgres:correctpassword123@localhost:5432/auroville_connect"
-export JWT_SECRET="ea21a8d798aa16aacce7fbcff1cde5dfbe50a294d5c7d14aee0ee>"
-export SMTP_SERVER="smtp.ionos.com"
-export SMTP_PORT="587"
-export SMTP_USERNAME="notifications@aurovillenetwork.us"
-export SMTP_PASSWORD="lovelightforever888!"
-export SMTP_AUTH="plain"
-export SMTP_DOMAIN="aurovillenetwork.us"
-export VITE_API_URL="http://localhost:5000/api"
-export VITE_FRONTEND_URL="http://localhost:5173"
-export API_URL="http://api.auroville.social"
-export FRONTEND_URL="http://auroville.social"
-export CORS_ORIGIN="http://auroville.social,http://localhost:5173,http://localhost:5000"
+export DATABASE_URL="postgresql://postgres:${DB_PASSWORD}@localhost:5432/auroville_connect?schema=public"
 cd server
 npx prisma migrate deploy
 if [ $? -ne 0 ]; then
