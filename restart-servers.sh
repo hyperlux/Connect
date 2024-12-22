@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Load environment variables
+source .env
+
 # Log file for deployment (in user's home directory instead of /var/log)
 LOG_FILE="$HOME/auroville-deploy.log"
 
@@ -98,7 +101,7 @@ export API_URL="http://api.auroville.social"
 export FRONTEND_URL="http://auroville.social"
 export CORS_ORIGIN="http://auroville.social,http://localhost:5173,http://localhost:5000"
 cd server
-npx prisma migrate deploy --url "postgresql://postgres:${DB_PASSWORD}@localhost:5432/auroville_connect?schema=public"
+npx prisma migrate deploy
 if [ $? -ne 0 ]; then
     log_message "Failed to run database migrations. Exiting."
     exit 1
