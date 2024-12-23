@@ -35,7 +35,7 @@ git pull origin main
 
 # Function to check service status
 check_service() {
-    if systemctl is-active --quiet $1; then
+    if brew services list | grep "$1" | grep "started" >/dev/null; then
         log_message "$1 is running"
         return 0
     else
