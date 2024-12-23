@@ -7,7 +7,7 @@
     "npm": ">=9.0.0"
   },
   "scripts": {
-    "dev": "NODE_ENV=development vite",
+    "dev": "NODE_ENV=development VITE_API_URL=$VITE_API_URL VITE_FRONTEND_URL=$VITE_FRONTEND_URL vite",
     "build": "tsc && NODE_ENV=production vite build",
     "build:prod": "npm run build",
     "preview": "vite preview",
