@@ -6,6 +6,7 @@ import ThemeToggle from './ThemeToggle';
 import { NotificationsPopover } from './NotificationsPopover';
 import { useTheme } from '../lib/theme';
 import { useSidebar } from '../lib/sidebar';
+import { API_URL } from '../lib/environment';
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -32,7 +33,7 @@ export default function Header() {
 
   const getProfileImage = () => {
     if (user?.profilePicture) {
-      return `${user.profilePicture}?${avatarKey}`;
+      return `${API_URL}${user.profilePicture}?${avatarKey}`;
     }
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`;
   };

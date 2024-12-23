@@ -53,7 +53,7 @@ export default function TodayEvents() {
             key={event.id} 
             className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
           >
-            <div className="flex justify-between items-start mb-2">
+            <div className="flex justify-between items-start">
               <h3 className="font-medium text-gray-900 dark:text-white">
                 {event.title}
               </h3>

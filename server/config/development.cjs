@@ -1,7 +1,14 @@
 module.exports = {
   port: process.env.PORT || 5000,
   cors: {
-    origin: ['https://auroville.social', 'http://localhost:5173', 'http://localhost:5000'],
+    origin: (origin, callback) => {
+      const allowedOrigins = ['https://auroville.social', 'http://localhost:5173', 'http://localhost:5000'];
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']

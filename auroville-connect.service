@@ -19,12 +19,6 @@ Environment=FRONTEND_URL=https://auroville.social
 Environment=API_URL=https://api.auroville.social
 
 # SMTP Configuration
-Environment=SMTP_SERVER=smtp.ionos.com
-Environment=SMTP_PORT=587
-Environment=SMTP_USERNAME=notifications@aurovillenetwork.us
-Environment=SMTP_PASSWORD=lovelightforever888!
-Environment=SMTP_AUTH=plain
-Environment=SMTP_DOMAIN=aurovillenetwork.us
 
 # Create uploads directory
 ExecStartPre=/bin/mkdir -p /root/AurovilleConnect/server/uploads

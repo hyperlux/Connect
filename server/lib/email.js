@@ -10,11 +10,11 @@ dotenv.config({ path: join(__dirname, '..', '..', '.env') });
 
 // Create reusable transporter object using environment variables
 const transportConfig = {
-  host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-  port: parseInt(process.env.SMTP_PORT || '587', 10),
+  host: process.env.SMTP_SERVER,
+  port: parseInt(process.env.SMTP_PORT, 10),
   secure: false, // false for port 587 (STARTTLS)
   auth: {
-    user: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
+    user: process.env.SMTP_USERNAME,
     pass: process.env.SMTP_PASSWORD
   },
   tls: {
@@ -41,9 +41,9 @@ transporter.verify(function(error, success) {
       code: error.code,
       command: error.command,
       response: error.response,
-      host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-      port: process.env.SMTP_PORT || '587',
-      username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'
+      host: process.env.SMTP_SERVER,
+      port: process.env.SMTP_PORT,
+      username: process.env.SMTP_USERNAME
     });
   } else {
     console.log('SMTP server is ready to send emails');
@@ -58,7 +58,7 @@ export async function sendVerificationEmail(email, token) {
   console.log('Verification URL:', verificationUrl);
   
   const mailOptions = {
-    from: `"Auroville Community" <${process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'}>`,
+    from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
     to: email,
     subject: 'Verify your email - Auroville Community',
     html: `
@@ -68,11 +68,11 @@ export async function sendVerificationEmail(email, token) {
         <div style="text-align: center; margin: 30px 0;">
           <a href="${verificationUrl}" 
              style="background-color: #E27B58; 
-                    color: white; 
-                    padding: 12px 24px; 
-                    text-decoration: none; 
-                    border-radius: 4px;
-                    display: inline-block;">
+                   color: white; 
+                   padding: 12px 24px; 
+                   text-decoration: none; 
+                   border-radius: 4px;
+                   display: inline-block;">
             Verify Email Address
           </a>
         </div>
@@ -102,9 +102,9 @@ export async function sendVerificationEmail(email, token) {
 
   try {
     console.log('Attempting to send email with config:', {
-      host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-      port: process.env.SMTP_PORT || '587',
-      username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us',
+      host: process.env.SMTP_SERVER,
+      port: process.env.SMTP_PORT,
+      username: process.env.SMTP_USERNAME,
       to: email,
       verificationUrl
     });
@@ -126,9 +126,9 @@ export async function sendVerificationEmail(email, token) {
       command: error.command,
       stack: error.stack,
       config: {
-        host: process.env.SMTP_SERVER || 'smtp.ionos.com',
-        port: process.env.SMTP_PORT || '587',
-        username: process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'
+        host: process.env.SMTP_SERVER,
+        port: process.env.SMTP_PORT,
+        username: process.env.SMTP_USERNAME
       }
     });
     throw error;
@@ -137,9 +137,9 @@ export async function sendVerificationEmail(email, token) {
 
 export async function sendNotificationEmail(email, notification) {
   const mailOptions = {
-    from: `"Auroville Community" <${process.env.SMTP_USERNAME || 'notifications@aurovillenetwork.us'}>`,
-    to: email,
-    subject: notification.title,
+      from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
+      to: email,
+      subject: notification.title,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h1 style="color: #E27B58; text-align: center;">${notification.title}</h1>
@@ -150,11 +150,11 @@ export async function sendNotificationEmail(email, notification) {
         <div style="text-align: center; margin: 30px 0;">
           <a href="${notification.link}" 
              style="background-color: #E27B58; 
-                    color: white; 
-                    padding: 12px 24px; 
-                    text-decoration: none; 
-                    border-radius: 4px;
-                    display: inline-block;">
+                   color: white; 
+                   padding: 12px 24px; 
+                   text-decoration: none; 
+                   border-radius: 4px;
+                   display: inline-block;">
             View Details
           </a>
         </div>

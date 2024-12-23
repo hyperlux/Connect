@@ -15,14 +15,36 @@ const queryClient = new QueryClient({
   },
 });
 
+import { useEffect } from 'react';
+
 function App() {
+ useEffect(() => {
+   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+     window.addEventListener('load', () => {
+       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+
+       navigator.serviceWorker
+         .register(swUrl)
+         .then((registration) => {
+           console.log('ServiceWorker registration successful with scope:', registration.scope);
+         })
+         .catch((error) => {
+           console.error('ServiceWorker registration failed:', error);
+         });
+     });
+   }
+ }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
           <SidebarProvider>
-            <RouterProvider 
-              router={router} 
+            <RouterProvider
+              router={router}
+              future={{
+                v7_startTransition: true,
+              }}
             />
           </SidebarProvider>
         </AuthProvider>

@@ -2,10 +2,11 @@
 
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { getFromCacheWithExpiry, saveToCache } from './cache';
+import { API_URL } from './environment';
 
 // Create axios instance with default config
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

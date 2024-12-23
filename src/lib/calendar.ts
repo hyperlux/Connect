@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import axios from './axios';
+import axios from 'axios';
 import { format, addDays } from 'date-fns';
 
 export interface EventComment {

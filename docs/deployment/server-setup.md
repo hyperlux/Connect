@@ -67,10 +67,12 @@ Make sure to create a `.env` file in the server directory with the following var
 ```
 DATABASE_URL=your_database_url
 JWT_SECRET=your_jwt_secret
-SMTP_HOST=your_smtp_host
+SMTP_SERVER=your_smtp_server
 SMTP_PORT=your_smtp_port
-SMTP_USER=your_smtp_user
-SMTP_PASS=your_smtp_pass
+SMTP_USERNAME=your_smtp_username
+SMTP_PASSWORD=your_smtp_password
+SMTP_AUTH=your_smtp_auth_method (e.g., plain)
+SMTP_DOMAIN=your_smtp_domain
 ```
 
 ## Monitoring Logs

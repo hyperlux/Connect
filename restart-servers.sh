@@ -1,20 +1,10 @@
 #!/bin/bash
 
 # Load environment variables
-export DB_PASSWORD=newpassword123
-export DATABASE_URL="postgresql://postgres:newpassword123@localhost:5432/auroville_connect"
-export JWT_SECRET=ea21a8d798aa16aacce7fbcff1cde5dfbe50a294d5c7d14aee0ee
-export SMTP_SERVER=smtp.ionos.com
-export SMTP_PORT=587
-export SMTP_USERNAME=notifications@aurovillenetwork.us
-export SMTP_PASSWORD=lovelightforever888!
-export SMTP_AUTH=plain
-export SMTP_DOMAIN=aurovillenetwork.us
-export VITE_API_URL=http://localhost:5000/api
-export VITE_FRONTEND_URL=http://localhost:5173
-export API_URL=http://api.auroville.social
-export FRONTEND_URL=http://auroville.social
-export CORS_ORIGIN="http://auroville.social,http://localhost:5173,http://localhost:5000"
+# Load environment variables from .env file
+if [ -f .env ]; then
+  source .env
+fi
 
 # Log file for deployment (in user's home directory instead of /var/log)
 LOG_FILE="$HOME/auroville-deploy.log"
@@ -99,7 +89,7 @@ cd ..
 
 # Run database migrations
 log_message "Running database migrations..."
-export DATABASE_URL="postgresql://postgres:${DB_PASSWORD}@localhost:5432/auroville_connect?schema=public"
+export DATABASE_URL="postgresql://postgres:${DB_PASSWORD}@localhost:5432/auroville?schema=public"
 cd server
 npx prisma migrate deploy
 if [ $? -ne 0 ]; then
@@ -117,12 +107,11 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Start backend with node
-log_message "Starting backend service..."
-cd server
-NODE_ENV=production node index.js
+# Start backend with PM2
+log_message "Starting or restarting backend service with PM2..."
+pm2 startOrRestart ecosystem.config.js --only auroville-connect-server
 if [ $? -ne 0 ]; then
-    log_message "Failed to start backend service. Exiting."
+    log_message "Failed to start or restart backend service with PM2. Exiting."
     exit 1
 fi
 cd ..
