@@ -6,7 +6,6 @@ interface ImportMetaEnv {
   readonly PROD: boolean
   readonly SSR: boolean
   readonly BASE_URL: string
-  readonly VITE_SITE_URL: string
   // Add other env variables as needed
 }
 
