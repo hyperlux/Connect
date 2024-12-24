@@ -59,7 +59,7 @@ DB_PASSWORD=postgres
 
 ---
 # Work with GPT-4o on your repo
-export ANTHROPIC_API_KEY=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
+# Removed Anthropic API Key
 
 --
 
