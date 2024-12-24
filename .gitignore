@@ -62,5 +62,4 @@ ssl/
 # Miscellaneous
 *.log
 .aider*
-memory.md
-mem.md
+
