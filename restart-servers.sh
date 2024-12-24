@@ -25,7 +25,7 @@ git pull origin main
 
 # Function to check service status
 check_service() {
-    if brew services list | grep "$1" | grep "started" >/dev/null; then
+    if systemctl is-active --quiet "$1"; then
         log_message "$1 is running"
         return 0
     else
@@ -33,26 +33,6 @@ check_service() {
         return 1
     fi
 }
-
-# Function to check if port is in use
-check_port() {
-    if lsof -i:$1 >/dev/null; then
-        log_message "Port $1 is already in use"
-        return 1
-    fi
-    return 0
-}
-
-# Check required port
-log_message "Checking ports..."
-check_port 5000
-if [ $? -eq 0 ]; then
-    log_message "Port 5000 is available"
-else
-    log_message "Port 5000 is in use. Will attempt to free it."
-    pm2 delete all
-    pm2 kill
-fi
 
 # Check PostgreSQL service
 log_message "Checking PostgreSQL service..."

@@ -25,7 +25,8 @@ module.exports = {
     {
       name: 'auroville-connect-frontend',
       cwd: './',
-      script: 'vite',
+      script: 'npm',
+      args: ['run', 'dev'],
       env: {
         NODE_ENV: process.env.NODE_ENV || 'development',
         PORT: process.env.PORT || 3000,
