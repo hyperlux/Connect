@@ -13,6 +13,7 @@ import winston from 'winston';
 import fs from 'fs';
 
 // Load environment variables from parent directory's .env
+console.log('Loading environment variables...');
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
@@ -26,6 +27,7 @@ if (!fs.existsSync(logsDir)) {
 }
 
 // Winston logger configuration
+console.log('Configuring Winston logger...');
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -47,6 +49,7 @@ const logger = winston.createLogger({
 });
 
 // Load configuration based on environment
+console.log('Loading configuration...');
 let config;
 try {
   const configPath = process.env.NODE_ENV === 'production'
@@ -65,10 +68,12 @@ try {
 }
 
 // CORS configuration
+console.log('Setting up CORS...');
 app.use(cors(config.cors));
 
 // Rate limiting in production
 if (process.env.NODE_ENV === 'production') {
+  console.log('Setting up rate limiting...');
   app.use(rateLimit({
     windowMs: config.security.timeWindow,
     max: config.security.maxRequests,
@@ -90,6 +95,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
+console.log('Setting up health check endpoint...');
 app.get('/health', (req, res) => {
   try {
     res.status(200).json({
@@ -107,6 +113,7 @@ app.get('/health', (req, res) => {
 });
 
 // Debug logging for file requests
+console.log('Setting up file request logging...');
 app.use('/api/uploads', (req, res, next) => {
   logger.info('File request:', req.path);
   logger.info('Full URL:', req.url);
@@ -124,6 +131,7 @@ app.use('/api/uploads', express.static(uploadsPath, {
 }));
 
 // Routes with /api prefix
+console.log('Setting up routes...');
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/forums', forumsRouter);
@@ -137,11 +145,19 @@ app.use('/api/events', eventsRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/notifications', notificationsRouter);
 
+// Add a route for the root URL
+console.log('Setting up root URL route...');
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
 // Error handling
+console.log('Setting up error handling...');
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, '0.0.0.0', () => {
+console.log('Starting server...');
+const server = app.listen(PORT, 'localhost', () => {
     logger.info(`
       🚀 Server is running in ${process.env.NODE_ENV || 'undefined'} mode
       🔊 Listening on 0.0.0.0:${PORT}
@@ -152,6 +168,7 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 });
 
 // Graceful shutdown
+console.log('Setting up graceful shutdown...');
 process.on('SIGTERM', () => {
   server.close(() => {
     logger.info('Server closed gracefully');

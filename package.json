@@ -14,7 +14,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "verify": "npm run typecheck && npm run lint",
-    "start:all": "pm2 start ecosystem.config.js"
+    "start:all": "pm2 start ecosystem.config.js",
+    "dev:all": "concurrently \"cd server && npm run dev\" \"npm run dev\""
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
@@ -43,6 +44,7 @@
     "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-react": "^4.2.0",
     "autoprefixer": "^10.4.16",
+    "concurrently": "^9.1.0",
     "cssnano": "^6.0.1",
     "eslint": "^8.54.0",
     "eslint-plugin-react-hooks": "^4.6.0",

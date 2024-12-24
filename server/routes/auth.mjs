@@ -382,6 +382,34 @@ router.post('/resend-verification', async (req, res) => {
   }
 });
 
+// Verify auth token endpoint
+router.get('/verify', authenticate, async (req, res) => {
+  try {
+    // Since we're using the authenticate middleware, we already have the verified user ID
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        bio: true,
+        profilePicture: true,
+        createdAt: true
+      }
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Token verification error:', error);
+    res.status(500).json({ message: 'Token verification failed' });
+  }
+});
+
 // Temporary admin verify endpoint
 router.post('/admin-verify', async (req, res) => {
   try {

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { API_URL } from './environment';
+import { environment } from './environment';
+
+const { API_URL } = environment;
 
 export interface LoginCredentials {
   email: string;
@@ -32,8 +34,7 @@ export interface AuthContextType {
 const api = axios.create({
   baseURL: API_URL,
   headers: {
-    'Accept': 'application/json',
-    'Cache-Control': 'no-cache'
+    'Accept': 'application/json'
   }
 });
 
@@ -45,6 +46,8 @@ api.interceptors.request.use((config) => {
   if (!(config.data instanceof FormData)) {
     config.headers['Content-Type'] = 'application/json';
   }
+  // Remove Cache-Control header
+  delete config.headers['Cache-Control'];
   return config;
 });
 
@@ -63,28 +66,47 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem('token');
-      if (!token) {
+      const storedUser = localStorage.getItem('user');
+      
+      if (!token || !storedUser) {
         setIsLoading(false);
         return;
       }
 
-      try {
-        // Verify token and get user data
-        const response = await api.get('/auth/verify');
-        const userData = response.data;
-        setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
-      } catch (err) {
-        // If token is invalid, clear storage
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
-      } finally {
+      // Set initial user state from localStorage
+      setUser(JSON.parse(storedUser));
+      
+      const verifyToken = async (retryCount = 0) => {
+        try {
+          const response = await api.get('/auth/verify');
+          const userData = response.data;
+          setUser(userData);
+          localStorage.setItem('user', JSON.stringify(userData));
+        } catch (err: any) {
+          console.error('Token verification error:', err.response?.data || err.message);
+          if (err.response?.status === 401) {
+            // Token is invalid
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+          } else if (retryCount < 3 && (!err.response || err.response.status >= 500)) {
+            // Retry on network errors or server errors, up to 3 times
+            setTimeout(() => verifyToken(retryCount + 1), 1000 * (retryCount + 1));
+            return;
+          }
+        }
         setIsLoading(false);
-      }
+      };
+
+      verifyToken();
     };
 
     initializeAuth();
+
+    // Set up interval to periodically verify token
+    const intervalId = setInterval(initializeAuth, 15 * 60 * 1000); // Verify every 15 minutes
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const login = async (credentials: LoginCredentials) => {
@@ -96,8 +118,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(userData));
-      
       setUser(userData);
+      
       return response.data;
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Login failed';

@@ -53,7 +53,7 @@ export default function ProfileSettings() {
 
   return (
     <div className="p-6">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-primary mb-6">Profile Settings</h2>
+      <h2 className="text-lg font-semibold mb-6" style={{ color: 'var(--color-text)' }}>Profile Settings</h2>
       
       <div className="mb-8">
         <div className="flex items-center gap-4">
@@ -84,14 +84,19 @@ export default function ProfileSettings() {
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-dark-primary mb-2">
+          <label htmlFor="name" className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
             Name
           </label>
           <input
             type="text"
             id="name"
             {...register('name', { required: 'Name is required' })}
-            className="block w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-dark-lighter dark:text-dark-primary shadow-sm focus:border-auroville-primary focus:ring-auroville-primary"
+            className="block w-full rounded-lg shadow-sm focus:border-auroville-primary focus:ring-auroville-primary"
+            style={{
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-text)',
+              borderColor: 'var(--color-border)'
+            }}
           />
           {errors.name && (
             <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>
@@ -99,20 +104,25 @@ export default function ProfileSettings() {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-dark-primary mb-2">
+          <label htmlFor="email" className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
             Email
           </label>
           <input
             type="email"
             id="email"
-            {...register('email', { 
+            {...register('email', {
               required: 'Email is required',
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                 message: 'Invalid email address'
               }
             })}
-            className="block w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-dark-lighter dark:text-dark-primary shadow-sm focus:border-auroville-primary focus:ring-auroville-primary"
+            className="block w-full rounded-lg shadow-sm focus:border-auroville-primary focus:ring-auroville-primary"
+            style={{
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-text)',
+              borderColor: 'var(--color-border)'
+            }}
           />
           {errors.email && (
             <p className="mt-2 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
@@ -120,14 +130,19 @@ export default function ProfileSettings() {
         </div>
 
         <div>
-          <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-dark-primary mb-2">
+          <label htmlFor="bio" className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
             Bio
           </label>
           <textarea
             id="bio"
             {...register('bio')}
             rows={4}
-            className="block w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-dark-lighter dark:text-dark-primary shadow-sm focus:border-auroville-primary focus:ring-auroville-primary"
+            className="block w-full rounded-lg shadow-sm focus:border-auroville-primary focus:ring-auroville-primary"
+            style={{
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-text)',
+              borderColor: 'var(--color-border)'
+            }}
           />
         </div>
 

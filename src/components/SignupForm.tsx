@@ -36,7 +36,9 @@ export default function SignupForm() {
       if (response.token) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
-        navigate('/app/dashboard');
+        setTimeout(() => {
+          navigate('/app/dashboard', { replace: true });
+        }, 0);
       }
     } catch (error: any) {
       console.error('Signup failed:', error);

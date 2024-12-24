@@ -9,7 +9,7 @@ import { useSidebar } from '../lib/sidebar';
 import { API_URL } from '../lib/environment';
 
 export default function Header() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
@@ -32,13 +32,23 @@ export default function Header() {
   }, [user?.profilePicture]);
 
   const getProfileImage = () => {
-    if (user?.profilePicture) {
-      return `${API_URL}${user.profilePicture}?${avatarKey}`;
+    console.log('User object:', user);
+    if (user?.profilePicture && user.profilePicture !== "") {
+      // Remove /api from API_URL and ensure proper path construction
+      const baseUrl = API_URL.replace('/api', '');
+      const profilePath = user.profilePicture.startsWith('/') ? user.profilePicture : `/${user.profilePicture}`;
+      const profileImageUrl = `${baseUrl}${profilePath}?${avatarKey}`;
+      console.log('Profile Image URL:', profileImageUrl);
+      return profileImageUrl;
+    } else {
+      console.log('No profile picture available, using default image URL');
     }
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`;
+    const defaultImageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=${encodeURIComponent(getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim())}&color=fff`;
+    console.log('Default Image URL:', defaultImageUrl);
+    return defaultImageUrl;
   };
 
-  if (typeof isAuthenticated === 'undefined') {
+  if (isLoading) {
     return null;
   }
 
@@ -91,8 +101,8 @@ export default function Header() {
                     className="w-7 h-7 rounded-full object-cover"
                     onError={(e) => {
                       const img = e.target as HTMLImageElement;
-                      if (!img.src.includes('ui-avatars')) {
-                        img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`;
+                      if (img.src !== `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=${encodeURIComponent(getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim())}&color=fff`) {
+                        img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=${encodeURIComponent(getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim())}&color=fff`;
                       }
                     }}
                   />
@@ -142,8 +152,8 @@ export default function Header() {
                   className="w-7 h-7 rounded-full object-cover"
                   onError={(e) => {
                     const img = e.target as HTMLImageElement;
-                    if (!img.src.includes('ui-avatars')) {
-                      img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`;
+                    if (img.src !== `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=${encodeURIComponent(getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim())}&color=fff`) {
+                      img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=${encodeURIComponent(getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim())}&color=fff`;
                     }
                   }}
                 />
@@ -181,8 +191,8 @@ export default function Header() {
                       className="w-10 h-10 rounded-full object-cover"
                       onError={(e) => {
                         const img = e.target as HTMLImageElement;
-                        if (!img.src.includes('ui-avatars')) {
-                          img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=FF8C00&color=fff`;
+                        if (img.src !== `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=${encodeURIComponent(getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim())}&color=fff`) {
+                          img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=${encodeURIComponent(getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim())}&color=fff`;
                         }
                       }}
                     />

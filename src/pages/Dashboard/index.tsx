@@ -24,22 +24,22 @@ export default function Dashboard() {
           <CriticalAnnouncements />
         </div>
 
-        {/* Priority 2: Events and Posts */}
+        {/* Priority 3: Latest Community Posts */}
+        <div className="mb-6">
+          <LatestPosts />
+        </div>
+
+        {/* Priority 2: Events and Resources */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
           {/* Left Column - Events */}
-          <div>
+          <div className="w-full">
             <TodayEvents />
           </div>
 
-          {/* Right Column - Posts */}
+          {/* Right Column - Resources */}
           <div>
-            <LatestPosts />
+            <ResourcesAndServices />
           </div>
-        </div>
-
-        {/* Priority 3: Resources and Services */}
-        <div className="mb-6">
-          <ResourcesAndServices />
         </div>
 
         {/* Priority 4: Marketplace */}

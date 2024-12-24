@@ -6,6 +6,26 @@ import path from 'path';
 
 const router = express.Router();
 
+// Get all users
+router.get('/', async (req, res, next) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        bio: true,
+        profilePicture: true,
+        createdAt: true
+      }
+    });
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    next(error);
+  }
+});
+
 // Update user profile
 router.put('/profile', authenticate, async (req, res, next) => {
   try {

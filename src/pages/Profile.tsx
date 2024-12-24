@@ -45,7 +45,7 @@ export default function Profile() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="dark:bg-dark-card rounded-xl shadow-sm overflow-hidden">
           <div className="p-6 sm:p-8 border-b">
             <div className="flex items-center gap-6">
               <div className="relative">

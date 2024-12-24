@@ -7,11 +7,11 @@ export default function SettingsLayout() {
   const { user } = useAuth();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 dark:bg-dark">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style={{ backgroundColor: 'var(--color-background)' }}>
       <div className="grid grid-cols-12 gap-8">
         {/* Sidebar */}
         <div className="col-span-3">
-          <nav className="space-y-1">
+          <nav className="space-y-1" style={{ backgroundColor: 'var(--color-card)', borderRadius: '0.75rem' }}>
             <NavLink
               to="/app/settings/profile"
               className={({ isActive }) =>
@@ -72,7 +72,7 @@ export default function SettingsLayout() {
 
         {/* Main Content */}
         <div className="col-span-9">
-          <div className="bg-white dark:bg-dark-card rounded-xl shadow-sm">
+          <div className="rounded-xl shadow-sm" style={{ backgroundColor: 'var(--color-card)' }}>
             <Outlet />
           </div>
         </div>

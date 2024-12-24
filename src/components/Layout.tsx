@@ -14,7 +14,7 @@ export default function Layout() {
   }, [theme]);
 
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-[#1a1a1a]">
+    <div className="min-h-screen flex bg-gray-50 dark:bg-[var(--color-background)]">
       <Sidebar />
       
       {/* Main Content Area */}

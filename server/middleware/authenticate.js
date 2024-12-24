@@ -18,6 +18,11 @@ export async function authenticate(req, res, next) {
     try {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('Decoded token details:', {
+        userId: decoded.userId,
+        email: decoded.email,
+        role: decoded.role
+      });
       console.log('Decoded token:', decoded);
       
       // Get user
