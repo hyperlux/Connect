@@ -10,7 +10,7 @@ bash restart-servers.sh
 cd server
 npm run dev
 
-    ssh root@142.93.218.172
+    ssh root@206.189.134.234
     password: love
 
 cd AurovilleConnect
