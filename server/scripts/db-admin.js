@@ -5,7 +5,7 @@ import { dirname } from 'path';
 
 const { Pool } = pg;
 const pool = new Pool({
-  connectionString: 'postgresql://postgres:postgres@localhost:5432/auroville'
+  connectionString: `postgresql://postgres:\${process.env.DB_PASSWORD || 'postgres'}@localhost:5432/auroville`
 });
 
 async function createAdmin() {
