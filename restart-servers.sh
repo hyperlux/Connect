@@ -89,7 +89,7 @@ cd ..
 
 # Run database migrations
 log_message "Running database migrations..."
-export DATABASE_URL="postgresql://postgres:${DB_PASSWORD}@localhost:5432/auroville_connect?schema=public"
+# Use DATABASE_URL from .env
 cd server
 npx prisma migrate deploy
 if [ $? -ne 0 ]; then
