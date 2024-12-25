@@ -14,14 +14,14 @@ log_message() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-# Create log file if it doesn0't exist
+# Create log file if it doesn't exist
 touch "$LOG_FILE"
 
 log_message "Starting deployment process..."
 
-# Pull latest code from amin branch
-log_message "Pulling latest code from amin branch..."
-git pull origin amin --ff-only
+# Pull latest code from main branch
+log_message "Pulling latest code from main branch..."
+git pull origin main --ff-only
 
 # Function to check service status
 check_service() {
@@ -134,5 +134,3 @@ log_message "Deployment completed successfully!"
 # Display status
 pm2 status
 exit 0
-
-cd server && touch .env
