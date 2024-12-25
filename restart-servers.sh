@@ -25,7 +25,7 @@ git pull origin main --ff-only
 
 # Function to check service status
 check_service() {
-    if brew services list | grep "$1" | grep "started" >/dev/null; then
+    if systemctl is-active --quiet "$1"; then
         log_message "$1 is running"
         return 0
     else
@@ -89,7 +89,6 @@ cd ..
 
 # Run database migrations
 log_message "Running database migrations..."
-# Use DATABASE_URL from .env
 cd server
 npx prisma migrate deploy
 if [ $? -ne 0 ]; then
@@ -114,7 +113,6 @@ if [ $? -ne 0 ]; then
     log_message "Failed to start or restart backend service with PM2. Exiting."
     exit 1
 fi
-cd ..
 
 # Verify services are running
 log_message "Verifying services..."
