@@ -98,7 +98,7 @@ npm run predeploy
 2. Deploy to production server:
 ```bash
 # SSH into server
-ssh user@auroville.social
+ssh root@206.189.134.234
 
 # Navigate to project
 cd /root/AurovilleConnect

@@ -128,3 +128,21 @@ git pull origin main
 ```bash
 sudo systemctl restart auroville-connect
 sudo systemctl restart nginx
+```
+
+## Production Deployment
+
+To deploy the application for production, follow these steps:
+
+1. **Build the frontend:**
+   Run the command `npm run build` in the project's root directory. This will create a `dist` directory containing the production-ready files.
+
+2. **Configure Nginx:**
+   Configure Nginx to serve the static files from the `dist` directory. Your Nginx configuration should point to the correct path where the built files are located.
+
+3. **Start the server:**
+   Start the server in production mode using `pm2 start ecosystem.config.js`. This will start the server using the configuration in `ecosystem.config.js`, which should be set to production mode.
+
+   **Important:** Do not use `npm run dev:all` or `vite` to serve the frontend in production. These are development commands and are not suitable for production environments.
+
+By following these steps, you will ensure that your application is running correctly in a production environment.

@@ -19,9 +19,9 @@ touch "$LOG_FILE"
 
 log_message "Starting deployment process..."
 
-# Pull latest code from main branch
-log_message "Pulling latest code from main branch..."
-git pull origin main
+# Pull latest code from amin branch
+log_message "Pulling latest code from amin branch..."
+git pull origin amin --ff-only
 
 # Function to check service status
 check_service() {
@@ -80,7 +80,7 @@ cd ..
 
 # Build frontend
 log_message "Building frontend..."
-export VITE_API_URL="http://localhost:5000/api"
+export VITE_API_URL="https://api.auroville.social/api"
 NODE_ENV=production npm run build
 if [ $? -ne 0 ]; then
     log_message "Frontend build failed. Exiting."
