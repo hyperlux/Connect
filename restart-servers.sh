@@ -14,14 +14,16 @@ log_message() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-# Create log file if it doesn't exist
+# Create log file if it doesn0't exist
 touch "$LOG_FILE"
 
 log_message "Starting deployment process..."
 
 # Pull latest code from main branch
 log_message "Pulling latest code from main branch..."
-git pull origin main --ff-only
+git stash push -u -m "Stash before merge"
+/usr/bin/git merge origin/main
+git stash pop
 
 # Function to check service status
 check_service() {
@@ -33,26 +35,6 @@ check_service() {
         return 1
     fi
 }
-
-# Function to check if port is in use
-check_port() {
-    if lsof -i:$1 >/dev/null; then
-        log_message "Port $1 is already in use"
-        return 1
-    fi
-    return 0
-}
-
-# Check required port
-log_message "Checking ports..."
-check_port 5000
-if [ $? -eq 0 ]; then
-    log_message "Port 5000 is available"
-else
-    log_message "Port 5000 is in use. Will attempt to free it."
-    pm2 delete all
-    pm2 kill
-fi
 
 # Check PostgreSQL service
 log_message "Checking PostgreSQL service..."
