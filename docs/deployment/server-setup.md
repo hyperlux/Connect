@@ -70,7 +70,7 @@ JWT_SECRET=your_jwt_secret
 SMTP_SERVER=your_smtp_server
 SMTP_PORT=your_smtp_port
 SMTP_USERNAME=your_smtp_username
-SMTP_PASSWORD=your_smtp_password
+SMTP_PASSWORD=lucky8magic7aurOville*Q
 SMTP_AUTH=your_smtp_auth_method (e.g., plain)
 SMTP_DOMAIN=your_smtp_domain
 ```
