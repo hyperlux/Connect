@@ -21,7 +21,9 @@ log_message "Starting deployment process..."
 
 # Pull latest code from amin branch
 log_message "Pulling latest code from amin branch..."
-git pull origin amin --ff-only
+git stash push -u -m "Stash before merge"
+git merge origin/main
+git stash pop
 
 # Function to check service status
 check_service() {
