@@ -14,22 +14,16 @@ log_message() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-# Create log file if it doesn't exist
+# Create log file if it doesn0't exist
 touch "$LOG_FILE"
 
 log_message "Starting deployment process..."
 
-<<<<<<< HEAD
-# Pull latest code from amin branch
-log_message "Pulling latest code from amin branch..."
-git stash push -u -m "Stash before merge"
-git merge origin/main
-git stash pop
-=======
 # Pull latest code from main branch
 log_message "Pulling latest code from main branch..."
-git pull origin main --ff-only
->>>>>>> origin/main
+git stash push -u -m "Stash before merge"
+/usr/bin/git merge origin/main
+git stash pop
 
 # Function to check service status
 check_service() {
