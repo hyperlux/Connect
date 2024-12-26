@@ -14,16 +14,22 @@ log_message() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-# Create log file if it doesn0't exist
+# Create log file if it doesn't exist
 touch "$LOG_FILE"
 
 log_message "Starting deployment process..."
 
+<<<<<<< HEAD
 # Pull latest code from amin branch
 log_message "Pulling latest code from amin branch..."
 git stash push -u -m "Stash before merge"
 git merge origin/main
 git stash pop
+=======
+# Pull latest code from main branch
+log_message "Pulling latest code from main branch..."
+git pull origin main --ff-only
+>>>>>>> origin/main
 
 # Function to check service status
 check_service() {
@@ -71,7 +77,6 @@ cd ..
 
 # Run database migrations
 log_message "Running database migrations..."
-export DATABASE_URL="postgresql://postgres:${DB_PASSWORD}@localhost:5432/auroville_connect?schema=public"
 cd server
 npx prisma migrate deploy
 if [ $? -ne 0 ]; then
@@ -96,7 +101,6 @@ if [ $? -ne 0 ]; then
     log_message "Failed to start or restart backend service with PM2. Exiting."
     exit 1
 fi
-cd ..
 
 # Verify services are running
 log_message "Verifying services..."
@@ -116,5 +120,3 @@ log_message "Deployment completed successfully!"
 # Display status
 pm2 status
 exit 0
-
-cd server && touch .env
