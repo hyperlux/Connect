@@ -23,12 +23,13 @@ export default defineConfig(({ mode }) => {
       outDir: "dist",
       sourcemap: false, // Disable source maps
       assetsInlineLimit: 0, // Serve all assets as files
+      emptyOutDir: true,
       rollupOptions: {
         input: {
-          main: 'index.html',
-          'service-worker': 'public/service-worker.js' // Uncommented ServiceWorker input
+          main: 'index.html'
         }
-      }
+      },
+      copyPublicDir: true
     },
   };
 });

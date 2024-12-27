@@ -1,20 +1,27 @@
 import { useEffect } from 'react';
 
 const registerServiceWorker = () => {
-  // if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-  //   window.addEventListener('load', () => {
-  //     const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // Unregister any existing service workers first
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(registration => {
+          registration.unregister();
+        });
+      });
 
-  //     navigator.serviceWorker
-  //       .register(swUrl)
-  //       .then((registration) => {
-  //         console.log('ServiceWorker registration successful:', registration);
-  //       })
-  //       .catch((error) => {
-  //         console.error('ServiceWorker registration failed:', error);
-  //       });
-  //   });
-  // }
+      const swUrl = `${window.location.origin}/service-worker.js`;
+      
+      navigator.serviceWorker
+        .register(swUrl, { scope: '/' })
+        .then((registration) => {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        })
+        .catch((error) => {
+          console.error('ServiceWorker registration failed:', error);
+        });
+    });
+  }
 };
 
 const useServiceWorker = () => {
