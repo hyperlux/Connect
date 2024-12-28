@@ -49,7 +49,7 @@ export default function Welcome() {
 
   useEffect(() => {
     // Redirect to dashboard if user is authenticated
-    if (isAuthenticated) {
+    if (isAuthenticated()) {
       navigate('/app/dashboard', { replace: true });
       return;
     }

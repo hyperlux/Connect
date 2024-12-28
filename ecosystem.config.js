@@ -5,7 +5,7 @@ module.exports = {
       cwd: './server',
       script: 'index.js',
       env: {
-        NODE_ENV: process.env.NODE_ENV || 'development',
+        NODE_ENV: 'production',
         PORT: process.env.PORT || 5000,
         HOST: '0.0.0.0',
         DATABASE_URL: process.env.DATABASE_URL || "postgresql://postgres:newpassword123@localhost:5432/auroville",

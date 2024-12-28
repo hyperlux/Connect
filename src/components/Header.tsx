@@ -9,7 +9,7 @@ import { useSidebar } from '../lib/sidebar';
 import { API_URL } from '../lib/environment';
 
 export default function Header() {
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticated: isAuth, isLoading, logout } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
@@ -90,7 +90,7 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-4">
             <ThemeToggle />
 
-            {isAuthenticated && user ? (
+            {isAuth() && user ? (
               <div className="flex items-center gap-3">
                 <NotificationsPopover />
                 <Link to="/profile" className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export default function Header() {
           {/* Mobile Navigation */}
           <div className="lg:hidden flex items-center gap-3">
             <ThemeToggle />
-            {isAuthenticated && user ? (
+            {isAuthenticated() && user ? (
               <Link to="/profile">
                 <img
                   key={avatarKey}
@@ -181,7 +181,7 @@ export default function Header() {
               Close
             </button>
             <div className="space-y-4">
-              {isAuthenticated && user ? (
+              {isAuth() && user ? (
                 <>
                   <div className="flex items-center gap-3 p-2">
                     <img

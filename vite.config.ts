@@ -3,7 +3,15 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const apiUrl = env.VITE_API_URL || 'https://auroville.social/api';
+  const apiUrl = env.VITE_API_URL || 'https://api.auroville.social/api';
+
+  // Explicitly define environment variables for production
+  const define = {
+    'process.env': {
+      VITE_API_URL: JSON.stringify(apiUrl),
+      VITE_FRONTEND_URL: JSON.stringify(env.VITE_FRONTEND_URL || 'https://auroville.social')
+    }
+  };
 
   return {
     plugins: [react()],
