@@ -28,12 +28,15 @@
 - Rebuilt frontend with production settings
 - Restarted all PM2 services
 - Ensured proper environment variable propagation
+- Added proper file copying to nginx directory
+- Set correct permissions for service worker
 
 ## Current State
-- Service worker bypasses API requests
+- Service worker properly registered and serving from correct path
 - Nginx configured to handle HTTPS and API routing
 - Environment detection in place for proper URL selection
 - Frontend and backend services running under PM2
+- All files correctly deployed to production directory
 
 ## Next Steps If Issue Persists
 

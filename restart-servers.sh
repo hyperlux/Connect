@@ -88,6 +88,17 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Copy built files to nginx directory
+log_message "Copying built files to nginx directory..."
+sudo cp -r dist/* /var/www/html/AurovilleConnect/
+if [ $? -ne 0 ]; then
+    log_message "Failed to copy built files. Exiting."
+    exit 1
+fi
+
+# Ensure service worker has correct permissions
+sudo chmod 644 /var/www/html/AurovilleConnect/service-worker.js
+
 # Start backend with PM2
 log_message "Starting or restarting backend service with PM2..."
 pm2 startOrRestart ecosystem.config.js --only auroville-connect-server
