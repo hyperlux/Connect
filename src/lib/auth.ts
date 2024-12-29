@@ -71,7 +71,7 @@ export const useAuth = () => {
     return user || JSON.parse(localStorage.getItem('user') || 'null');
   };
 
-  export const isAuthenticated: () => boolean = () => {
+  const isAuthenticated: () => boolean = () => {
     return !!localStorage.getItem('token');
   };
 

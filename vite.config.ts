@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
           main: 'index.html'
         }
       },
-      copyPublicDir: true
+      copyPublicDir: false
     },
   };
 });
