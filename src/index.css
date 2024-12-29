@@ -27,9 +27,17 @@ body,
 @layer components {
   .layout-container {
     display: grid;
-    grid-template-columns: 256px 1fr;
+    grid-template-columns: 256px minmax(0, 1fr);
     min-height: 100vh;
+<<<<<<< Updated upstream
     position: relative;
+=======
+    background-color: var(--color-background);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+>>>>>>> Stashed changes
   }
 
   .layout-sidebar-container {
@@ -38,18 +46,48 @@ body,
     height: 100vh;
     overflow-y: auto;
     border-right: 1px solid var(--color-border);
+<<<<<<< Updated upstream
+=======
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    margin: 0;
+    padding: 1rem;
+    overflow-y: auto;
+>>>>>>> Stashed changes
   }
 
   .layout-main-container {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+<<<<<<< Updated upstream
+=======
+    min-width: 0;
+    background-color: var(--color-background);
+    position: relative;
+    margin: 0;
+    padding: 0;
+    max-width: 1600px;
+    width: 100%;
+>>>>>>> Stashed changes
   }
 
   .layout-content {
     flex: 1;
+<<<<<<< Updated upstream
     width: 100%;
     padding: 1rem;
+=======
+    min-width: 0;
+    background-color: var(--color-background);
+    position: relative;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+>>>>>>> Stashed changes
   }
 }
 
