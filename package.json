@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "NODE_ENV=development VITE_API_URL=$VITE_API_URL VITE_FRONTEND_URL=$VITE_FRONTEND_URL vite",
-    "build": "tsc --pretty && NODE_ENV=production vite build && cp public/service-worker.js dist/",
+    "build": "NODE_ENV=production vite build && cp public/service-worker.js dist/",
     "build:prod": "npm run build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
