@@ -1,0 +1,160 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String          @id @default(uuid())
+  email             String          @unique
+  password          String
+  name              String
+  role              String          @default("USER")
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  emailVerified     Boolean         @default(false)
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  verificationToken String?
+  profilePicture    String?
+  bio               String?
+  cityServices      CityService[]
+  commentVotes      CommentVote[]
+  events            Event[]         @relation("OrganizedEvents")
+  attending         EventAttendee[]
+  comments          ForumComment[]
+  posts             ForumPost[]
+  notifications     Notification[]
+  postVotes         PostVote[]
+
+  @@index([email])
+}
+
+model Event {
+  id          String          @id @default(uuid())
+  title       String
+  description String
+  date        DateTime
+  location    String
+  imageUrl    String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  organizerId String
+  category    String
+  endTime     String
+  maxSpots    Int             @default(100)
+  time        String
+  organizer   User            @relation("OrganizedEvents", fields: [organizerId], references: [id])
+  attendees   EventAttendee[]
+
+  @@index([organizerId])
+  @@index([date])
+  @@index([category])
+}
+
+model EventAttendee {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  eventId   String
+  userId    String
+  event     Event    @relation(fields: [eventId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+}
+
+model ForumPost {
+  id        String         @id @default(uuid())
+  title     String
+  content   String
+  category  String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  views     Int            @default(0)
+  authorId  String
+  score     Int            @default(0)
+  comments  ForumComment[]
+  author    User           @relation(fields: [authorId], references: [id])
+  votes     PostVote[]
+
+  @@index([authorId])
+  @@index([category])
+  @@index([createdAt])
+}
+
+model ForumComment {
+  id        String        @id @default(uuid())
+  content   String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  authorId  String
+  postId    String
+  score     Int           @default(0)
+  votes     CommentVote[]
+  author    User          @relation(fields: [authorId], references: [id])
+  post      ForumPost     @relation(fields: [postId], references: [id])
+
+  @@index([authorId])
+  @@index([postId])
+  @@index([createdAt])
+}
+
+model PostVote {
+  id        String    @id @default(uuid())
+  value     Int
+  postId    String
+  userId    String
+  createdAt DateTime  @default(now())
+  post      ForumPost @relation(fields: [postId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@unique([postId, userId])
+}
+
+model CommentVote {
+  id        String       @id @default(uuid())
+  value     Int
+  commentId String
+  userId    String
+  createdAt DateTime     @default(now())
+  comment   ForumComment @relation(fields: [commentId], references: [id])
+  user      User         @relation(fields: [userId], references: [id])
+
+  @@unique([commentId, userId])
+}
+
+model CityService {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  category    String
+  contactInfo String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  providerId  String
+  provider    User     @relation(fields: [providerId], references: [id])
+
+  @@index([providerId])
+  @@index([category])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  link      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+}

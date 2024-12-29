@@ -1,0 +1,4 @@
+{"cors":"*","env":"development","level":"info","message":"Loaded configuration:","port":"5001","timestamp":"2024-12-29T15:24:17.388Z"}
+{"level":"info","message":"Uploads directory path:","timestamp":"2024-12-29T15:24:17.393Z"}
+{"level":"info","message":"\n      🚀 Server is running in development mode\n      🔊 Listening on 0.0.0.0:5001\n      📱 API URL: https://api.auroville.social\n      🌐 Frontend URL: https://auroville.social\n      ","timestamp":"2024-12-29T15:24:17.476Z"}
+{"level":"info","message":"NODE_ENV:","timestamp":"2024-12-29T15:24:17.476Z"}
