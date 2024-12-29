@@ -34,10 +34,10 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       rollupOptions: {
         input: {
-          main: 'index.html'
+          main: 'public/index.html'
         }
       },
-      copyPublicDir: false
+      copyPublicDir: true
     },
   };
 });

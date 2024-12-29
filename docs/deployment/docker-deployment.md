@@ -1,11 +1,12 @@
 # Docker Deployment Guide
 
 ## Overview
-This document provides instructions for deploying the Auroville Connect platform using Docker.
+This document provides instructions for deploying the Auroville Connect platform using Docker in production.
 
 ## Prerequisites
 - Docker installed
 - Docker Compose installed
+- Let's Encrypt SSL certificates
 - Sufficient system resources (RAM, CPU)
 
 ## Configuration
@@ -43,12 +44,46 @@ services:
       - auroville_network
     restart: unless-stopped
 
+  nginx:
+    image: nginx:latest
+    container_name: auroville_nginx
+    depends_on:
+      - app
+    volumes:
+      - ./nginx.docker.conf:/etc/nginx/nginx.conf
+      - ./dist:/usr/share/nginx/html
+      - /etc/letsencrypt/live/yourdomain.com/fullchain.pem:/etc/ssl/certs/fullchain.pem
+      - /etc/letsencrypt/live/yourdomain.com/privkey.pem:/etc/ssl/private/privkey.pem
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - auroville_network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
 
 networks:
   auroville_network:
     driver: bridge
+```
+
+## Production Build Steps
+
+1. Build the production assets:
+```bash
+npm run build
+```
+
+2. Verify the dist directory structure:
+```bash
+ls -la dist/
+```
+
+3. Ensure proper file permissions:
+```bash
+chmod -R 755 dist/
 ```
 
 ## Deployment Steps
@@ -68,17 +103,52 @@ docker-compose up -d
 docker ps
 ```
 
-4. Check logs:
+4. Check nginx logs:
 ```bash
-docker logs auroville_app
+docker logs auroville_nginx
 ```
+
+## SSL Configuration
+
+1. Obtain Let's Encrypt certificates:
+```bash
+sudo certbot certonly --standalone -d yourdomain.com
+```
+
+2. Verify certificate files exist:
+```bash
+ls -la /etc/letsencrypt/live/yourdomain.com/
+```
+
+3. Ensure proper permissions for certificate files:
+```bash
+sudo chmod 644 /etc/letsencrypt/live/yourdomain.com/fullchain.pem
+sudo chmod 600 /etc/letsencrypt/live/yourdomain.com/privkey.pem
+```
+
+## Nginx Configuration
+
+The nginx.docker.conf file should include:
+
+- HTTP to HTTPS redirection
+- SSL configuration with proper certificate paths
+- Static file serving from /usr/share/nginx/html
+- Proxy pass for API requests to the app service
+- Proper caching headers for static assets
 
 ## Troubleshooting
 
-### Connection Issues
-- Verify database container is running
-- Check network connectivity between containers
-- Validate environment variables
+### SSL Issues
+- Verify certificate files are mounted correctly
+- Check nginx logs for SSL-related errors
+- Ensure certificate files have proper permissions
+
+### Static File Issues
+- Verify dist directory is mounted correctly
+- Check file permissions in the container:
+```bash
+docker exec auroville_nginx ls -la /usr/share/nginx/html
+```
 
 ### Performance Problems
 - Monitor resource usage:
@@ -87,13 +157,9 @@ docker stats
 ```
 - Adjust resource limits in docker-compose.yml
 
-### Migration Issues
-- Run migrations manually:
-```bash
-docker exec auroville_app npx prisma migrate deploy
-```
-
 ## Maintenance
+
 - Backup database regularly
 - Monitor logs for errors
 - Update containers as needed
+- Renew SSL certificates before expiration
