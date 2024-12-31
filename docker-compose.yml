@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: auroville_db
+    environment:
+      POSTGRES_USER: auroville_user
+      POSTGRES_PASSWORD: ok
+      POSTGRES_DB: auroville_connect
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - auroville_network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    command: postgres -c shared_buffers=256MB -c work_mem=16MB -c maintenance_work_mem=128MB -c max_connections=50
+
+  app:
+    build: .
+    container_name: auroville_app
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://auroville_user:ok@db:5432/auroville_connect"
+      NODE_ENV: production
+      NODE_OPTIONS: "--max-old-space-size=512"
+    networks:
+      - auroville_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.70'
+          memory: 512M
+        reservations:
+          cpus: '0.35'
+          memory: 256M
+
+  nginx:
+    image: nginx:alpine
+    container_name: auroville_nginx
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.docker.conf:/etc/nginx/conf.d/default.conf
+      - ./dist:/usr/share/nginx/html
+      - /etc/letsencrypt/live/auroville.social/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
+      - /etc/letsencrypt/live/auroville.social/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
+    networks:
+      - auroville_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+volumes:
+  postgres_data:
+
+networks:
+  auroville_network:
+    driver: bridge

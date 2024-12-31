@@ -3,7 +3,15 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const apiUrl = env.VITE_API_URL || 'http://localhost:5000/api';
+  const apiUrl = env.VITE_API_URL || 'https://api.auroville.social/api';
+
+  // Explicitly define environment variables for production
+  const define = {
+    'process.env': {
+      VITE_API_URL: JSON.stringify(apiUrl),
+      VITE_FRONTEND_URL: JSON.stringify(env.VITE_FRONTEND_URL || 'https://auroville.social')
+    }
+  };
 
   return {
     plugins: [react()],
@@ -23,12 +31,13 @@ export default defineConfig(({ mode }) => {
       outDir: "dist",
       sourcemap: false, // Disable source maps
       assetsInlineLimit: 0, // Serve all assets as files
+      emptyOutDir: true,
       rollupOptions: {
         input: {
-          main: 'index.html',
-          'service-worker': 'public/service-worker.js' // Uncommented ServiceWorker input
+          main: 'public/index.html'
         }
-      }
+      },
+      copyPublicDir: true
     },
   };
 });

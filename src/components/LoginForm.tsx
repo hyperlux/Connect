@@ -40,7 +40,7 @@ export default function LoginForm() {
   // Watch for auth state changes
   useEffect(() => {
     console.log('LoginForm auth state:', { isAuthenticated, user });
-    if (isAuthenticated && user) {
+    if (isAuthenticated() && user) {
       console.log('Auth state confirmed, navigating to dashboard...');
       // Use a timeout to ensure state is fully updated
       setTimeout(() => {

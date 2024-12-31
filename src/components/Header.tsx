@@ -9,7 +9,7 @@ import { useSidebar } from '../lib/sidebar';
 import { API_URL } from '../lib/environment';
 
 export default function Header() {
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticated: isAuth, isLoading, logout } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
@@ -90,7 +90,7 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-4">
             <ThemeToggle />
 
-            {isAuthenticated && user ? (
+            {isAuth() && user ? (
               <div className="flex items-center gap-3">
                 <NotificationsPopover />
                 <Link to="/profile" className="flex items-center gap-2">
@@ -139,34 +139,6 @@ export default function Header() {
               </div>
             )}
           </div>
-
-          {/* Mobile Navigation */}
-          <div className="lg:hidden flex items-center gap-3">
-            <ThemeToggle />
-            {isAuthenticated && user ? (
-              <Link to="/profile">
-                <img
-                  key={avatarKey}
-                  src={getProfileImage()}
-                  alt="Profile"
-                  className="w-7 h-7 rounded-full object-cover"
-                  onError={(e) => {
-                    const img = e.target as HTMLImageElement;
-                    if (img.src !== `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=${encodeURIComponent(getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim())}&color=fff`) {
-                      img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || '')}&background=${encodeURIComponent(getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim())}&color=fff`;
-                    }
-                  }}
-                />
-              </Link>
-            ) : (
-              <Link
-                to="/login"
-                className="text-xs text-white bg-auroville-primary hover:bg-auroville-primary/90 px-3 py-1 rounded transition-colors"
-              >
-                Sign In
-              </Link>
-            )}
-          </div>
         </div>
       </div>
 
@@ -181,7 +153,7 @@ export default function Header() {
               Close
             </button>
             <div className="space-y-4">
-              {isAuthenticated && user ? (
+              {isAuth() && user ? (
                 <>
                   <div className="flex items-center gap-3 p-2">
                     <img

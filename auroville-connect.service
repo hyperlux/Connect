@@ -5,7 +5,10 @@ After=network.target postgresql.service
 [Service]
 Type=simple
 User=root
-EnvironmentFile=/root/AurovilleConnect/server/.env
+EnvironmentFile=/root/AurovilleConnect/.env
+Environment=DATABASE_URL="postgresql://auroville_user:${DB_PASSWORD}@host.docker.internal:5432/auroville"
+Environment=DB_PASSWORD=new_secure_password
+Environment=PORT=8000
 
 # Environment variables
 Environment=NODE_ENV=production

@@ -157,7 +157,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 console.log('Starting server...');
-const server = app.listen(PORT, 'localhost', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
     logger.info(`
       🚀 Server is running in ${process.env.NODE_ENV || 'undefined'} mode
       🔊 Listening on 0.0.0.0:${PORT}
