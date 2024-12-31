@@ -116,8 +116,8 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
               {...formRegister('password', {
                 required: 'Password is required',
                 minLength: {
-                  value: 8,
-                  message: 'Password must be at least 8 characters'
+                  value: 6,
+                  message: 'Password must be at least 6 characters'
                 }
               })}
               className="w-full rounded-lg border-gray-300 focus:border-auroville-primary focus:ring-auroville-primary"
