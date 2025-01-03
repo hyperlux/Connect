@@ -14,14 +14,6 @@ services:
       - "5433:5432"
     networks:
       - auroville_network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
     command: postgres -c shared_buffers=256MB -c work_mem=16MB -c maintenance_work_mem=128MB -c max_connections=50
 
   app:
@@ -36,14 +28,12 @@ services:
     networks:
       - auroville_network
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.70'
-          memory: 512M
-        reservations:
-          cpus: '0.35'
-          memory: 256M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 1s
+      retries: 5
+      start_period: 10s
 
   nginx:
     image: nginx:alpine
@@ -66,8 +56,7 @@ services:
         limits:
           cpus: '0.50'
           memory: 512M
-        reservations:
-          cpus: '0.25'
+        
           memory: 256M
 
 volumes:

@@ -1,5 +1,5 @@
 # Stage 1: Build the frontend
-FROM node:20-alpine AS frontend-builder
+FROM node:20 AS frontend-builder
 
 # Set build-time memory limit for node
 ENV NODE_OPTIONS="--max-old-space-size=512"
@@ -14,22 +14,29 @@ WORKDIR /app/frontend
 COPY package*.json ./
 COPY vite.config.ts ./
 
-# Install dependencies with npm ci for faster, reliable builds
-RUN npm ci --no-audit --no-optional && \
-    # Clear npm cache
-    npm cache clean --force
+# Debug: Show package.json contents
+RUN cat package.json
+
+# Debug: Show package-lock.json contents
+RUN cat package-lock.json
+
+# Clear npm cache and install dependencies using npm ci
+RUN npm cache clean --force && \
+    npm ci --no-audit --include=dev
 
 # Copy source files
 COPY src ./src
 COPY public ./public
 
-# Build with production optimization
-RUN npm run build && \
+# Build the frontend using npm exec
+WORKDIR /app/frontend
+RUN npx vite build && \
+    cp public/service-worker.js dist/ && \
     # Remove source files after build
     rm -rf src public
 
 # Stage 2: Build the server
-FROM node:20-alpine AS server-builder
+FROM node:20 AS server-builder
 
 # Set build-time memory limit for node
 ENV NODE_OPTIONS="--max-old-space-size=512"
@@ -52,7 +59,7 @@ RUN npm ci --no-audit --no-optional && \
 COPY server/ .
 
 # Stage 3: Final image
-FROM node:20-alpine
+FROM node:20
 
 # Set production environment
 ENV NODE_ENV=production
@@ -62,8 +69,8 @@ ENV NODE_OPTIONS="--max-old-space-size=512"
 RUN npm install -g pm2
 
 # Create non-root user
-RUN addgroup -g 1001 appuser && \
-    adduser -u 1001 -G appuser -s /bin/sh -D appuser
+RUN addgroup --gid 1001 appuser && \
+    adduser -u 1001 --gid 1001 --shell /bin/sh --disabled-password --disabled-login appuser
 
 WORKDIR /app
 

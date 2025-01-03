@@ -13,32 +13,6 @@ export const environment = {
     : window.location.hostname === 'localhost'
       ? 'http://localhost:5174'
       : 'https://auroville.social'
->>>>>>> origin/main
-=======
-  production: isProd,
-  API_URL: isProd
-    ? 'https://api.auroville.social/api'
-    : window.location.hostname === 'localhost'
-      ? '/api'  // Use relative path to leverage Vite's proxy
-      : 'https://api.auroville.social/api',
-  FRONTEND_URL: isProd
-    ? 'https://auroville.social'
-    : window.location.hostname === 'localhost'
-      ? 'http://localhost:5174'
-      : 'https://auroville.social'
-=======
-  production: isProd,
-  API_URL: isProd
-    ? 'https://api.auroville.social/api'
-    : window.location.hostname === 'localhost'
-      ? '/api'  // Use relative path to leverage Vite's proxy
-      : 'https://api.auroville.social/api',
-  FRONTEND_URL: isProd
-    ? 'https://auroville.social'
-    : window.location.hostname === 'localhost'
-      ? 'http://localhost:5174'
-      : 'https://auroville.social'
->>>>>>> origin/main
 };
 
 export const API_URL = environment.API_URL;

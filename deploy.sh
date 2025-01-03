@@ -19,17 +19,17 @@ log() {
 check_resources() {
     local memory_usage=$(free | grep Mem | awk '{print $3/$2 * 100.0}')
     local cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}')
-    
+
     if (( $(echo "$memory_usage > $MAX_MEMORY_USAGE" | bc -l) )); then
         log "ERROR: Memory usage too high: ${memory_usage}%"
         return 1
     fi
-    
+
     if (( $(echo "$cpu_usage > $MAX_CPU_USAGE" | bc -l) )); then
         log "ERROR: CPU usage too high: ${cpu_usage}%"
         return 1
     fi
-    
+
     return 0
 }
 
@@ -78,69 +78,69 @@ rollback() {
 # Main deployment process
 main() {
     log "Starting deployment process..."
-    
+
     # Check initial system resources
     if ! check_resources; then
         log "System resources exceeded limits. Aborting deployment."
-        exit 1
+        return 1
     fi
-    
+
     # Backup current state
     backup_current_state
-    
+
     # Clean up before build
     cleanup
-    
+
     # Build frontend with resource monitoring
     log "Building frontend..."
     NODE_OPTIONS="--max-old-space-size=512" npm run build
-    
+
     if [ ! -d "dist" ] || [ ! -f "dist/index.html" ]; then
         log "Frontend build failed. Rolling back..."
         rollback
-        exit 1
+        return 1
     fi
-    
+
     # Check resources after build
     if ! check_resources; then
         log "System resources exceeded limits after build. Rolling back..."
         rollback
-        exit 1
-    
-    
+        return 1
+    fi
+
     # Stop current containers
     log "Stopping current containers..."
     docker-compose down
-    
+
     # Start new containers
     log "Starting new containers..."
     docker-compose up -d
-    
+
     # Health check
     if ! health_check; then
         log "Health check failed. Rolling back..."
         rollback
-        exit 1
+        return 1
     fi
-    
+
     # Final resource check
     if ! check_resources; then
         log "System resources exceeded limits after deployment. Rolling back..."
         rollback
-        exit 1
+        return 1
     fi
-    
+
     # Cleanup backup files if deployment successful
     rm -rf dist_backup docker_state_backup
-    
+
     log "Deployment completed successfully"
+    return 0
 }
 
-
-# Trap errors
+# Trap for errors
 trap 'log "Error occurred. Rolling back..."; rollback; exit 1' ERR
 
 # Execute main function
 main
 
-exit 0
+exit $?  # Exit with the status of the last command executed

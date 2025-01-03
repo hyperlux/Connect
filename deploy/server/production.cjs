@@ -24,6 +24,6 @@ module.exports = {
     timeWindow: 15 * 60 * 1000 // 15 minutes
   },
   db: {
-    url: process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5432/auroville"
+    url: process.env.DATABASE_URL || "postgresql://auroville_user:ok@db:5432/auroville_connect"
   }
 };

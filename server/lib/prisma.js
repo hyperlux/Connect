@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 console.log('🔌 Initializing Prisma client with DATABASE_URL:', {
-  url: process.env.DATABASE_URL?.replace(/:[^:@]*@/, ':****@') // Hide password in logs
+  url: process.env.DATABASE_URL?.replace(/:\/\/([^@]+)@/, '://****@') // Hide password in logs
 });
 
 const prisma = new PrismaClient({
