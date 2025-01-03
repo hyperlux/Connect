@@ -134,6 +134,7 @@ main() {
     rm -rf dist_backup docker_state_backup
     
     log "Deployment completed successfully"
+}
 
 
 # Trap errors
