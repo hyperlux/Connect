@@ -137,9 +137,15 @@ app.use('/api/users', usersRouter);
 app.use('/api/forums', forumsRouter);
 
 // Import and use other routes
-const { eventsRouter } = await import('./routes/events.js');
-const { servicesRouter } = await import('./routes/services.js');
-const { notificationsRouter } = await import('./routes/notifications.js');
+let eventsRouter, servicesRouter, notificationsRouter;
+try {
+  ({ eventsRouter } = await import('./routes/events.js'));
+  ({ servicesRouter } = await import('./routes/services.js'));
+  ({ notificationsRouter } = await import('./routes/notifications.js'));
+} catch (error) {
+  logger.error('Failed to import routes:', error);
+  process.exit(1);
+}
 
 app.use('/api/events', eventsRouter);
 app.use('/api/services', servicesRouter);
@@ -157,6 +163,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 console.log('Starting server...');
+logger.info('Server is about to start listening on port:', PORT);
 const server = app.listen(PORT, '0.0.0.0', () => {
     logger.info(`
       🚀 Server is running in ${process.env.NODE_ENV || 'undefined'} mode

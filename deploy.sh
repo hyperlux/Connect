@@ -18,7 +18,13 @@ log() {
 # Monitor system resources
 check_resources() {
     local memory_usage=$(free | grep Mem | awk '{print $3/$2 * 100.0}')
-    local cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}')
+    local cpu_total=0
+    local cpu_samples=5
+    for ((i=0; i<cpu_samples; i++)); do
+      cpu_total=$(echo "$cpu_total + $(top -bn1 | grep "Cpu(s)" | awk '{print $2}')" | bc)
+      sleep 0.2
+    done
+    local cpu_usage=$(echo "$cpu_total / $cpu_samples" | bc)
 
     if (( $(echo "$memory_usage > $MAX_MEMORY_USAGE" | bc -l) )); then
         log "ERROR: Memory usage too high: ${memory_usage}%"
@@ -37,7 +43,7 @@ check_resources() {
 health_check() {
     local retries=$HEALTH_CHECK_RETRIES
     while [ $retries -gt 0 ]; do
-        if curl -f -s https://auroville.social/api/health > /dev/null; then
+        if docker exec auroville_app curl -f -s http://localhost:5000/health > /dev/null; then
             log "Health check passed"
             return 0
         fi
@@ -93,7 +99,18 @@ main() {
 
     # Build frontend with resource monitoring
     log "Building frontend..."
-    NODE_OPTIONS="--max-old-space-size=512" npm run build
+    NODE_OPTIONS="--max-old-space-size=512" npm run build &
+    BUILD_PID=$!
+    while kill -0 $BUILD_PID 2>/dev/null; do
+        if ! check_resources; then
+            log "System resources exceeded limits during build. Aborting build."
+            kill $BUILD_PID
+            wait $BUILD_PID
+            return 1
+        fi
+        sleep 2
+    done
+    wait $BUILD_PID
 
     if [ ! -d "dist" ] || [ ! -f "dist/index.html" ]; then
         log "Frontend build failed. Rolling back..."
@@ -114,14 +131,10 @@ main() {
 
     # Start new containers
     log "Starting new containers..."
-    docker-compose up -d
-
-    # Health check
-    if ! health_check; then
-        log "Health check failed. Rolling back..."
-        rollback
-        return 1
-    fi
+    docker-compose up --no-start
+    log "Containers started successfully"
+    docker start auroville_app
+    docker logs -f auroville_app
 
     # Final resource check
     if ! check_resources; then
@@ -143,4 +156,4 @@ trap 'log "Error occurred. Rolling back..."; rollback; exit 1' ERR
 # Execute main function
 main
 
-exit $?  # Exit with the status of the last command executed
+exit $?

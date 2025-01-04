@@ -14,12 +14,22 @@ const prisma = new PrismaClient({
 });
 
 // Test database connection
-prisma.$connect()
-  .then(() => {
+const connectWithRetry = async (retries = 5) => {
+  try {
+    await prisma.$connect();
     console.log('✅ Successfully connected to database');
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error('❌ Failed to connect to database:', error);
-  });
+    if (retries > 0) {
+      console.log(`Retrying database connection in 5 seconds... (${retries} retries remaining)`);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      await connectWithRetry(retries - 1);
+    } else {
+      process.exit(1);
+    }
+  }
+};
+
+connectWithRetry();
 
 export { prisma };

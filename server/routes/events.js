@@ -36,8 +36,8 @@ router.post('/', async (req, res) => {
       data: {
         title: req.body.title,
         description: req.body.description,
-        startDate: new Date(req.body.startDate),
-        endDate: req.body.endDate ? new Date(req.body.endDate) : null,
+        startDate:  Date.parse(req.body.startDate) ? new Date(req.body.startDate) : null,
+        endDate: req.body.endDate ? (Date.parse(req.body.endDate) ? new Date(req.body.endDate) : null) : null,
         location: req.body.location,
         contact: req.body.contact,
         website: req.body.website,
