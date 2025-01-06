@@ -1,0 +1,32 @@
+{
+  "short_name": "Auroville",
+  "name": "Auroville Community",
+  "icons": [
+    {
+      "src": "logodark.png",
+      "type": "image/png",
+      "sizes": "64x64"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#E27B58",
+  "background_color": "#1a1a1a",
+  "orientation": "portrait",
+  "scope": "/",
+  "description": "Auroville Community Platform",
+  "screenshots": [],
+  "categories": ["community", "social"],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/dashboard",
+      "description": "View your dashboard"
+    },
+    {
+      "name": "Events",
+      "url": "/events",
+      "description": "Browse community events"
+    }
+  ]
+} 

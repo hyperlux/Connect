@@ -1,0 +1,5 @@
+     Name                    Command                  State                                       Ports                                 
+----------------------------------------------------------------------------------------------------------------------------------------
+auroville_app     docker-entrypoint.sh pm2-r ...   Up (healthy)   5000/tcp                                                              
+auroville_db      docker-entrypoint.sh postg ...   Up             0.0.0.0:5433->5432/tcp,:::5433->5432/tcp                              
+auroville_nginx   /docker-entrypoint.sh ngin ...   Up             0.0.0.0:443->443/tcp,:::443->443/tcp, 0.0.0.0:80->80/tcp,:::80->80/tcp
