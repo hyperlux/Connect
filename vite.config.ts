@@ -1,5 +1,5 @@
 import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react-swc";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
+    base: '/',
     plugins: [react()],
     server: {
       host: "0.0.0.0",
@@ -29,15 +30,31 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: "dist",
-      sourcemap: false, // Disable source maps
-      assetsInlineLimit: 0, // Serve all assets as files
+      sourcemap: false,
+      assetsInlineLimit: 0,
       emptyOutDir: true,
       rollupOptions: {
         input: {
-          main: 'public/index.html'
+          main: 'src/index.html'
+        },
+        output: {
+          // Prevent source file references in production
+          sourcemapIgnore: true,
+          sourcemapExcludeSources: true
         }
       },
-      copyPublicDir: true
+      // Don't copy public directory
+      copyPublicDir: false,
+      // Prevent source file access in production
+      manifest: false,
+      // Minify production code
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true
+        }
+      }
     },
   };
 });

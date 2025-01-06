@@ -14,13 +14,7 @@ WORKDIR /app/frontend
 COPY package*.json ./
 COPY vite.config.ts ./
 
-# Debug: Show package.json contents
-RUN cat package.json
-
-# Debug: Show package-lock.json contents
-RUN cat package-lock.json
-
-# Clear npm cache and install dependencies using npm ci
+# Install dependencies using npm ci
 RUN npm cache clean --force && \
     npm ci --no-audit --include=dev
 
@@ -28,10 +22,14 @@ RUN npm cache clean --force && \
 COPY src ./src
 COPY public ./public
 
-# Build the frontend using npm exec
-WORKDIR /app/frontend
-RUN npx vite build && \
+# Build the frontend with error checking
+RUN echo "Building frontend..." && \
+    npx vite build && \
+    echo "Build completed successfully" && \
+    echo "Build output:" && \
+    ls -la dist && \
     cp public/service-worker.js dist/ && \
+    echo "Service worker copied successfully" && \
     # Remove source files after build
     rm -rf src public
 
@@ -74,25 +72,28 @@ RUN addgroup --gid 1001 appuser && \
 
 WORKDIR /app
 
-# Copy built frontend and server
-COPY --from=frontend-builder /app/frontend/dist ./public
-COPY --from=server-builder /app/server ./server
-COPY ecosystem.config.js .
+# Copy built frontend to Nginx serving directory
+COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html/dist
+RUN echo "Verifying frontend build:" && \
+    ls -la /usr/share/nginx/html/dist && \
+    chmod -R 755 /usr/share/nginx/html/dist
 
-# Set correct permissions
-RUN chown -R appuser:appuser /app
+COPY --from=server-builder /app/server ./server
+COPY ecosystem.config.js ./
+
+# Create logs directory
+RUN mkdir -p logs && \
+    chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
 
-WORKDIR /app/server
-
 # Install production dependencies only
-RUN npm ci --only=production --no-audit --no-optional && \
+RUN cd server && npm ci --only=production --no-audit --no-optional && \
     npm cache clean --force
 
 # Expose port
 EXPOSE 5000
 
-# Use PM2 to run the application
-CMD ["pm2-runtime", "start", "/app/ecosystem.config.js"]
+# Start the server using PM2 in production mode
+CMD ["pm2-runtime", "ecosystem.config.js"]

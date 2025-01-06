@@ -19,10 +19,10 @@ log() {
 check_resources() {
     local memory_usage=$(free | grep Mem | awk '{print $3/$2 * 100.0}')
     local cpu_total=0
-    local cpu_samples=5
+    local cpu_samples=10
     for ((i=0; i<cpu_samples; i++)); do
       cpu_total=$(echo "$cpu_total + $(top -bn1 | grep "Cpu(s)" | awk '{print $2}')" | bc)
-      sleep 0.2
+      sleep 0.1
     done
     local cpu_usage=$(echo "$cpu_total / $cpu_samples" | bc)
 
@@ -129,12 +129,30 @@ main() {
     log "Stopping current containers..."
     docker-compose down
 
-    # Start new containers
+    # Start new containers with PM2 management
     log "Starting new containers..."
-    docker-compose up --no-start
+    docker-compose up -d
     log "Containers started successfully"
-    docker start auroville_app
-    docker logs -f auroville_app
+    
+    # Wait for container to be ready
+    sleep 5
+    
+    # Check PM2 process status
+    log "Checking PM2 process status..."
+    if ! docker exec auroville_app pm2 list | grep -q "online"; then
+        log "ERROR: PM2 process not running correctly"
+        rollback
+        return 1
+    fi
+    
+    # Monitor logs for startup
+    log "Monitoring application logs..."
+    docker logs -f auroville_app &
+    LOGS_PID=$!
+    
+    # Wait for 10 seconds while monitoring logs
+    sleep 10
+    kill $LOGS_PID 2>/dev/null || true
 
     # Final resource check
     if ! check_resources; then

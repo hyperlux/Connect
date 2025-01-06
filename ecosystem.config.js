@@ -1,7 +1,6 @@
 module.exports = {
   apps: [{
     name: 'auroville-connect-server',
-    cwd: '/app/server',
     script: '/app/server/index.js',
     instances: 'max', // Use all available CPUs
     exec_mode: 'cluster',
