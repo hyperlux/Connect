@@ -73,10 +73,10 @@ RUN addgroup --gid 1001 appuser && \
 WORKDIR /app
 
 # Copy built frontend to Nginx serving directory
-COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html/dist
+COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
 RUN echo "Verifying frontend build:" && \
-    ls -la /usr/share/nginx/html/dist && \
-    chmod -R 755 /usr/share/nginx/html/dist
+    ls -la /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html
 
 COPY --from=server-builder /app/server ./server
 COPY ecosystem.config.js ./

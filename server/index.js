@@ -69,7 +69,14 @@ try {
 
 // CORS configuration
 console.log('Setting up CORS...');
-app.use(cors(config.cors));
+app.use(cors({
+  origin: config.cors.origin,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Custom-Header', 'Accept', 'Cache-Control'],
+  credentials: true,
+  exposedHeaders: ['Content-Length', 'Content-Range'],
+  maxAge: 600
+}));
 
 // Rate limiting in production
 if (process.env.NODE_ENV === 'production') {

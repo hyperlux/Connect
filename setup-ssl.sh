@@ -6,8 +6,8 @@ set -e
 # Enable debugging
 set -x
 
-# Check if domain is provided
-DOMAIN="auroville.social"
+# Domains to include in certificate
+DOMAINS=("auroville.social" "api.auroville.social")
 
 # Ask for email if not provided
 echo "Enter email address for SSL certificate notifications:"
@@ -34,15 +34,15 @@ pkill -f certbot || true
 
 # Clean up any previous attempts
 echo "Cleaning up previous certificate attempts..."
-rm -rf /etc/letsencrypt/live/$DOMAIN
-rm -rf /etc/letsencrypt/archive/$DOMAIN
-rm -rf /etc/letsencrypt/renewal/$DOMAIN.conf
+rm -rf /etc/letsencrypt/live/${DOMAINS[0]}
+rm -rf /etc/letsencrypt/archive/${DOMAINS[0]}
+rm -rf /etc/letsencrypt/renewal/${DOMAINS[0]}.conf
 
 # Get SSL certificate
-echo "Obtaining SSL certificate for $DOMAIN..."
+echo "Obtaining SSL certificate for ${DOMAINS[*]}..."
 certbot certonly --standalone \
     --preferred-challenges http \
-    -d $DOMAIN \
+    -d ${DOMAINS[0]} -d ${DOMAINS[1]} \
     --agree-tos \
     --email "$EMAIL" \
     --non-interactive \
