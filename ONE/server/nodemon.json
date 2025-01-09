@@ -1,0 +1,7 @@
+{
+  "watch": ["*.js", "routes/*.js", "middleware/*.js", "lib/*.js"],
+  "ignore": ["node_modules"],
+  "ext": "js,json",
+  "exec": "node index.js",
+  "restartTimeout": 1000
+}

@@ -1,0 +1,116 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                String         @id @default(uuid())
+  email            String         @unique
+  name             String
+  password         String
+  role             Role           @default(USER)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  posts            ForumPost[]
+  comments         ForumComment[]
+  postVotes        PostVote[]
+  commentVotes     CommentVote[]
+  emailVerified    Boolean        @default(false)
+  verificationCode String?        @map("verificationToken")
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  profilePicture   String?
+}
+
+model ForumPost {
+  id            String         @id @default(uuid())
+  title         String
+  content       String
+  category      String
+  author        User          @relation(fields: [authorId], references: [id])
+  authorId      String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  comments      ForumComment[]
+  votes         PostVote[]
+  score         Int           @default(0)
+  views         Int           @default(0)
+}
+
+model ForumComment {
+  id        String         @id @default(uuid())
+  content   String
+  post      ForumPost     @relation(fields: [postId], references: [id])
+  postId    String
+  author    User          @relation(fields: [authorId], references: [id])
+  authorId  String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  votes     CommentVote[]
+  score     Int           @default(0)
+}
+
+model PostVote {
+  id        String    @id @default(uuid())
+  value     Int       // 1 for upvote, -1 for downvote
+  post      ForumPost @relation(fields: [postId], references: [id])
+  postId    String
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime  @default(now())
+
+  @@unique([postId, userId])
+}
+
+model CommentVote {
+  id        String       @id @default(uuid())
+  value     Int         // 1 for upvote, -1 for downvote
+  comment   ForumComment @relation(fields: [commentId], references: [id])
+  commentId String
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime    @default(now())
+
+  @@unique([commentId, userId])
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  startDate   DateTime
+  endDate     DateTime?
+  location    String?
+  contact     String?
+  website     String?
+  isRecurring Boolean  @default(false)
+  frequency   String?  // "weekly", "monthly", etc.
+  dayOfWeek   String?  // For recurring events
+  startTime   String?  // For recurring events
+  endTime     String?  // For recurring events
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  category    String   // e.g., "Health", "Education", "Utility"
+  hours       String
+  phone       String?
+  email       String?
+  location    String?
+  website     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
