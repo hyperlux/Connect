@@ -21,9 +21,9 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 const app = express();
 
 // Ensure logs directory exists
-const logsDir = path.join(__dirname, 'logs');
+const logsDir = '/var/logs/app';
 if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir);
+  fs.mkdirSync(logsDir, { recursive: true });
 }
 
 // Winston logger configuration
@@ -72,7 +72,7 @@ console.log('Setting up CORS...');
 app.use(cors({
   origin: config.cors.origin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Custom-Header', 'Accept', 'Cache-Control'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Custom-Header', 'Accept', 'Cache-Control', 'Access-Control-Request-Headers'],
   credentials: true,
   exposedHeaders: ['Content-Length', 'Content-Range'],
   maxAge: 600

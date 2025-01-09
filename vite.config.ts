@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       rollupOptions: {
         input: {
-          main: './index.html'
+          main: './public/index.html'
         },
         output: {
           assetFileNames: 'assets/[name].[hash][extname]',

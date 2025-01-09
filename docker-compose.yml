@@ -24,9 +24,16 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL="postgresql://auroville_user:ok@db:5432/auroville_connect"
+      - DATABASE_URL=postgresql://auroville_user:ok@db:5432/auroville_connect
       - NODE_ENV=production
       - NODE_OPTIONS="--max-old-space-size=512"
+      - SMTP_SERVER=smtp.ionos.com
+      - SMTP_PORT=587
+      - SMTP_USERNAME=notifications@aurovillenetwork.us
+      - SMTP_PASSWORD=lucky8magic7aurOville*Q
+      - SMTP_AUTH=plain
+    volumes:
+      - ./logs:/var/logs/app
     networks:
       - auroville_network
     restart: unless-stopped
@@ -38,7 +45,9 @@ services:
       start_period: 10s
 
   nginx:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: deploy/nginx/Dockerfile
     container_name: auroville_nginx
     depends_on:
       - app

@@ -4,66 +4,84 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma.js';
 import { sendVerificationEmail } from '../lib/email.js';
 import { authenticate } from '../middleware/authenticate.js';
-import { z } from 'zod';
+import { z } from 'zod';;
 
-const router = express.Router();
+const router = express.Router();t router = express.Router();
 
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters')
+// Handle OPTIONS requests for CORS preflightandle OPTIONS requests for CORS preflight
+router.options('*', (req, res) => {er.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', 'https://auroville.social');s.header('Access-Control-Allow-Origin', 'https://auroville.social');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');s.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-Custom-Header, Accept, Cache-Control');s.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-Custom-Header, Accept, Cache-Control');
+  res.header('Access-Control-Allow-Credentials', 'true');s.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(204);s.sendStatus(204);
 });
 
-router.post('/login', async (req, res) => {
-  try {
-    console.log('🔍 Login attempt:', { email: req.body.email });
+// Add CORS headers to all responsesdd CORS headers to all responses
+router.use((req, res, next) => {er.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://auroville.social');s.header('Access-Control-Allow-Origin', 'https://auroville.social');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');s.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-Custom-Header, Accept, Cache-Control');s.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-Custom-Header, Accept, Cache-Control');
+  res.header('Access-Control-Allow-Credentials', 'true');s.header('Access-Control-Allow-Credentials', 'true');
+  next();xt();
+});
+
+const loginSchema = z.object({t loginSchema = z.object({
+  email: z.string().email('Invalid email address'),ail: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters')ssword: z.string().min(6, 'Password must be at least 6 characters')
+});
+
+router.post('/login', async (req, res) => {er.post('/login', async (req, res) => {
+  try {y {
+    console.log('🔍 Login attempt:', { email: req.body.email });console.log('🔍 Login attempt:', { email: req.body.email });
     
-    // Validate input
-    const { email, password } = loginSchema.parse(req.body);
-    console.log('✅ Input validation passed');
+    // Validate input// Validate input
+    const { email, password } = loginSchema.parse(req.body);const { email, password } = loginSchema.parse(req.body);
+    console.log('✅ Input validation passed');console.log('✅ Input validation passed');
 
-    // Find user
-    const user = await prisma.user.findUnique({
-      where: { email }
-    });
-    console.log('👤 User lookup result:', { found: !!user, userId: user?.id });
+    // Find user// Find user
+    const user = await prisma.user.findUnique({const user = await prisma.user.findUnique({
+      where: { email }  where: { email }
+    });});
+    console.log('👤 User lookup result:', { found: !!user, userId: user?.id });console.log('👤 User lookup result:', { found: !!user, userId: user?.id });
 
-    if (!user) {
-      console.log('❌ User not found');
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
+    if (!user) {if (!user) {
+      console.log('❌ User not found');  console.log('❌ User not found');
+      return res.status(401).json({ message: 'Invalid email or password' });  return res.status(401).json({ message: 'Invalid email or password' });
+    }}
 
-    // Check if email is verified
-    if (!user.emailVerified) {
-      console.log('❌ Email not verified');
-      return res.status(403).json({ 
-        message: 'Please verify your email before logging in',
-        needsVerification: true 
-      });
-    }
+    // Check if email is verified// Check if email is verified
+    if (!user.emailVerified) {if (!user.emailVerified) {
+      console.log('❌ Email not verified');  console.log('❌ Email not verified');
+      return res.status(403).json({   return res.status(403).json({ 
+        message: 'Please verify your email before logging in',    message: 'Please verify your email before logging in',
+        needsVerification: true     needsVerification: true 
+      });  });
+    }}
 
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    console.log('🔐 Password check:', { isValid: isValidPassword });
+    // Verify password// Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password);const isValidPassword = await bcrypt.compare(password, user.password);
+    console.log('🔐 Password check:', { isValid: isValidPassword });console.log('🔐 Password check:', { isValid: isValidPassword });
     
-    if (!isValidPassword) {
-      console.log('❌ Invalid password');
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
+    if (!isValidPassword) {if (!isValidPassword) {
+      console.log('❌ Invalid password');  console.log('❌ Invalid password');
+      return res.status(401).json({ message: 'Invalid email or password' });  return res.status(401).json({ message: 'Invalid email or password' });
+    }}
 
-    // Create JWT token
-    const token = jwt.sign(
-      { 
-        userId: user.id, 
-        email: user.email, 
-        role: user.role 
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-    console.log('🎟️ JWT token created');
+    // Create JWT token// Create JWT token
+    const token = jwt.sign(const token = jwt.sign(
+      {   { 
+        userId: user.id,     userId: user.id, 
+        email: user.email,     email: user.email, 
+        role: user.role     role: user.role 
+      },  },
+      process.env.JWT_SECRET,  process.env.JWT_SECRET,
+      { expiresIn: '24h' }  { expiresIn: '24h' }
+    ););
+    console.log('🎟️ JWT token created');console.log('🎟️ JWT token created');
 
-    // Return user data and token
-    console.log('✅ Login successful');
+    // Return user data and token// Return user data and token
+    console.log('✅ Login successful');console.log('✅ Login successful');
     res.json({
       user: {
         id: user.id,
@@ -119,7 +137,7 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Generate verification token
-    const verificationToken = jwt.sign(
+    const verificationCode = jwt.sign(
       { email },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
@@ -130,24 +148,6 @@ router.post('/register', async (req, res) => {
       const user = await prisma.user.create({
         data: {
           name,
-          email,
-          password: hashedPassword,
-          role: 'USER',
-          verificationToken,
-          emailVerified: false // Disable auto-verify to test email sending
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          bio: true,
-          profilePicture: true,
-          createdAt: true
-        }
-      });
-
-      // Create JWT token for immediate login
       const token = jwt.sign(
         { 
           userId: user.id, 
@@ -407,33 +407,6 @@ router.get('/verify', authenticate, async (req, res) => {
   } catch (error) {
     console.error('Token verification error:', error);
     res.status(500).json({ message: 'Token verification failed' });
-  }
-});
-
-// Temporary admin verify endpoint
-router.post('/admin-verify', async (req, res) => {
-  try {
-    const { email } = req.body;
-    
-    const user = await prisma.user.update({
-      where: { email },
-      data: { 
-        emailVerified: true,
-        verificationToken: null 
-      }
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    return res.status(200).json({ message: 'User verified successfully' });
-  } catch (error) {
-    console.error('Admin verification error:', error);
-    return res.status(500).json({ 
-      message: 'Failed to verify user',
-      error: error.message 
-    });
   }
 });
 

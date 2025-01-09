@@ -17,21 +17,21 @@ module.exports = {
       SMTP_AUTH: process.env.SMTP_AUTH,
       SMTP_DOMAIN: process.env.SMTP_DOMAIN
     },
-    error_file: 'logs/error.log',
-    out_file: 'logs/out.log',
+    error_file: '/app/server/logs/error.log',
+    out_file: '/app/server/logs/out.log',
     max_memory_restart: '512M',
     node_args: [
       '--max-old-space-size=512',
       '--gc-interval=50'
     ],
     exp_backoff_restart_delay: 100,
-    watch: false,
-    ignore_watch: ['node_modules', 'logs'],
+    watch: false, // Disable file watching in Docker
     max_restarts: 10,
     min_uptime: '10s',
     listen_timeout: 8000,
     kill_timeout: 5000,
     merge_logs: true,
-    autorestart: true
+    autorestart: true,
+    health_check: "http://localhost:5000/health"
   }]
 };

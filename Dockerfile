@@ -29,9 +29,7 @@ RUN echo "Building frontend..." && \
     echo "Build output:" && \
     ls -la dist && \
     cp public/service-worker.js dist/ && \
-    echo "Service worker copied successfully" && \
-    # Remove source files after build
-    rm -rf src public
+    echo "Service worker copied successfully"
 
 # Stage 2: Build the server
 FROM node:20 AS server-builder
@@ -55,6 +53,7 @@ RUN npm ci --no-audit --no-optional && \
 
 # Copy server source
 COPY server/ .
+COPY prisma ./prisma
 
 # Stage 3: Final image
 FROM node:20
@@ -79,6 +78,7 @@ RUN echo "Verifying frontend build:" && \
     chmod -R 755 /usr/share/nginx/html
 
 COPY --from=server-builder /app/server ./server
+COPY prisma ./prisma
 COPY ecosystem.config.js ./
 
 # Create logs directory

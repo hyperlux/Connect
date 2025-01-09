@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#E27B58" />
     <link rel="manifest" href="/manifest.json" />
     <title>Auroville Community</title>
+    <script type="module" src="/src/main.tsx"></script>
     <style>
       /* Critical CSS for layout */
       html, body {
@@ -62,19 +63,5 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/assets/index.js"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/service-worker.js')
-            .then(registration => {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            })
-            .catch(error => {
-              console.error('ServiceWorker registration failed: ', error);
-            });
-        });
-      }
-    </script>
   </body>
 </html>
