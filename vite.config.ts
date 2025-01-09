@@ -33,6 +33,9 @@ export default defineConfig(({ mode }) => {
       sourcemap: false,
       assetsInlineLimit: 0,
       emptyOutDir: true,
+      chunkSizeWarningLimit: 1000,
+      maxThreads: 1,
+      minify: false,
       rollupOptions: {
         input: {
           main: './public/index.html'
@@ -40,24 +43,30 @@ export default defineConfig(({ mode }) => {
         output: {
           assetFileNames: 'assets/[name].[hash][extname]',
           chunkFileNames: 'assets/[name].[hash].js',
-          entryFileNames: 'assets/[name].[hash].js',
-          // Prevent source file references in production
-          sourcemapIgnoreList: true,
-          sourcemapExcludeSources: true
+          entryFileNames: 'assets/[name].[hash].js'
         },
-        external: ['react-router-dom']
-      },
-      // Don't copy public directory
-      copyPublicDir: true,
-      // Prevent source file access in production
-      manifest: false,
-      // Minify production code
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          drop_console: true,
-          drop_debugger: true
-        }
+        external: [
+          'react',
+          'react-dom',
+          'react-router-dom',
+          'recharts',
+          'lucide-react',
+          'date-fns',
+          'd3',
+          'lodash',
+          'axios',
+          'zod',
+          'zustand',
+          'react-transition-group',
+          'react-query',
+          'react-icons',
+          'react-hook-form',
+          'react-select',
+          'react-toastify',
+          'react-table'
+        ],
+        maxParallelFileOps: 1,
+        preserveEntrySignatures: 'strict'
       }
     },
   };
