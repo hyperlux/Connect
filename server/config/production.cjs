@@ -1,4 +1,5 @@
 import cors from 'express-cors';
+import { createClient } from '@supabase/supabase-js';
 
 export const corsConfig = {
   origin: 'https://auroville.social',
@@ -8,3 +9,8 @@ export const corsConfig = {
 };
 
 export const applyCors = cors(corsConfig);
+
+export const supabaseClient = createClient({
+  url: process.env.SUPABASE_URL,
+  key: process.env.SUPABASE_KEY
+});
