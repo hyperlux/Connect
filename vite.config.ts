@@ -42,9 +42,10 @@ export default defineConfig(({ mode }) => {
           chunkFileNames: 'assets/[name].[hash].js',
           entryFileNames: 'assets/[name].[hash].js',
           // Prevent source file references in production
-          sourcemapIgnore: true,
+          sourcemapIgnoreList: true,
           sourcemapExcludeSources: true
-        }
+        },
+        external: ['react-router-dom']
       },
       // Don't copy public directory
       copyPublicDir: true,
