@@ -36,6 +36,7 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1000,
       maxThreads: 1,
       minify: false,
+      module: true, // Enable module handling
       rollupOptions: {
         input: {
           main: './public/index.html'
