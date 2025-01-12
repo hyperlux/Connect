@@ -28,7 +28,11 @@ A community platform for Auroville residents to connect, share information, and 
   - Notifications system
   - User profiles
 
+
 ## Tech Stack
+
+### Mindmap 
+![Stack Structure](<Auroville Connect Project Structure.png>)
 
 - **Frontend**
   - React with TypeScript
