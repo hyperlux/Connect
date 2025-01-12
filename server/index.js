@@ -6,7 +6,7 @@ import { dirname } from 'path';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler.js';
-import authRouter from './routes/auth.js'; // Changed from .mjs to .js
+import { authRouter } from './routes/auth.mjs';
 import { forumsRouter } from './routes/forums.js';
 import { usersRouter } from './routes/users.js';
 import winston from 'winston';
