@@ -35,7 +35,7 @@ RUN echo "Building frontend..." && \
 FROM node:20 AS server-builder
 
 # Set build-time memory limit for node
-ENV NODE_OPTIONS="--max-old-space-size=512"
+ENV NODE_OPTIONS="--max-old-space-size=512 --experimental-modules --es-module-specifier-resolution=node"
 
 # Set npm to production mode and use package cache
 ENV NODE_ENV=production
@@ -55,12 +55,15 @@ RUN npm ci --no-audit --no-optional && \
 COPY server/ .
 COPY prisma ./prisma
 
+# Ensure correct file extensions for ES modules
+RUN find . -name "*.cjs" -exec sh -c 'mv "$1" "${1%.cjs}.js"' _ {} \;
+
 # Stage 3: Final image
 FROM node:20
 
 # Set production environment
 ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=512"
+ENV NODE_OPTIONS="--max-old-space-size=512 --experimental-modules --es-module-specifier-resolution=node"
 
 # Install PM2 globally
 RUN npm install -g pm2
@@ -77,9 +80,11 @@ RUN echo "Verifying frontend build:" && \
     ls -la /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html
 
-COPY --from=server-builder /app/server ./server
+# Copy server files and set up working directory
+WORKDIR /app/server
+COPY --from=server-builder /app/server .
 COPY prisma ./prisma
-COPY ecosystem.config.js ./
+COPY ecosystem.config.js .
 
 # Create logs directory
 RUN mkdir -p logs && \
@@ -89,11 +94,11 @@ RUN mkdir -p logs && \
 USER appuser
 
 # Install production dependencies only
-RUN cd server && npm ci --only=production --no-audit --no-optional && \
+RUN npm ci --only=production --no-audit --no-optional && \
     npm cache clean --force
 
 # Expose port
 EXPOSE 5000
 
-# Start the server using PM2 in production mode
-CMD ["pm2-runtime", "ecosystem.config.js"]
+# Start the server directly with PM2
+CMD ["pm2-runtime", "--node-args=\"--experimental-modules --es-module-specifier-resolution=node\"", "index.js"]

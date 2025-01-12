@@ -52,11 +52,11 @@ const logger = winston.createLogger({
 console.log('Loading configuration...');
 let config;
 try {
-  const configPath = process.env.NODE_ENV === 'production'
-    ? './config/production.cjs'
-    : './config/development.cjs';
-  const { default: loadedConfig } = await import(configPath);
-  config = loadedConfig;
+  const configModule = process.env.NODE_ENV === 'production'
+    ? './config/production.js'
+    : './config/development.js';
+  const { corsConfig, security, port } = await import(configModule);
+  config = { cors: corsConfig, security, port };
   logger.info('Loaded configuration:', {
     env: process.env.NODE_ENV,
     port: config.port,
