@@ -10,7 +10,13 @@ const registerServiceWorker = () => {
         });
       });
 
-      const swUrl = `${window.location.origin}/service-worker.js`;
+      const baseUrl = window.location.origin || process.env.PUBLIC_URL || '';
+      if (!baseUrl) {
+        console.error('ServiceWorker: Unable to determine base URL');
+        return;
+      }
+
+      const swUrl = `${baseUrl}/service-worker.js`;
       
       navigator.serviceWorker
         .register(swUrl, { scope: '/' })

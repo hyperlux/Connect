@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: 'auroville-connect-server',
-    script: '/app/server/index.js',
+    script: 'index.js',
     instances: 1,
     exec_mode: 'fork',
     env: {
@@ -17,14 +17,14 @@ module.exports = {
       SMTP_AUTH: process.env.SMTP_AUTH,
       SMTP_DOMAIN: process.env.SMTP_DOMAIN
     },
-    error_file: '/app/server/logs/error.log',
-    out_file: '/app/server/logs/out.log',
+    error_file: 'logs/error.log',
+    out_file: 'logs/out.log',
     max_memory_restart: '512M',
     exp_backoff_restart_delay: 100,
     watch: false,
     max_restarts: 10,
-    min_uptime: '10s',
-    listen_timeout: 8000,
+    min_uptime: '30s',
+    listen_timeout: 15000,
     kill_timeout: 5000,
     merge_logs: true,
     autorestart: true

@@ -99,7 +99,7 @@ main() {
 
     # Build frontend with resource monitoring
     log "Building frontend..."
-    NODE_OPTIONS="--max-old-space-size=512" npm run build &
+    npm run build &
     BUILD_PID=$!
     while kill -0 $BUILD_PID 2>/dev/null; do
         if ! check_resources; then
@@ -131,7 +131,7 @@ main() {
 
     # Start new containers with PM2 management
     log "Starting new containers..."
-    docker-compose up -d
+    docker-compose up -d --build
     log "Containers started successfully"
     
     # Wait for container to be ready

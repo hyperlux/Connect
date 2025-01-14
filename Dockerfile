@@ -5,7 +5,7 @@ FROM node:20 AS frontend-builder
 ENV NODE_OPTIONS="--max-old-space-size=512"
 
 # Set npm to production mode and use package cache
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 ENV npm_config_cache=/tmp/npm-cache
 
 WORKDIR /app/frontend
@@ -14,9 +14,10 @@ WORKDIR /app/frontend
 COPY package*.json ./
 COPY vite.config.ts ./
 
-# Install dependencies using npm ci
+# Install all dependencies including devDependencies
 RUN npm cache clean --force && \
-    npm ci --no-audit --include=dev
+    npm install --include=dev --no-audit && \
+    npm list @vitejs/plugin-react-swc
 
 # Copy source files
 COPY src ./src
@@ -31,11 +32,14 @@ RUN echo "Building frontend..." && \
     cp public/service-worker.js dist/ && \
     echo "Service worker copied successfully"
 
+# Remove unnecessary files
+RUN rm -rf node_modules
+
 # Stage 2: Build the server
 FROM node:20 AS server-builder
 
 # Set build-time memory limit for node
-ENV NODE_OPTIONS="--max-old-space-size=512 --experimental-modules --es-module-specifier-resolution=node"
+ENV NODE_OPTIONS="--max-old-space-size=512"
 
 # Set npm to production mode and use package cache
 ENV NODE_ENV=production
@@ -43,62 +47,110 @@ ENV npm_config_cache=/tmp/npm-cache
 
 WORKDIR /app/server
 
-# Copy package files first
-COPY server/package*.json ./
+# Copy and verify package.json
+COPY server/package.json ./
+RUN echo "Verifying package.json contents:" && \
+    cat package.json && \
+    echo "Current directory contents:" && \
+    pwd && ls -la && \
+    echo "File permissions:" && \
+    ls -l package.json && \
+    echo "Checking for prisma:generate script:" && \
+    npm run | grep prisma:generate && \
+    echo "Package.json location:" && \
+    find / -name package.json 2>/dev/null && \
+    echo "Environment variables:" && \
+    printenv
 
-# Install dependencies with npm ci
-RUN npm ci --no-audit --no-optional && \
-    # Clear npm cache
+# Copy package-lock.json
+COPY server/package-lock.json ./
+RUN echo "Verifying package-lock.json:" && \
+    ls -l package-lock.json && \
+    echo "Listing available npm scripts:" && \
+    npm run && \
+    echo "Package-lock.json location:" && \
+    find / -name package-lock.json 2>/dev/null && \
+    echo "Node version:" && \
+    node -v && \
+    echo "NPM version:" && \
+    npm -v
+
+# Copy prisma schema first
+COPY prisma/schema.prisma ./prisma/
+
+# Install dependencies and generate Prisma client
+RUN npm install && \
+    # Install prisma globally
+    npm install -g prisma && \
+    # Generate Prisma client
+    npx prisma generate && \
+    # Verify Prisma client was generated
+    ls -la node_modules/.prisma/client && \
+    node -e "require('@prisma/client')" && \
+    echo "Prisma client generated and verified successfully" && \
+    # Clean up npm cache
     npm cache clean --force
 
-# Copy server source
-COPY server/ .
-COPY prisma ./prisma
+# Verify and copy essential server files
+COPY server/index.js ./
+COPY server/package.json ./
+COPY server/package-lock.json ./
+COPY server/config ./config
+COPY server/lib ./lib
+COPY server/middleware ./middleware
+COPY server/routes ./routes
 
 # Ensure correct file extensions for ES modules
 RUN find . -name "*.cjs" -exec sh -c 'mv "$1" "${1%.cjs}.js"' _ {} \;
 
-# Stage 3: Final image
-FROM node:20
+# Stage 3: Backend server
+FROM node:20-alpine AS app
 
 # Set production environment
 ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=512 --experimental-modules --es-module-specifier-resolution=node"
+ENV NODE_OPTIONS="--max-old-space-size=512"
 
-# Install PM2 globally
-RUN npm install -g pm2
+# Install PM2 and required build tools
+RUN apk add --no-cache python3 make g++ && \
+    npm install -g pm2 prisma
 
 # Create non-root user
-RUN addgroup --gid 1001 appuser && \
-    adduser -u 1001 --gid 1001 --shell /bin/sh --disabled-password --disabled-login appuser
+RUN addgroup -g 1001 appuser && \
+    adduser -u 1001 -G appuser -s /bin/sh -D appuser
 
-WORKDIR /app
-
-# Copy built frontend to Nginx serving directory
-COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
-RUN echo "Verifying frontend build:" && \
-    ls -la /usr/share/nginx/html && \
-    chmod -R 755 /usr/share/nginx/html
-
-# Copy server files and set up working directory
 WORKDIR /app/server
 COPY --from=server-builder /app/server .
-COPY prisma ./prisma
 COPY ecosystem.config.js .
 
-# Create logs directory
-RUN mkdir -p logs && \
-    chown -R appuser:appuser /app
+# Generate Prisma client in Alpine environment and set up directories
+RUN npm install && \
+    npx prisma generate && \
+    mkdir -p logs && \
+    chown -R appuser:appuser /app/server && \
+    # Clean up build dependencies
+    apk del python3 make g++ && \
+    npm prune --production
 
 # Switch to non-root user
 USER appuser
-
-# Install production dependencies only
-RUN npm ci --only=production --no-audit --no-optional && \
-    npm cache clean --force
 
 # Expose port
 EXPOSE 5000
 
 # Start the server directly with PM2
-CMD ["pm2-runtime", "--node-args=\"--experimental-modules --es-module-specifier-resolution=node\"", "index.js"]
+CMD ["pm2-runtime", "ecosystem.config.js"]
+
+# Stage 4: Nginx server
+FROM nginx:stable-alpine AS nginx
+
+# Copy nginx configuration
+COPY deploy/nginx.conf/nginx.docker.conf /etc/nginx/conf.d/default.conf
+
+# Copy built frontend files
+COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
+
+# Expose ports
+EXPOSE 80 443
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

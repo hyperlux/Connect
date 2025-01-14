@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:password@localhost:5432/auroville"
+  url      = env("DATABASE_URL")
 }
 
 model User {
