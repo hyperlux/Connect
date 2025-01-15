@@ -4,7 +4,7 @@ module.exports = {
     script: 'index.js',
     instances: 1,
     exec_mode: 'fork',
-    env: {
+    env_production: {
       NODE_ENV: 'production',
       PORT: process.env.PORT || 5000,
       HOST: '0.0.0.0',
@@ -16,6 +16,11 @@ module.exports = {
       SMTP_PASSWORD: process.env.SMTP_PASSWORD,
       SMTP_AUTH: process.env.SMTP_AUTH,
       SMTP_DOMAIN: process.env.SMTP_DOMAIN
+    },
+    env: {
+      NODE_ENV: 'production',
+      PORT: 5000,
+      HOST: '0.0.0.0'
     },
     error_file: '/app/server/logs/error.log',
     out_file: '/app/server/logs/out.log',

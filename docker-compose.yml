@@ -46,11 +46,25 @@ services:
       - auroville_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/health', (res) => { if (res.statusCode !== 200) process.exit(1) }).on('error', () => process.exit(1))"]
-      interval: 10s
-      timeout: 1s
-      retries: 5
-      start_period: 10s
+      test: ["CMD", "curl", "-f", "--max-time", "3", "--ipv4", "http://127.0.0.1:5000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend-builder
+    container_name: auroville_frontend
+    depends_on:
+      - app
+    networks:
+      - auroville_network
+    volumes:
+      - ./dist:/app/frontend/dist
+    restart: unless-stopped
 
   nginx:
     build:
@@ -60,6 +74,7 @@ services:
     container_name: auroville_nginx
     depends_on:
       - app
+      - frontend
     ports:
       - "80:80"
       - "443:443"

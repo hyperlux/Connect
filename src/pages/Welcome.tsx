@@ -36,10 +36,13 @@ const carouselImages = [
   }
 ];
 
-// Override default layout styles for Welcome page
-if (typeof document !== 'undefined') {
-  document.getElementById('root')?.classList.add('!block', '!w-full');
-}
+  // Override default layout styles for Welcome page
+  if (typeof document !== 'undefined') {
+    const root = document.getElementById('root');
+    if (root) {
+      root.style.cssText = 'display: block !important; width: 100% !important; height: 100vh !important; overflow: hidden !important;';
+    }
+  }
 
 export default function Welcome() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -99,7 +102,7 @@ export default function Welcome() {
   return (
     <div className="min-h-screen bg-[#1E1E1E] w-full">
       {/* Hero Section with Carousel */}
-      <div className="relative h-screen">
+      <div className="relative h-screen overflow-hidden bg-dark">
         {/* Logo Header */}
         <div className="absolute top-6 left-0 z-20 p-4">
           <img
@@ -112,14 +115,18 @@ export default function Welcome() {
         {carouselImages.map((image, index) => (
           <div
             key={image.url}
-            className={`absolute inset-0 transition-opacity duration-500 ${
-              index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+            className={`absolute inset-0 transition-all duration-500 ease-in-out transform w-full h-full ${
+              index === currentImageIndex 
+                ? 'opacity-100 z-10 translate-x-0' 
+                : index < currentImageIndex
+                  ? 'opacity-0 z-0 -translate-x-full'
+                  : 'opacity-0 z-0 translate-x-full'
             }`}
           >
             <img
               src={image.url}
               alt={image.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center transform scale-[1.01]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30">
               <div className="container mx-auto px-6 h-full flex flex-col justify-center items-center text-center">

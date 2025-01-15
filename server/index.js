@@ -61,8 +61,14 @@ app.use('/users', usersRouter);
 app.use(errorHandler);
 
 // Start server
-app.listen(config.port, () => {
-  logger.info(`Server started on port ${config.port}`);
+const host = process.env.HOST || '0.0.0.0';
+const port = config.port;
+
+console.log(`Starting server with HOST=${host} PORT=${port}`);
+
+app.listen(port, host, () => {
+  console.log(`✅ Server started successfully on ${host}:${port}`);
+  logger.info(`Server started on ${host}:${port}`);
 });
 
 // Handle uncaught exceptions and rejections

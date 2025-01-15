@@ -22,18 +22,25 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         injectRegister: 'script',
         srcDir: 'src',
-        filename: 'sw.js',
+        filename: 'service-worker.js',
         strategies: 'injectManifest',
         scope: '/',
+        workbox: {
+          navigateFallback: '/index.html',
+          clientsClaim: true,
+          skipWaiting: true,
+        },
         devOptions: {
           enabled: true,
-          type: 'module'
+          type: 'module',
+          navigateFallback: '/index.html'
         },
         injectManifest: {
           injectionPoint: 'self.__WB_MANIFEST',
           maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB
           rollupFormat: 'iife',
-          swDest: 'sw.js' // Output directly to root of build directory
+          swDest: 'dist/service-worker.js', // Output to dist directory
+          swSrc: 'src/service-worker.js' // Source file location
         },
         manifest: {
           name: 'Auroville Connect',

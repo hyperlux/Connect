@@ -4,8 +4,9 @@ FROM node:20 AS frontend-builder
 # Set build-time memory limit for node
 ENV NODE_OPTIONS="--max-old-space-size=512"
 
-# Set npm to production mode and use package cache
-ENV NODE_ENV=development
+# Set environment variables for build
+ENV NODE_ENV=production
+ENV VITE_NODE_ENV=production
 ENV npm_config_cache=/tmp/npm-cache
 
 WORKDIR /app/frontend
@@ -16,10 +17,9 @@ COPY vite.config.ts ./
 COPY index.html ./
 COPY tsconfig*.json ./
 
-# Install all dependencies including devDependencies
+# Install all dependencies in one command
 RUN npm cache clean --force && \
-    npm install --include=dev --no-audit --legacy-peer-deps && \
-    npm list @vitejs/plugin-react-swc
+    npm install --include=dev --no-audit --legacy-peer-deps --force
 
 # Copy source files
 COPY src ./src
@@ -27,11 +27,15 @@ COPY public ./public
 
 # Build the frontend with error checking
 RUN echo "Building frontend..." && \
-    npx vite build && \
+    NODE_ENV=production npx vite build && \
     echo "Build completed successfully" && \
     echo "Build output:" && \
     ls -la dist && \
-    echo "Build completed successfully"
+    echo "Verifying build files:" && \
+    [ -f dist/index.html ] && \
+    [ -f dist/service-worker.js ] && \
+    [ -d dist/assets ] && \
+    echo "Build verification successful"
 
 # Remove unnecessary files
 RUN rm -rf node_modules
@@ -142,9 +146,10 @@ RUN pm2 set pm2-logrotate:max_size 10M && \
     pm2 set pm2-logrotate:rotateInterval '0 0 * * *' && \
     pm2 set pm2-logrotate:rotateModule true
 
-# Add health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
+# Copy and setup health check script
+COPY server/health-check.sh /app/server/
+RUN chmod +x /app/server/health-check.sh && \
+    chown appuser:appuser /app/server/health-check.sh
 
 # Switch to non-root user
 USER appuser
@@ -152,8 +157,8 @@ USER appuser
 # Expose port
 EXPOSE 5000
 
-# Start the server directly with PM2
-CMD ["pm2-runtime", "ecosystem.config.cjs"]
+# Start the server directly with PM2 in production mode
+CMD ["pm2-runtime", "ecosystem.config.cjs", "--env", "production"]
 
 # Stage 4: Nginx server
 FROM nginx:stable-alpine AS nginx
@@ -162,7 +167,7 @@ FROM nginx:stable-alpine AS nginx
 COPY deploy/nginx.conf/nginx.docker.conf /etc/nginx/conf.d/auroville.conf
 
 # Copy built frontend files and auroimgs
-COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
+COPY --from=frontend-builder /app/frontend/dist/. /usr/share/nginx/html/
 COPY public/auroimgs /usr/share/nginx/html/auroimgs
 
 # Expose ports
