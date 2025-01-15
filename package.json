@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development VITE_API_URL=$VITE_API_URL VITE_FRONTEND_URL=$VITE_FRONTEND_URL vite",
-    "build": "NODE_ENV=production vite build && cp public/service-worker.js dist/",
+    "build": "NODE_ENV=production vite build",
     "start": "NODE_ENV=production node server/index.js"
   },
   "dependencies": {

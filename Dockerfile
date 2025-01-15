@@ -13,6 +13,8 @@ WORKDIR /app/frontend
 # Copy package files first to leverage layer caching
 COPY package*.json ./
 COPY vite.config.ts ./
+COPY index.html ./
+COPY tsconfig*.json ./
 
 # Install all dependencies including devDependencies
 RUN npm cache clean --force && \
@@ -29,8 +31,7 @@ RUN echo "Building frontend..." && \
     echo "Build completed successfully" && \
     echo "Build output:" && \
     ls -la dist && \
-    cp public/service-worker.js dist/ && \
-    echo "Service worker copied successfully"
+    echo "Build completed successfully"
 
 # Remove unnecessary files
 RUN rm -rf node_modules
@@ -46,6 +47,11 @@ ENV NODE_ENV=production
 ENV npm_config_cache=/tmp/npm-cache
 
 WORKDIR /app/server
+
+# Create logs directory early with correct permissions using numeric UID/GID
+RUN mkdir -p /app/server/logs && \
+    chown -R 1001:1001 /app/server/logs && \
+    chmod -R 775 /app/server/logs
 
 # Copy and verify package.json
 COPY server/package.json ./
@@ -80,15 +86,11 @@ COPY prisma/schema.prisma ./prisma/
 
 # Install dependencies and generate Prisma client
 RUN npm install && \
-    # Install prisma globally
     npm install -g prisma && \
-    # Generate Prisma client
     npx prisma generate && \
-    # Verify Prisma client was generated
     ls -la node_modules/.prisma/client && \
     node -e "require('@prisma/client')" && \
     echo "Prisma client generated and verified successfully" && \
-    # Clean up npm cache
     npm cache clean --force
 
 # Verify and copy essential server files
@@ -120,16 +122,29 @@ RUN addgroup -g 1001 appuser && \
 
 WORKDIR /app/server
 COPY --from=server-builder /app/server .
-COPY ecosystem.config.js .
+COPY ecosystem.config.cjs .
 
-# Generate Prisma client in Alpine environment and set up directories
+# Install production dependencies and set permissions
 RUN npm install && \
     npx prisma generate && \
-    mkdir -p logs && \
-    chown -R appuser:appuser /app/server && \
-    # Clean up build dependencies
     apk del python3 make g++ && \
-    npm prune --production
+    npm prune --production && \
+    mkdir -p /app/server/logs && \
+    chown -R appuser:appuser /app/server && \
+    chmod -R 775 /app/server/logs
+
+# Configure PM2 logging
+RUN pm2 set pm2-logrotate:max_size 10M && \
+    pm2 set pm2-logrotate:retain 30 && \
+    pm2 set pm2-logrotate:compress true && \
+    pm2 set pm2-logrotate:dateFormat YYYY-MM-DD_HH-mm-ss && \
+    pm2 set pm2-logrotate:workerInterval 30 && \
+    pm2 set pm2-logrotate:rotateInterval '0 0 * * *' && \
+    pm2 set pm2-logrotate:rotateModule true
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:5000/health || exit 1
 
 # Switch to non-root user
 USER appuser
@@ -138,13 +153,13 @@ USER appuser
 EXPOSE 5000
 
 # Start the server directly with PM2
-CMD ["pm2-runtime", "ecosystem.config.js"]
+CMD ["pm2-runtime", "ecosystem.config.cjs"]
 
 # Stage 4: Nginx server
 FROM nginx:stable-alpine AS nginx
 
 # Copy nginx configuration
-COPY deploy/nginx.conf/nginx.docker.conf /etc/nginx/conf.d/default.conf
+COPY deploy/nginx.conf/nginx.docker.conf /etc/nginx/conf.d/auroville.conf
 
 # Copy built frontend files
 COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html

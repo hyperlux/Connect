@@ -17,8 +17,8 @@ module.exports = {
       SMTP_AUTH: process.env.SMTP_AUTH,
       SMTP_DOMAIN: process.env.SMTP_DOMAIN
     },
-    error_file: 'logs/error.log',
-    out_file: 'logs/out.log',
+    error_file: '/app/server/logs/error.log',
+    out_file: '/app/server/logs/out.log',
     max_memory_restart: '512M',
     exp_backoff_restart_delay: 100,
     watch: false,

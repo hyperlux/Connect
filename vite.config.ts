@@ -16,6 +16,8 @@ export default defineConfig(({ mode }) => {
   return {
     base: '/',
     plugins: [react()],
+    root: '.',
+    publicDir: 'public',
     server: {
       host: "0.0.0.0",
       port: 5173,
@@ -37,36 +39,16 @@ export default defineConfig(({ mode }) => {
       maxThreads: 1,
       minify: false,
       rollupOptions: {
-        input: {
-          main: './public/index.html'
-        },
         output: {
           assetFileNames: 'assets/[name].[hash][extname]',
           chunkFileNames: 'assets/[name].[hash].js',
-          entryFileNames: 'assets/[name].[hash].js'
-        },
-        external: [
-          'react',
-          'react-dom',
-          'react-router-dom',
-          'recharts',
-          'lucide-react',
-          'date-fns',
-          'd3',
-          'lodash',
-          'axios',
-          'zod',
-          'zustand',
-          'react-transition-group',
-          'react-query',
-          'react-icons',
-          'react-hook-form',
-          'react-select',
-          'react-toastify',
-          'react-table'
-        ],
-        maxParallelFileOps: 1,
-        preserveEntrySignatures: 'strict'
+          entryFileNames: 'assets/[name].[hash].js',
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
+          }
+        }
       }
     },
   };
