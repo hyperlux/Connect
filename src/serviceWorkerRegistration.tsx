@@ -1,43 +1,45 @@
-import { useEffect } from 'react';
-
-const registerServiceWorker = () => {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      // Unregister any existing service workers first
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        registrations.forEach(registration => {
-          registration.unregister();
-        });
-      });
-
-      const baseUrl = window.location.origin || process.env.PUBLIC_URL || '';
-      if (!baseUrl) {
-        console.error('ServiceWorker: Unable to determine base URL');
-        return;
-      }
-
-      const swUrl = `${baseUrl}/service-worker.js`;
-      
-      navigator.serviceWorker
-        .register(swUrl, { scope: '/' })
-        .then((registration) => {
-          console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        })
-        .catch((error) => {
-          console.error('ServiceWorker registration failed:', error);
-        });
-    });
-  }
-};
-
-const useServiceWorker = () => {
-  useEffect(() => {
-    registerServiceWorker();
-  }, []);
-};
+import { useEffect, useCallback } from 'react';
+import type { RegisterSWOptions } from 'vite-plugin-pwa/types';
 
 const ServiceWorkerInitializer = () => {
-  useServiceWorker();
+  const registerSW = useCallback(async () => {
+    if (!('serviceWorker' in navigator)) {
+      console.info('Service workers are not supported');
+      return;
+    }
+
+    try {
+      // Vite PWA plugin generates this virtual module
+      const { registerSW } = await import('virtual:pwa-register');
+      
+      const updateSW = registerSW({
+        onRegistered(registration: ServiceWorkerRegistration) {
+          console.info('Service Worker registered:', registration);
+        },
+        onRegisterError(error: Error) {
+          console.error('Service Worker registration failed:', error);
+        },
+        onNeedRefresh() {
+          // You can implement a UI prompt here if you want to ask users to refresh
+          console.info('New content available, please refresh.');
+        },
+        onOfflineReady() {
+          console.info('App ready to work offline');
+        }
+      } as RegisterSWOptions);
+
+      // Optional: You can expose the update function if you want to manually trigger updates
+      window.__SW_UPDATE = () => updateSW?.();
+      
+    } catch (error) {
+      console.error('Failed to register service worker:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    registerSW();
+  }, [registerSW]);
+
   return null;
 };
 

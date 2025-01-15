@@ -47,6 +47,11 @@ app.use(rateLimit({
 // Apply CORS
 app.use(cors(config.corsConfig));
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // Register routes
 app.use('/auth', authRouter);
 app.use('/forums', forumsRouter);

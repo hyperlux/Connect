@@ -18,7 +18,7 @@ COPY tsconfig*.json ./
 
 # Install all dependencies including devDependencies
 RUN npm cache clean --force && \
-    npm install --include=dev --no-audit && \
+    npm install --include=dev --no-audit --legacy-peer-deps && \
     npm list @vitejs/plugin-react-swc
 
 # Copy source files
@@ -112,8 +112,8 @@ FROM node:20-alpine AS app
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=512"
 
-# Install PM2 and required build tools
-RUN apk add --no-cache python3 make g++ && \
+# Install PM2, curl, and required build tools
+RUN apk add --no-cache python3 make g++ curl && \
     npm install -g pm2 prisma
 
 # Create non-root user
@@ -161,8 +161,9 @@ FROM nginx:stable-alpine AS nginx
 # Copy nginx configuration
 COPY deploy/nginx.conf/nginx.docker.conf /etc/nginx/conf.d/auroville.conf
 
-# Copy built frontend files
+# Copy built frontend files and auroimgs
 COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
+COPY public/auroimgs /usr/share/nginx/html/auroimgs
 
 # Expose ports
 EXPOSE 80 443

@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -15,7 +16,44 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: '/',
-    plugins: [react()],
+    plugins: [
+      react(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        injectRegister: 'script',
+        srcDir: 'src',
+        filename: 'sw.js',
+        strategies: 'injectManifest',
+        scope: '/',
+        devOptions: {
+          enabled: true,
+          type: 'module'
+        },
+        injectManifest: {
+          injectionPoint: 'self.__WB_MANIFEST',
+          maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB
+          rollupFormat: 'iife',
+          swDest: 'sw.js' // Output directly to root of build directory
+        },
+        manifest: {
+          name: 'Auroville Connect',
+          short_name: 'AuroConnect',
+          theme_color: '#ffffff',
+          background_color: '#ffffff',
+          display: 'standalone',
+          scope: '/',
+          start_url: '/',
+          icons: [
+            {
+              src: '/favicon.png',
+              sizes: '192x192',
+              type: 'image/png',
+              purpose: 'any maskable'
+            }
+          ]
+        }
+      })
+    ],
     root: '.',
     publicDir: 'public',
     server: {
