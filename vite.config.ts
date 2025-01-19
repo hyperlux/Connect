@@ -1,47 +1,28 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { VitePWA } from 'vite-plugin-pwa';
+import fs from 'fs';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
+import cssnano from 'cssnano';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const apiUrl = env.VITE_API_URL || 'https://auroville.social/api';
-
-  // Explicitly define environment variables for production
-  const define = {
-    'process.env': {
-      VITE_API_URL: JSON.stringify(apiUrl),
-      VITE_FRONTEND_URL: JSON.stringify(env.VITE_FRONTEND_URL || 'https://auroville.social')
-    }
-  };
+  const isProd = mode === 'production';
 
   return {
-    base: '/',
+    base: 'https://auroville.social/',
     plugins: [
       react(),
       VitePWA({
         registerType: 'autoUpdate',
-        injectRegister: 'script',
+        injectRegister: 'auto',
         srcDir: 'src',
         filename: 'service-worker.js',
         strategies: 'injectManifest',
+        base: 'https://auroville.social/',
         scope: '/',
-        workbox: {
-          navigateFallback: '/index.html',
-          clientsClaim: true,
-          skipWaiting: true,
-        },
-        devOptions: {
-          enabled: true,
-          type: 'module',
-          navigateFallback: '/index.html'
-        },
-        injectManifest: {
-          injectionPoint: 'self.__WB_MANIFEST',
-          maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4MB
-          rollupFormat: 'iife',
-          swDest: 'dist/service-worker.js', // Output to dist directory
-          swSrc: 'src/service-worker.js' // Source file location
-        },
         manifest: {
           name: 'Auroville Connect',
           short_name: 'AuroConnect',
@@ -58,7 +39,38 @@ export default defineConfig(({ mode }) => {
               purpose: 'any maskable'
             }
           ]
-        }
+        },
+        injectManifest: {
+          injectionPoint: 'self.__WB_MANIFEST',
+          maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6MB
+          rollupFormat: 'iife',
+          swDest: 'dist/service-worker.js',
+          swSrc: './src/service-worker.js',
+          globDirectory: 'dist',
+          globPatterns: [
+            '**/*.{js,css,html,png,svg,woff2}'
+          ]
+        },
+        workbox: {
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/auroville\.social\/.*/,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'pages-cache',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                },
+              },
+            },
+          ],
+        },
+        devOptions: {
+          enabled: false,
+          type: 'module',
+          navigateFallback: '/index.html'
+        },
       })
     ],
     root: '.',
@@ -77,24 +89,55 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: "dist",
-      sourcemap: false,
+      sourcemap: true,
       assetsInlineLimit: 0,
+      cssCodeSplit: false,
       emptyOutDir: true,
       chunkSizeWarningLimit: 1000,
       maxThreads: 1,
-      minify: false,
+      minify: true,
+      // Inline critical CSS in HTML
       rollupOptions: {
-        output: {
-          assetFileNames: 'assets/[name].[hash][extname]',
-          chunkFileNames: 'assets/[name].[hash].js',
-          entryFileNames: 'assets/[name].[hash].js',
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              return 'vendor';
+        plugins: [
+          {
+            name: 'inline-critical-css',
+            transformIndexHtml(html: string): string {
+              const criticalCSS = fs.readFileSync('./src/critical.css', 'utf-8');
+              return html.replace(
+                '<!-- INJECT CRITICAL CSS HERE -->',
+                `<style>${criticalCSS}</style>`
+              );
             }
           }
+        ],
+        output: {
+          assetFileNames: (info: { name?: string }): string => {
+            if (info.name && /\.css$/.test(info.name)) {
+              // Force CSS files to be named consistently
+              return 'assets/styles.[hash].css';
+            }
+            return 'assets/[name].[hash][extname]';
+          },
+          chunkFileNames: 'assets/[name].[hash].js',
+          entryFileNames: 'assets/[name].[hash].js'
         }
-      }
+      },
+      // Ensure CSS is processed correctly
+      css: {
+        postcss: {
+          plugins: [
+            tailwindcss,
+            autoprefixer,
+            cssnano({
+              preset: ['default', {
+                discardComments: {
+                  removeAll: true,
+                },
+              }],
+            }),
+          ],
+        },
+      },
     },
   };
 });

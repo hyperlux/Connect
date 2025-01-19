@@ -39,21 +39,22 @@ api.interceptors.request.use(
   }
 );
 
-// Add request interceptor to include auth token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+// Extend AxiosRequestConfig to include _retry flag
+interface RetryableAxiosRequestConfig extends AxiosRequestConfig {
+  _retry?: boolean;
+}
 
-// Add a response interceptor
+// Add a response interceptor with enhanced error handling
 api.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as RetryableAxiosRequestConfig | undefined;
+
+    // Prevent infinite retry loop
+    if (originalRequest && originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
     if (error.response) {
       // Log detailed error information
       console.error('Response error:', {
@@ -68,10 +69,45 @@ api.interceptors.response.use(
       // Handle specific error cases
       switch (error.response.status) {
         case 401:
-          // Only remove token and redirect if not on login page
-          if (!window.location.pathname.includes('/login')) {
+          // Attempt token refresh for authentication errors
+          try {
+            const refreshToken = localStorage.getItem('refreshToken');
+            
+            if (refreshToken && (!originalRequest || !originalRequest._retry)) {
+              // Mark request as retried to prevent infinite loop
+              if (originalRequest) originalRequest._retry = true;
+
+              // Attempt to refresh token
+              const refreshResponse = await axios.post(`${API_URL}/auth/refresh`, 
+                { refreshToken }, 
+                { 
+                  headers: { 'Content-Type': 'application/json' },
+                  withCredentials: true 
+                }
+              );
+
+              if (refreshResponse.data.token) {
+                // Update token in localStorage
+                localStorage.setItem('token', refreshResponse.data.token);
+
+                // Retry original request with new token
+                if (originalRequest) {
+                  originalRequest.headers = originalRequest.headers || {};
+                  originalRequest.headers['Authorization'] = `Bearer ${refreshResponse.data.token}`;
+                  return axios(originalRequest);
+                }
+              }
+            }
+          } catch (refreshError) {
+            // Refresh failed, force logout
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            
+            // Redirect to login only if not already on login page
+            if (!window.location.pathname.includes('/login')) {
+              window.location.href = '/login';
+            }
           }
           break;
         case 403:
@@ -83,10 +119,10 @@ api.interceptors.response.use(
       }
     } else if (error.request) {
       // Request made but no response received
-      return Promise.reject(new Error('No response from server. Please try again.'));
+      return Promise.reject(new Error('No response from server. Please check your network connection.'));
     } else {
       // Error in request configuration
-      return Promise.reject(new Error('Request failed. Please try again.'));
+      return Promise.reject(new Error('Request configuration failed. Please try again.'));
     }
 
     return Promise.reject(error);
@@ -165,11 +201,13 @@ interface LoginCredentials {
 
 interface LoginResponse {
   token: string;
+  refreshToken?: string;
   user: {
     id: string;
     email: string;
     name: string;
     role: string;
+    status?: 'active' | 'pending' | 'suspended';
   };
 }
 
@@ -177,17 +215,51 @@ export async function login(credentials: LoginCredentials): Promise<LoginRespons
   try {
     const response = await api.post<LoginResponse>('/auth/login', credentials);
     
-    // Store the token
+    // Store tokens and user data
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
+      
+      // Store refresh token if provided
+      if (response.data.refreshToken) {
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+      }
+      
+      // Store user information
+      localStorage.setItem('user', JSON.stringify(response.data.user));
     }
     
     return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
+  } catch (error: any) {
+    // More detailed error handling
+    if (axios.isAxiosError(error)) {
+      const errorMessage = error.response?.data?.message || 
+                           error.response?.data?.error || 
+                           'Login failed';
+      
+      console.error('Login error:', {
+        status: error.response?.status,
+        message: errorMessage,
+        data: error.response?.data
+      });
+      
+      // Specific error handling based on status code
+      switch (error.response?.status) {
+        case 401:
+          throw new Error('Invalid email or password');
+        case 403:
+          throw new Error('Account is locked or disabled');
+        case 500:
+          throw new Error('Server error. Please try again later.');
+        default:
+          throw new Error(errorMessage);
+      }
+    } else if (error instanceof Error) {
       console.error('Login error:', error.message);
       throw error;
     }
+    
     throw new Error('An unexpected error occurred during login');
   }
 }
+
+export default api;

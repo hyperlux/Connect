@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 
 export default function Register() {
-  const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, isLoading, error: authError } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -12,54 +11,45 @@ export default function Register() {
     name: '',
   });
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [verificationSent, setVerificationSent] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear errors when user starts typing
+    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
+    // Validate password match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
-    setIsLoading(true);
+    // Validate password strength
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
 
     try {
       const { confirmPassword, ...registerData } = formData;
       await register(registerData);
-      setVerificationSent(true);
+      // Navigation is handled by the auth hook
     } catch (err: any) {
       setError(err.message || 'Failed to register. Please try again.');
-    } finally {
-      setIsLoading(false);
     }
   };
-
-  if (verificationSent) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#1E1E1E] px-4">
-        <div className="max-w-md w-full bg-[#2A2A2A] rounded-xl shadow-lg p-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">Verification Email Sent</h2>
-          <p className="text-gray-400 mb-6">
-            Please check your email to verify your account. The verification link will expire in 24 hours.
-          </p>
-          <Link
-            to="/login"
-            className="inline-block px-4 py-2 bg-auroville-primary text-white rounded-lg hover:bg-opacity-90 transition-colors"
-          >
-            Go to Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1E1E1E] px-4">
@@ -70,9 +60,9 @@ export default function Register() {
           <p className="text-gray-400">Join the Auroville community</p>
         </div>
 
-        {error && (
+        {(error || authError) && (
           <div className="mb-4 p-3 bg-red-900/20 border border-red-900/30 rounded-lg">
-            <p className="text-red-400 text-sm">{error}</p>
+            <p className="text-red-400 text-sm">{error || authError}</p>
           </div>
         )}
 
@@ -90,6 +80,8 @@ export default function Register() {
               className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
               placeholder="Enter your full name"
               required
+              minLength={2}
+              maxLength={50}
             />
           </div>
 
@@ -120,8 +112,9 @@ export default function Register() {
               value={formData.password}
               onChange={handleChange}
               className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
-              placeholder="Create a password"
+              placeholder="Create a password (min. 8 characters)"
               required
+              minLength={8}
             />
           </div>
 
@@ -138,6 +131,7 @@ export default function Register() {
               className="w-full px-4 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-auroville-primary focus:border-transparent"
               placeholder="Confirm your password"
               required
+              minLength={8}
             />
           </div>
 
@@ -159,4 +153,4 @@ export default function Register() {
       </div>
     </div>
   );
-} 
+}

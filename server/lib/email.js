@@ -61,7 +61,7 @@ export async function sendVerificationEmail(email, token) {
   console.log('Starting email send process for:', email);
   
   // Construct verification URL
-  const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
+  const verificationUrl = `${process.env.VITE_FRONTEND_URL}/verify-email?token=${token}`;
   console.log('Verification URL:', verificationUrl);
   
   const mailOptions = {
@@ -69,41 +69,66 @@ export async function sendVerificationEmail(email, token) {
     to: email,
     subject: 'Verify your email - Auroville Community',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #E27B58; text-align: center;">Welcome to Auroville Community!</h1>
-        <p style="font-size: 16px; line-height: 1.5;">Thank you for joining our community. Please verify your email address by clicking the button below:</p>
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${verificationUrl}" 
-             style="background-color: #E27B58; 
-                   color: white; 
-                   padding: 12px 24px; 
-                   text-decoration: none; 
-                   border-radius: 4px;
-                   display: inline-block;">
-            Verify Email Address
-          </a>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #2A2A2A; color: #FFFFFF; padding: 40px; border-radius: 12px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <img src="${process.env.VITE_FRONTEND_URL}/logodark.png" alt="Auroville" style="height: 60px; margin-bottom: 20px;" />
+          <h1 style="color: #E27B58; margin: 0;">Welcome to Auroville Community!</h1>
         </div>
-        <p style="font-size: 14px; color: #666;">
-          If the button doesn't work, you can also copy and paste this link into your browser:
-          <br>
-          <a href="${verificationUrl}" style="color: #E27B58;">${verificationUrl}</a>
-        </p>
-        <p style="font-size: 14px; color: #666;">This link will expire in 24 hours.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-        <p style="font-size: 12px; color: #999; text-align: center;">
-          If you didn't create an account with Auroville Community, you can safely ignore this email.
-        </p>
+
+        <div style="background-color: #1E1E1E; padding: 30px; border-radius: 8px; margin-bottom: 30px;">
+          <p style="font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
+            Thank you for joining our community. To complete your registration and ensure the security of your account, please verify your email address by clicking the button below:
+          </p>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${verificationUrl}" 
+               style="display: inline-block;
+                      background-color: #E27B58;
+                      color: white;
+                      padding: 14px 28px;
+                      text-decoration: none;
+                      border-radius: 6px;
+                      font-weight: bold;
+                      font-size: 16px;">
+              Verify Email Address
+            </a>
+          </div>
+
+          <p style="font-size: 14px; color: #999; margin-top: 25px;">
+            If the button doesn't work, you can copy and paste this link into your browser:
+            <br>
+            <a href="${verificationUrl}" style="color: #E27B58; word-break: break-all;">${verificationUrl}</a>
+          </p>
+        </div>
+
+        <div style="border-top: 1px solid #444; padding-top: 20px; margin-top: 30px;">
+          <p style="font-size: 14px; color: #999; text-align: center; margin-bottom: 10px;">
+            This verification link will expire in 24 hours for security reasons.
+          </p>
+          <p style="font-size: 14px; color: #999; text-align: center;">
+            If you didn't create an account with Auroville Community, you can safely ignore this email.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+          <p style="font-size: 12px; color: #666;">
+            Need help? Contact us at <a href="mailto:support@auroville.social" style="color: #E27B58;">support@auroville.social</a>
+          </p>
+        </div>
       </div>
     `,
     text: `
       Welcome to Auroville Community!
       
-      Please verify your email address by clicking the following link:
+      Thank you for joining our community. To complete your registration and ensure the security of your account, please verify your email address by clicking the following link:
+      
       ${verificationUrl}
       
-      This link will expire in 24 hours.
+      This verification link will expire in 24 hours for security reasons.
       
       If you didn't create an account with Auroville Community, you can safely ignore this email.
+      
+      Need help? Contact us at support@auroville.social
     `
   };
 
@@ -144,32 +169,45 @@ export async function sendVerificationEmail(email, token) {
 
 export async function sendNotificationEmail(email, notification) {
   const mailOptions = {
-      from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
-      to: email,
-      subject: notification.title,
+    from: `"Auroville Community" <${process.env.SMTP_USERNAME}>`,
+    to: email,
+    subject: notification.title,
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #E27B58; text-align: center;">${notification.title}</h1>
-        <div style="font-size: 16px; line-height: 1.5;">
-          ${notification.message}
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #2A2A2A; color: #FFFFFF; padding: 40px; border-radius: 12px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <img src="${process.env.VITE_FRONTEND_URL}/logodark.png" alt="Auroville" style="height: 60px; margin-bottom: 20px;" />
+          <h1 style="color: #E27B58; margin: 0;">${notification.title}</h1>
         </div>
-        ${notification.link ? `
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${notification.link}" 
-             style="background-color: #E27B58; 
-                   color: white; 
-                   padding: 12px 24px; 
-                   text-decoration: none; 
-                   border-radius: 4px;
-                   display: inline-block;">
-            View Details
-          </a>
+
+        <div style="background-color: #1E1E1E; padding: 30px; border-radius: 8px; margin-bottom: 30px;">
+          <div style="font-size: 16px; line-height: 1.6;">
+            ${notification.message}
+          </div>
+
+          ${notification.link ? `
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${notification.link}" 
+               style="display: inline-block;
+                      background-color: #E27B58;
+                      color: white;
+                      padding: 14px 28px;
+                      text-decoration: none;
+                      border-radius: 6px;
+                      font-weight: bold;
+                      font-size: 16px;">
+              View Details
+            </a>
+          </div>
+          ` : ''}
         </div>
-        ` : ''}
-        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-        <p style="font-size: 12px; color: #999; text-align: center;">
-          This is an automated message from Auroville Community platform.
-        </p>
+
+        <div style="text-align: center; margin-top: 30px;">
+          <p style="font-size: 12px; color: #666;">
+            This is an automated message from Auroville Community platform.
+            <br>
+            Need help? Contact us at <a href="mailto:support@auroville.social" style="color: #E27B58;">support@auroville.social</a>
+          </p>
+        </div>
       </div>
     `,
     text: `
@@ -180,6 +218,7 @@ export async function sendNotificationEmail(email, notification) {
       ${notification.link ? `View details at: ${notification.link}` : ''}
       
       This is an automated message from Auroville Community platform.
+      Need help? Contact us at support@auroville.social
     `
   };
 

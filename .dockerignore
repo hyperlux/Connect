@@ -13,7 +13,6 @@ build
 **/build
 
 # Development files
-.env
 .env.*
 *.log
 npm-debug.log*

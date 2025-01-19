@@ -5,6 +5,7 @@ import ServiceWorkerInitializer from './serviceWorkerRegistration'
 
 // Import Tailwind styles
 import './index.css'
+import './critical.css'
 
 // Force style refresh
 if (import.meta.hot) {

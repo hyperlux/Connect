@@ -1,22 +1,22 @@
 const corsConfig = {
-  origin: 'https://auroville.social',
+  origin: '*', // Allow all origins in development
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   credentials: true
 };
 
 const security = {
-  timeWindow: 5 * 60 * 1000, // 5 minutes
-  maxRequests: 50 // Stricter limit for production
+  timeWindow: 15 * 60 * 1000, // 15 minutes
+  maxRequests: 100 // More lenient limit for development
 };
 
 const port = process.env.PORT || 5000;
 
 const databaseUrl = process.env.DATABASE_URL || "postgresql://auroville_user:ok@db:5432/auroville_connect";
-const jwtSecret = process.env.JWT_SECRET || "ea21a8d798aa16aacce7fbcff1cde5dfbe50a294d5c7d14aee0ee4f6a6d2a5a7a";
+const jwtSecret = process.env.JWT_SECRET || "dev_secret_key_for_local_development";
 const smtpConfig = {
-  server: process.env.SMTP_SERVER,
-  port: process.env.SMTP_PORT,
+  server: process.env.SMTP_SERVER || 'localhost',
+  port: process.env.SMTP_PORT || 1025,
   username: process.env.SMTP_USERNAME,
   password: process.env.SMTP_PASSWORD,
   auth: process.env.SMTP_AUTH,

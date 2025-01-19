@@ -1,57 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Declare critical layer first */
+@layer critical;
 
-/* Reset and base styles */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  font-size: 16px;
-  font-family: sans-serif;
-  color: var(--color-text);
-}
-
-/* Layout styles */
-@layer components {
-  .layout-container {
-    display: grid;
-    grid-template-columns: 256px 1fr;
-    min-height: 100vh;
-    position: relative;
-  }
-
-  .layout-sidebar-container {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-    border-right: 1px solid var(--color-border);
-  }
-
-  .layout-main-container {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .layout-content {
-    flex: 1;
-    width: 100%;
-    padding: 1rem;
-  }
-}
+/* Import critical CSS */
+@import './critical.css';
 
 /* Theme variables */
 :root {
@@ -80,4 +31,37 @@ body,
   --color-text: #E4E6EB;
   --color-text-secondary: #B0B3B8;
   --color-border: #2A2A2A;
+}
+
+/* Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset and base styles */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html,
+  body,
+  #root {
+    font-size: 16px;
+    font-family: sans-serif;
+    color: var(--color-text);
+  }
+}
+
+/* Layout styles */
+@layer components {
+  .layout-content {
+    flex: 1;
+    width: 100%;
+    padding: 1rem;
+  }
 }

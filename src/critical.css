@@ -1,0 +1,69 @@
+@layer critical {
+  /* Define theme variables with fallbacks */
+  :root {
+    --color-background: #ffffff;
+    --color-border: #e5e7eb;
+  }
+  
+  .dark {
+    --color-background: #18191A;
+    --color-border: #3A3B3C;
+  }
+
+  /* Critical CSS for layout */
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: var(--color-background, #ffffff);
+  }
+
+  #root {
+    min-height: 100vh;
+    background-color: var(--color-background, #ffffff);
+  }
+
+  /* Layout styles for non-Welcome pages */
+  #root:not(.welcome-page) {
+    display: grid;
+    grid-template-columns: 256px 1fr;
+  }
+
+  /* Prevent layout shift */
+  .layout-container {
+    display: grid;
+    grid-template-columns: 256px 1fr;
+    min-height: 100vh;
+    background-color: var(--color-background);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .layout-sidebar-container {
+    width: 256px;
+    min-width: 256px;
+    max-width: 256px;
+    background-color: var(--color-background);
+    border-right: 1px solid var(--color-border);
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  .layout-main-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background-color: var(--color-background);
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Welcome page specific styles */
+  .welcome-page {
+    display: block !important;
+    width: 100% !important;
+  }
+}

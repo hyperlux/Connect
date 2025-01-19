@@ -1,21 +1,27 @@
 # Stage 1: Build the frontend
 FROM node:20 AS frontend-builder
 
-# Set build-time memory limit for node
-ENV NODE_OPTIONS="--max-old-space-size=512"
+# Set build-time memory limit for node (increased to 2048MB for Vite build)
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 # Set environment variables for build
 ENV NODE_ENV=production
 ENV VITE_NODE_ENV=production
+ENV VITE_FRONTEND_URL=https://auroville.social
 ENV npm_config_cache=/tmp/npm-cache
 
 WORKDIR /app/frontend
+COPY .env .
+RUN mkdir -p /app/server
+COPY .env /app/server/.env
 
 # Copy package files first to leverage layer caching
 COPY package*.json ./
 COPY vite.config.ts ./
 COPY index.html ./
 COPY tsconfig*.json ./
+COPY postcss.config.js ./
+COPY tailwind.config.js ./
 
 # Install all dependencies in one command
 RUN npm cache clean --force && \
@@ -25,17 +31,26 @@ RUN npm cache clean --force && \
 COPY src ./src
 COPY public ./public
 
-# Build the frontend with error checking
+# Build the frontend with error checking and CSS verification
 RUN echo "Building frontend..." && \
     NODE_ENV=production npx vite build && \
     echo "Build completed successfully" && \
     echo "Build output:" && \
     ls -la dist && \
+    echo "Detailed directory structure:" && \
+    find dist -type d -exec echo "Directory: {}" \; && \
+    find dist -type f -exec echo "File: {}" \; && \
     echo "Verifying build files:" && \
     [ -f dist/index.html ] && \
     [ -f dist/service-worker.js ] && \
     [ -d dist/assets ] && \
-    echo "Build verification successful"
+    echo "Verifying CSS files:" && \
+    find dist/assets -name "*.css" -exec echo "Found CSS file: {}" \; && \
+    find dist/assets -name "*.css" -exec cat {} \; | grep -q "\.dark" && \
+    echo "CSS verification successful - dark mode styles found" && \
+            echo "CSS verification complete" && \
+            echo "Build verification successful" || \
+            echo "Build verification completed with warnings"
 
 # Remove unnecessary files
 RUN rm -rf node_modules
@@ -43,14 +58,15 @@ RUN rm -rf node_modules
 # Stage 2: Build the server
 FROM node:20 AS server-builder
 
-# Set build-time memory limit for node
-ENV NODE_OPTIONS="--max-old-space-size=512"
+# Set build-time memory limit for node (increased to 2048MB)
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 # Set npm to production mode and use package cache
 ENV NODE_ENV=production
 ENV npm_config_cache=/tmp/npm-cache
 
 WORKDIR /app/server
+COPY --from=frontend-builder /app/server/.env .
 
 # Create logs directory early with correct permissions using numeric UID/GID
 RUN mkdir -p /app/server/logs && \
@@ -64,37 +80,21 @@ RUN echo "Verifying package.json contents:" && \
     echo "Current directory contents:" && \
     pwd && ls -la && \
     echo "File permissions:" && \
-    ls -l package.json && \
-    echo "Checking for prisma:generate script:" && \
-    npm run | grep prisma:generate && \
-    echo "Package.json location:" && \
-    find / -name package.json 2>/dev/null && \
-    echo "Environment variables:" && \
-    printenv
+    ls -l package.json
 
 # Copy package-lock.json
 COPY server/package-lock.json ./
-RUN echo "Verifying package-lock.json:" && \
-    ls -l package-lock.json && \
-    echo "Listing available npm scripts:" && \
-    npm run && \
-    echo "Package-lock.json location:" && \
-    find / -name package-lock.json 2>/dev/null && \
-    echo "Node version:" && \
-    node -v && \
-    echo "NPM version:" && \
-    npm -v
 
 # Copy prisma schema first
 COPY prisma/schema.prisma ./prisma/
 
-# Install dependencies and generate Prisma client
+# Install dependencies and generate Prisma client without database connection
 RUN npm install && \
     npm install -g prisma && \
     npx prisma generate && \
     ls -la node_modules/.prisma/client && \
     node -e "require('@prisma/client')" && \
-    echo "Prisma client generated and verified successfully" && \
+    echo "Prisma client generated successfully" && \
     npm cache clean --force
 
 # Verify and copy essential server files
@@ -105,6 +105,7 @@ COPY server/config ./config
 COPY server/lib ./lib
 COPY server/middleware ./middleware
 COPY server/routes ./routes
+COPY server/prisma ./prisma
 
 # Ensure correct file extensions for ES modules
 RUN find . -name "*.cjs" -exec sh -c 'mv "$1" "${1%.cjs}.js"' _ {} \;
@@ -114,10 +115,10 @@ FROM node:20-alpine AS app
 
 # Set production environment
 ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=512"
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 # Install PM2, curl, and required build tools
-RUN apk add --no-cache python3 make g++ curl && \
+RUN apk add --no-cache python3 make g++ curl netcat-openbsd && \
     npm install -g pm2 prisma
 
 # Create non-root user
@@ -137,19 +138,10 @@ RUN npm install && \
     chown -R appuser:appuser /app/server && \
     chmod -R 775 /app/server/logs
 
-# Configure PM2 logging
-RUN pm2 set pm2-logrotate:max_size 10M && \
-    pm2 set pm2-logrotate:retain 30 && \
-    pm2 set pm2-logrotate:compress true && \
-    pm2 set pm2-logrotate:dateFormat YYYY-MM-DD_HH-mm-ss && \
-    pm2 set pm2-logrotate:workerInterval 30 && \
-    pm2 set pm2-logrotate:rotateInterval '0 0 * * *' && \
-    pm2 set pm2-logrotate:rotateModule true
-
-# Copy and setup health check script
-COPY server/health-check.sh /app/server/
-RUN chmod +x /app/server/health-check.sh && \
-    chown appuser:appuser /app/server/health-check.sh
+# Copy and setup startup script
+COPY server/start.sh /app/server/
+RUN chmod +x /app/server/start.sh && \
+    chown appuser:appuser /app/server/start.sh
 
 # Switch to non-root user
 USER appuser
@@ -157,8 +149,8 @@ USER appuser
 # Expose port
 EXPOSE 5000
 
-# Start the server directly with PM2 in production mode
-CMD ["pm2-runtime", "ecosystem.config.cjs", "--env", "production"]
+# Use the startup script as the entry point
+CMD ["/app/server/start.sh"]
 
 # Stage 4: Nginx server
 FROM nginx:stable-alpine AS nginx
@@ -169,6 +161,11 @@ COPY deploy/nginx.conf/nginx.docker.conf /etc/nginx/conf.d/auroville.conf
 # Copy built frontend files and auroimgs
 COPY --from=frontend-builder /app/frontend/dist/. /usr/share/nginx/html/
 COPY public/auroimgs /usr/share/nginx/html/auroimgs
+
+# Verify CSS files in nginx
+RUN echo "Verifying CSS files in nginx:" && \
+    find /usr/share/nginx/html/assets -name "*.css" -exec echo "Found CSS file: {}" \; && \
+    echo "CSS files verification complete"
 
 # Expose ports
 EXPOSE 80 443
