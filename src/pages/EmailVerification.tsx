@@ -20,16 +20,70 @@ export default function EmailVerification() {
 
       try {
         const { data } = await api.get(`/auth/verify-email?token=${token}`);
-        setStatus(data.verified ? 'success' : 'error');
-        setMessage(data.message || 'Email verified successfully');
         
-        // Redirect to login after 3 seconds
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
+        // Successful verification
+        if (data.verified) {
+          setStatus('success');
+          setMessage(data.message || 'Email verified successfully');
+          
+          // Redirect to login after 3 seconds
+          setTimeout(() => {
+            navigate('/login');
+          }, 3000);
+        } else {
+          // Server returned verification failure
+          console.error('Email verification failed:', data);
+          setStatus('error');
+          setMessage(data.message || 'Email verification could not be completed');
+        }
       } catch (error) {
+        // Comprehensive error handling
+        let errorMessage = 'Failed to verify email';
+        let logMessage = 'Email verification error';
+
+        if (error instanceof Error) {
+          // Axios error handling
+          if (error.name === 'AxiosError') {
+            const axiosError = error as any;
+            
+            // Specific error handling based on status code
+            switch (axiosError.response?.status) {
+              case 400:
+                errorMessage = 'Invalid verification token';
+                logMessage = 'Bad Request: Invalid token';
+                break;
+              case 401:
+                errorMessage = 'Verification token has expired';
+                logMessage = 'Unauthorized: Token expired';
+                break;
+              case 404:
+                errorMessage = 'Verification link is no longer valid';
+                logMessage = 'Not Found: Invalid verification link';
+                break;
+              case 500:
+                errorMessage = 'Server error occurred during verification';
+                logMessage = 'Internal Server Error during email verification';
+                break;
+              default:
+                errorMessage = axiosError.response?.data?.message || 'Server error during email verification';
+                logMessage = `Unhandled error status: ${axiosError.response?.status}`;
+            }
+          } else if (error.name === 'NetworkError') {
+            errorMessage = 'Network connection failed. Please check your internet.';
+            logMessage = 'Network Error during email verification';
+          }
+
+          // Log detailed error information
+          console.error(logMessage, {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+            additionalDetails: error instanceof Error ? (error as any).response?.data : null
+          });
+        }
+
         setStatus('error');
-        setMessage(error instanceof Error ? error.message : 'Failed to verify email');
+        setMessage(errorMessage);
       }
     };
 
@@ -71,4 +125,4 @@ export default function EmailVerification() {
       </div>
     </div>
   );
-} 
+}

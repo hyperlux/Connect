@@ -31,26 +31,29 @@ RUN npm cache clean --force && \
 COPY src ./src
 COPY public ./public
 
-# Build the frontend with error checking and CSS verification
-RUN echo "Building frontend..." && \
-    NODE_ENV=production npx vite build && \
+# Build the frontend with comprehensive error checking and logging
+RUN set -e && \
+    echo "Building frontend..." && \
+    NODE_ENV=production npm run build && \
     echo "Build completed successfully" && \
     echo "Build output:" && \
     ls -la dist && \
     echo "Detailed directory structure:" && \
-    find dist -type d -exec echo "Directory: {}" \; && \
-    find dist -type f -exec echo "File: {}" \; && \
+    find dist -type d && \
     echo "Verifying build files:" && \
-    [ -f dist/index.html ] && \
-    [ -f dist/service-worker.js ] && \
-    [ -d dist/assets ] && \
-    echo "Verifying CSS files:" && \
-    find dist/assets -name "*.css" -exec echo "Found CSS file: {}" \; && \
-    find dist/assets -name "*.css" -exec cat {} \; | grep -q "\.dark" && \
-    echo "CSS verification successful - dark mode styles found" && \
-            echo "CSS verification complete" && \
-            echo "Build verification successful" || \
-            echo "Build verification completed with warnings"
+    test -f dist/index.html && \
+    test -d dist/assets && \
+    echo "Frontend build verification successful" || \
+    (echo "Frontend build verification failed" && \
+     echo "Current directory contents:" && \
+     pwd && ls -la && \
+     echo "Vite version:" && \
+     npx vite --version && \
+     echo "Node version:" && \
+     node --version && \
+     echo "npm version:" && \
+     npm --version && \
+     exit 1)
 
 # Remove unnecessary files
 RUN rm -rf node_modules
