@@ -1,8 +1,22 @@
 const corsConfig = {
-  origin: 'https://auroville.social',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  credentials: true
+  origin: [
+    'https://auroville.social',
+    'https://www.auroville.social',
+    process.env.NODE_ENV === 'development' && 'http://localhost:3000'
+  ].filter(Boolean),
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Allow-Origin',
+    'X-API-Version'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 204,
+  preflightContinue: false
 };
 
 const security = {

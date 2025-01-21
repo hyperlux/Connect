@@ -66,6 +66,10 @@ const router = createBrowserRouter([
     element: <PrivateRouteWrapper><Dashboard /></PrivateRouteWrapper>,
   },
   {
+    path: "/app/dashboard",
+    element: <PrivateRouteWrapper><Dashboard /></PrivateRouteWrapper>,
+  },
+  {
     path: "/profile",
     element: <PrivateRouteWrapper><Profile /></PrivateRouteWrapper>,
   },

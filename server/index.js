@@ -11,6 +11,7 @@ const prisma = new PrismaClient();
 import { authRouter } from './routes/auth.mjs';
 import { forumsRouter } from './routes/forums.js';
 import { usersRouter } from './routes/users.js';
+import { eventsRouter } from './routes/events.js';
 import winston from 'winston';
 import fs from 'fs';
 
@@ -59,6 +60,7 @@ app.get('/health', (req, res) => {
 app.use('/auth', authRouter);
 app.use('/forums', forumsRouter);
 app.use('/users', usersRouter);
+app.use('/events', eventsRouter);
 
 // Apply error handling middleware
 app.use(errorHandler);

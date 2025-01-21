@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+
 import { Users, Calendar, MessageSquare, TrendingUp, Activity, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../lib/theme';
 import { api, withCache } from '../lib/api';
+import { useState, useEffect } from 'react';
 
 interface Event {
   id: string;
@@ -149,55 +150,60 @@ export default function Dashboard() {
     <div className="w-full h-full">
       <div className="max-w-screen-2xl mx-auto px-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Community Dashboard</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-text)]">Community Dashboard</h1>
           {isStale && (
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-[var(--color-text-secondary)]">
               ⚡ Using cached data
             </span>
           )}
         </div>
         
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {STATS_CONFIG.map((stat) => (
-            <div key={stat.label} className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <stat.icon className="h-6 w-6 text-indigo-500" />
-                <span className="text-green-500 text-sm font-medium">{stat.trend}</span>
+            <div 
+              key={stat.label} 
+              className="bg-[var(--color-card)] border border-[var(--color-border)] p-6 rounded-xl shadow-sm"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-2 bg-[var(--color-primary)] bg-opacity-10 rounded-lg">
+                  <stat.icon className="h-6 w-6 text-[var(--color-primary)]" />
+                </div>
+                <span className="text-green-500 text-sm font-semibold">{stat.trend}</span>
               </div>
-              <h3 className="text-xl font-bold mb-1">
+              <h3 className="text-2xl font-bold mb-2 text-[var(--color-text)]">
                 {stats ? stats[stat.key].toLocaleString() : '-'}
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">{stat.label}</p>
             </div>
           ))}
         </div>
 
         {/* Community Engagement Section */}
-        <div className="mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">Community Engagement</h2>
-            <div className="h-48 bg-gray-50 dark:bg-gray-700 rounded"></div>
+        <div className="mb-8">
+          <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4 text-[var(--color-text)]">Community Engagement</h2>
+            <div className="h-48 bg-[var(--color-background)] rounded-lg"></div>
           </div>
         </div>
 
         {/* Bottom Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Latest Posts */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">Latest Community Posts</h2>
+          <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4 text-[var(--color-text)]">Latest Community Posts</h2>
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-start gap-3 pb-4 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                <div key={i} className="flex items-start gap-3 pb-4 border-b border-[var(--color-border)] last:border-0">
                   <img
                     src={`https://images.unsplash.com/photo-${1492633423870 + i}-4f9aeb10bb8f?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80`}
                     alt="User"
                     className="w-8 h-8 rounded-full"
                   />
                   <div>
-                    <h3 className="font-medium">Community Garden Project</h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Started by Jane Smith • 2h ago</p>
-                    <p className="text-sm">Looking for volunteers to help with the new community garden project...</p>
+                    <h3 className="font-medium text-[var(--color-text)]">Community Garden Project</h3>
+                    <p className="text-xs text-[var(--color-text-secondary)] mb-1">Started by Jane Smith • 2h ago</p>
+                    <p className="text-sm text-[var(--color-text-secondary)]">Looking for volunteers to help with the new community garden project...</p>
                   </div>
                 </div>
               ))}
@@ -205,15 +211,15 @@ export default function Dashboard() {
           </div>
 
           {/* Weekly Events */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
+          <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6 shadow-sm">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <h2 className="text-lg font-semibold">Weekly Events</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{getCurrentWeekRange()}</p>
+                <h2 className="text-lg font-semibold text-[var(--color-text)]">Weekly Events</h2>
+                <p className="text-sm text-[var(--color-text-secondary)]">{getCurrentWeekRange()}</p>
               </div>
               <Link 
                 to="/app/events"
-                className="flex items-center gap-1 text-indigo-500 hover:text-indigo-600"
+                className="flex items-center gap-1 text-[var(--color-primary)] hover:opacity-80"
                 onClick={handleNavigateToEvents}
               >
                 <span className="text-sm">View All</span>
@@ -227,21 +233,21 @@ export default function Dashboard() {
                 <div className="text-center py-4 text-gray-500">No events this week</div>
               ) : (
                 events.map((event) => (
-                  <div key={event.id} className="flex items-start gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                    <div className="bg-indigo-100 dark:bg-indigo-900 p-2 rounded">
-                      <Calendar className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                  <div key={event.id} className="flex items-start gap-3 p-3 hover:bg-[var(--color-background)] rounded-lg transition-colors">
+                    <div className="p-2 bg-[var(--color-primary)] bg-opacity-10 rounded-lg">
+                      <Calendar className="h-6 w-6 text-[var(--color-primary)]" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium">{event.title}</h3>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                      <h3 className="font-medium text-[var(--color-text)]">{event.title}</h3>
+                      <p className="text-xs text-[var(--color-text-secondary)]">
                         {formatDate(event.startDate)} • {getEventTimeDisplay(event)}
                       </p>
                       {event.location && (
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                           📍 {event.location}
                         </p>
                       )}
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                      <p className="text-sm text-[var(--color-text-secondary)] mt-1 line-clamp-2">
                         {event.description}
                       </p>
                     </div>

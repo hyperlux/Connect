@@ -31,16 +31,19 @@ export default function Layout() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-[var(--color-background)]">
-      <Sidebar />
+    <div className="layout-container">
+      <aside className="layout-sidebar">
+        <Sidebar />
+      </aside>
       
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <main className="layout-main">
         <Header />
-        <main className="flex-1 p-4">
-          <Outlet />
-        </main>
-      </div>
+        <div className="p-6">
+          <div className="max-w-screen-2xl mx-auto">
+            <Outlet />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
