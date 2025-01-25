@@ -55,11 +55,17 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    // Update lastLoginAt
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() }
+    });
+
     const token = jwt.sign(
       { 
-        userId: user.id, 
-        email: user.email, 
-        role: user.role 
+        userId: updatedUser.id, 
+        email: updatedUser.email, 
+        role: updatedUser.role 
       },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }

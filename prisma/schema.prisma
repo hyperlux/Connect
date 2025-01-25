@@ -24,6 +24,7 @@ model User {
   resetToken       String?
   resetTokenExpiry DateTime?
   profilePicture   String?
+  lastLoginAt      DateTime?
 }
 
 model ForumPost {

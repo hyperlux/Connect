@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
   const isProd = mode === 'production';
 
   return {
-    base: 'https://auroville.social/',
+    base: isProd ? 'https://auroville.social/' : '/',
     plugins: [
       react(),
       VitePWA({
@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
         srcDir: 'src',
         filename: 'service-worker.js',
         strategies: 'injectManifest',
-        base: 'https://auroville.social/',
+        base: isProd ? 'https://auroville.social/' : '/',
         scope: '/',
         manifest: {
           name: 'Auroville Connect',

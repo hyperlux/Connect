@@ -12,6 +12,7 @@ import { authRouter } from './routes/auth.mjs';
 import { forumsRouter } from './routes/forums.js';
 import { usersRouter } from './routes/users.js';
 import { eventsRouter } from './routes/events.js';
+import { dashboardRouter } from './routes/dashboard.js';
 import winston from 'winston';
 import fs from 'fs';
 
@@ -61,6 +62,7 @@ app.use('/auth', authRouter);
 app.use('/forums', forumsRouter);
 app.use('/users', usersRouter);
 app.use('/events', eventsRouter);
+app.use('/dashboard', dashboardRouter);
 
 // Apply error handling middleware
 app.use(errorHandler);

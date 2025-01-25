@@ -24,8 +24,5 @@ if (import.meta.hot) {
 const root = document.getElementById('root')!;
 root.innerHTML = ''; // Clear any existing content
 ReactDOM.createRoot(root).render(
-  <React.StrictMode>
-    <ServiceWorkerInitializer />
-    <App />
-  </React.StrictMode>
+  <App />
 )

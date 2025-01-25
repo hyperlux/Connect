@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 
@@ -9,20 +9,56 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
+
+  // Add detailed logging for authentication state
+  useEffect(() => {
+    console.log('Login Component Mount - Auth State:', {
+      isAuthenticated: isAuthenticated(),
+      user: user ? { id: user.id, email: user.email } : null,
+      locationState: location.state
+    });
+  }, [isAuthenticated, user, location.state]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
     setIsLoading(true);
 
+    console.log('Login Attempt:', {
+      email,
+      timestamp: new Date().toISOString()
+    });
+
     try {
-      await login({ email, password });
+      // Log before login attempt
+      console.log('Attempting login with credentials');
+      
+      const loginResponse = await login({ email, password });
+      
+      console.log('Login Response:', {
+        success: true,
+        userReturned: !!loginResponse.user,
+        tokenReceived: !!loginResponse.token
+      });
+
+      // Verify authentication state immediately after login
+      console.log('Post-Login Auth Check:', {
+        isAuthenticated: isAuthenticated(),
+        user: user ? { id: user.id, email: user.email } : null
+      });
       
       // Get the redirect path from location state or default to dashboard
       const from = location.state?.from?.pathname || '/app/dashboard';
+      
+      console.log('Navigating to:', from);
       navigate(from, { replace: true });
     } catch (error) {
+      console.error('Login Error:', {
+        error,
+        errorMessage: error instanceof Error ? error.message : 'Login failed'
+      });
+
       setError(error instanceof Error ? error.message : 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
