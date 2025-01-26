@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../lib/api';
 import { z } from 'zod';
-import { useAuth } from '../lib/auth';
 import { AxiosError } from 'axios';
+import { useAuth } from '../lib/auth';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -18,8 +17,7 @@ export default function SignupForm() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const navigate = useNavigate();
-  const { login } = useAuth();
+  const { register } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,13 +27,8 @@ export default function SignupForm() {
     try {
       const validatedData = signupSchema.parse({ name, email, password });
 
-      const response = await api.post('/auth/register', validatedData);
-
-      if (response.data) {
-        setTimeout(() => {
-          navigate('/', { replace: true });
-        }, 0);
-      }
+      await register(validatedData);
+      // Navigation is handled within the register method
     } catch (err: unknown) {
       if (err instanceof z.ZodError) {
         setError(err.errors[0].message);

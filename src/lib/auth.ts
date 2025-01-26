@@ -89,7 +89,55 @@ export const useAuth = () => {
   };
 
   const isAuthenticated: () => boolean = () => {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      // Basic token validation
+      const tokenParts = token.split('.');
+      if (tokenParts.length !== 3) return false;
+
+      // Decode payload
+      const payload = JSON.parse(atob(tokenParts[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+      
+      // Check token expiration
+      if (payload.exp && payload.exp < currentTime) {
+        // Token expired, remove from storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Token validation error:', error);
+      // Invalid token, clear storage
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return false;
+    }
+  };
+
+  const refreshToken = async () => {
+    try {
+      const currentToken = localStorage.getItem('token');
+      if (!currentToken) return false;
+
+      const response = await api.post('/auth/refresh-token', { token: currentToken });
+      const { token, user } = response.data;
+
+      // Update stored token and user
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      return true;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      // Logout user if refresh fails
+      logoutUser();
+      return false;
+    }
   };
 
   const updateProfile = async (data: { name?: string; email?: string; profilePicture?: string }) => {
@@ -176,6 +224,7 @@ export const useAuth = () => {
     logout: logoutUser,
     getCurrentUser,
     isAuthenticated,
+    refreshToken,
     updateProfile,
     uploadProfilePicture,
     resendVerificationEmail,
