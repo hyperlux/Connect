@@ -14,6 +14,11 @@ try {
     // Additional filtering to prevent caching problematic resources
     return entry && entry.url && !entry.url.includes('undefined');
   }));
+  console.log('Precache list:', precacheList); // Log precacheList
+  const filteredPrecacheList = precacheList.filter(entry => {
+    return entry && entry.url && !entry.url.includes('undefined');
+  });
+  console.log('Filtered precache list:', filteredPrecacheList); // Log filteredPrecacheList
 } catch (error) {
   console.error('Precaching failed:', error);
 }

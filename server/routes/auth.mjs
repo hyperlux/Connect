@@ -31,16 +31,20 @@ const loginSchema = z.object({
 });
 
 router.post('/login', async (req, res) => {
+  console.log('Login request body:', req.body); // Log request body
   try {
     const { email, password } = loginSchema.parse(req.body);
 
+    console.error('Login attempt for email:', email);
     const user = await prisma.user.findUnique({
       where: { email }
     });
 
     if (!user) {
+      console.log('User not found for email:', email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
+    console.log('User found:', user);
 
     if (!user.emailVerified) {
       return res.status(403).json({ 
@@ -52,8 +56,11 @@ router.post('/login', async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, user.password);
     
     if (!isValidPassword) {
+      console.log('Password does not match for email:', email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
+    console.log('Password valid for user:', user.email);
+    console.log('Attempting to generate token for user:', user.email);
 
     // Update lastLoginAt
     const updatedUser = await prisma.user.update({
@@ -70,6 +77,7 @@ router.post('/login', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
+    console.log('Token generated successfully for user:', updatedUser.email);
 
     res.json({
       user: {

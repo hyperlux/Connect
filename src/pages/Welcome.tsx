@@ -51,29 +51,44 @@ export default function Welcome() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to dashboard if user is authenticated
-    if (isAuthenticated()) {
-      navigate('/app/dashboard', { replace: true });
-      return;
-    }
+    // Client-side execution only
+    if (typeof window === 'undefined') return;
 
-    // Override layout styles when component mounts
+    // Get root element for style overrides
     const root = document.getElementById('root');
+    
+    // Initialize auth check
+    let authCheckTimeout: number;
+    
+    const performAuthCheck = () => {
+      // Check if auth state has initialized
+      const isAuthInitialized = typeof isAuthenticated === 'function';
+      
+      if (isAuthInitialized && isAuthenticated()) {
+        navigate('/app/dashboard', { replace: true });
+      }
+    };
+
+    // Schedule auth check with increased delay for production
+    authCheckTimeout = setTimeout(performAuthCheck, 300);
+
+    // Apply welcome page layout overrides
     if (root) {
       root.style.display = 'block';
       root.style.width = '100%';
       root.style.gridTemplateColumns = 'none';
     }
 
-    // Cleanup when component unmounts
     return () => {
+      // Cleanup styles
       if (root) {
         root.style.display = '';
         root.style.width = '';
         root.style.gridTemplateColumns = '';
       }
+      clearTimeout(authCheckTimeout);
     };
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate]); // Ensure effect runs on auth state changes
 
   useEffect(() => {
     const timer = setInterval(() => {
