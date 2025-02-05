@@ -13,9 +13,9 @@ router.get('/', async (req, res) => {
 
     // If both start and end dates are provided, use them for filtering
     if (startDate && endDate) {
-      whereCondition.startDate = {
-        gte: new Date(startDate),
-        lte: new Date(endDate)
+      whereCondition.date = {
+         gte: new Date(startDate),
+         lte: new Date(endDate)
       };
     } else {
       // Default to current week if no dates provided
@@ -25,15 +25,15 @@ router.get('/', async (req, res) => {
       const endOfWeek = new Date(today);
       endOfWeek.setDate(today.getDate() + 7);
 
-      whereCondition.startDate = {
-        gte: today,
-        lt: endOfWeek
+      whereCondition.date = {
+         gte: today,
+         lt: endOfWeek
       };
     }
 
     const events = await prisma.event.findMany({
       where: whereCondition,
-      orderBy: { startDate: 'asc' }
+      orderBy: { date: 'asc' }
     });
 
     res.json(events);

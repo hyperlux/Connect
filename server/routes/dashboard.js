@@ -26,7 +26,7 @@ router.get('/stats', async (req, res) => {
     
     const upcomingEvents = await prisma.event.count({
       where: {
-        startDate: {
+        date: {
           gte: today,
           lte: nextWeek
         }
@@ -44,9 +44,6 @@ router.get('/stats', async (req, res) => {
 
     // Get count of active city services
     const cityServices = await prisma.service.count({
-      where: {
-        status: 'ACTIVE'
-      }
     });
 
     res.json({

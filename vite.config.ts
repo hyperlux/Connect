@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
   const isProd = mode === 'production';
 
   return {
-    base: isProd ? 'https://auroville.social/' : '/',
+    base: '/',
     plugins: [
       react(),
       VitePWA({

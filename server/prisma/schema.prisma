@@ -22,6 +22,7 @@ model User {
   verificationToken String?
   profilePicture    String?
   bio               String?
+  lastLoginAt       DateTime?
   cityServices      CityService[]
   commentVotes      CommentVote[]
   events            Event[]         @relation("OrganizedEvents")

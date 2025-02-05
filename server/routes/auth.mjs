@@ -36,9 +36,11 @@ router.post('/login', async (req, res) => {
     const { email, password } = loginSchema.parse(req.body);
 
     console.error('Login attempt for email:', email);
+    console.log('Before prisma.user.findUnique');
     const user = await prisma.user.findUnique({
       where: { email }
     });
+    console.log('After prisma.user.findUnique');
 
     if (!user) {
       console.log('User not found for email:', email);
@@ -61,13 +63,15 @@ router.post('/login', async (req, res) => {
     }
     console.log('Password valid for user:', user.email);
     console.log('Attempting to generate token for user:', user.email);
-
+    console.log('Before prisma.user.update');
     // Update lastLoginAt
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: { lastLoginAt: new Date() }
     });
+    console.log('After prisma.user.update');
 
+    console.log('Before jwt.sign');
     const token = jwt.sign(
       { 
         userId: updatedUser.id, 
