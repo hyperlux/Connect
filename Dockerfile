@@ -7,7 +7,7 @@ ENV NODE_OPTIONS="--max-old-space-size=2048"
 # Set environment variables for build
 ENV NODE_ENV=production
 ENV VITE_NODE_ENV=production
-ENV VITE_FRONTEND_URL=https://auroville.social
+# ENV VITE_FRONTEND_URL=https://auroville.social
 ENV npm_config_cache=/tmp/npm-cache
 
 WORKDIR /app/frontend
@@ -110,9 +110,6 @@ COPY server/middleware ./middleware
 COPY server/routes ./routes
 COPY server/prisma ./prisma
 
-# Ensure correct file extensions for ES modules
-RUN find . -name "*.cjs" -exec sh -c 'mv "$1" "${1%.cjs}.js"' _ {} \;
-
 # Stage 3: Backend server
 FROM node:20-alpine AS app
 
@@ -121,16 +118,18 @@ ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 # Install PM2, curl, and required build tools
-RUN apk add --no-cache python3 make g++ curl netcat-openbsd && \
+RUN apk add --no-cache python3 make g++ curl netcat-openbsd dos2unix bash && \
     npm install -g pm2 prisma
 
 # Create non-root user
 RUN addgroup -g 1001 appuser && \
-    adduser -u 1001 -G appuser -s /bin/sh -D appuser
+    adduser -u 1001 -G appuser -s /bin/bash -D appuser
 
 WORKDIR /app/server
 COPY --from=server-builder /app/server .
-COPY ecosystem.config.cjs .
+
+# Copy and rename ecosystem config
+COPY ecosystem.config.cjs ./ecosystem.config.cjs
 
 # Install production dependencies and set permissions
 RUN npm install && \
@@ -141,18 +140,20 @@ RUN npm install && \
     chown -R appuser:appuser /app/server && \
     chmod -R 775 /app/server/logs
 
-# Copy and setup startup script
+# Copy and setup startup script with debug output
 COPY server/start.sh /app/server/
-RUN chmod +x /app/server/start.sh && \
-    chown appuser:appuser /app/server/start.sh
+RUN dos2unix /app/server/start.sh && \
+    chmod +x /app/server/start.sh && \
+    chown appuser:appuser /app/server/start.sh && \
+    echo "Verifying start.sh:" && \
+    ls -la /app/server/start.sh && \
+    cat /app/server/start.sh
 
 # Switch to non-root user
 USER appuser
 
-# Expose port
-EXPOSE 5000
-
-# Use the startup script as the entry point
+# Add debug command to show file existence and permissions at runtime
+ENTRYPOINT ["/bin/bash"]
 CMD ["/app/server/start.sh"]
 
 # Stage 4: Nginx server

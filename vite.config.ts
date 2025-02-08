@@ -8,7 +8,7 @@ import cssnano from 'cssnano';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const apiUrl = env.VITE_API_URL || 'https://auroville.social/api';
+  const apiUrl = env.VITE_API_URL || 'http://localhost:5000/api';
   const isProd = mode === 'production';
 
   return {

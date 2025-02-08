@@ -1,10 +1,10 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
 import { dirname } from 'path';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler.js';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
@@ -16,9 +16,9 @@ import { dashboardRouter } from './routes/dashboard.js';
 import winston from 'winston';
 import fs from 'fs';
 
-// Load environment variables from parent directory's .env
-console.log('Loading environment variables from .env');
-dotenv.config({ path: path.join(dirname(fileURLToPath(import.meta.url)), '../.env') });
+// Load environment variables from the server directory's .env
+console.log('Loading environment variables');
+dotenv.config({ path: path.join(dirname(fileURLToPath(import.meta.url)), '.env') });
 
 // Initialize logger
 const logger = winston.createLogger({
@@ -32,10 +32,32 @@ const logger = winston.createLogger({
 
 // Load configuration based on environment
 let config;
-if (process.env.NODE_ENV === 'production') {
-  config = await import('./config/production.mjs');
-} else {
-  config = await import('./config/development.mjs');
+try {
+  if (process.env.NODE_ENV === 'production') {
+    config = await import('./config/production.mjs');
+  } else {
+    config = await import('./config/development.mjs');
+  }
+} catch (error) {
+  logger.error('Failed to load configuration:', error);
+  process.exit(1);
+}
+
+// Fallback configuration if import fails
+if (!config) {
+  config = {
+    security: {
+      timeWindow: 15 * 60 * 1000, // 15 minutes
+      maxRequests: 100
+    },
+    corsConfig: {
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true
+    },
+    port: process.env.PORT || 5000
+  };
 }
 
 const app = express();

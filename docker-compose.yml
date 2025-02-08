@@ -28,18 +28,19 @@ services:
       target: app
     container_name: auroville_app
     depends_on:
-      db:
-        condition: service_healthy
+          - db
     environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - NODE_ENV=${NODE_ENV}
-      - NODE_OPTIONS=${NODE_OPTIONS}
-      - JWT_SECRET=${JWT_SECRET}
-      - SMTP_SERVER=${SMTP_SERVER}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USERNAME=${SMTP_USERNAME}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - SMTP_AUTH=${SMTP_AUTH}
+          DATABASE_URL: ${DATABASE_URL}
+          NODE_ENV: ${NODE_ENV}
+          HOST: ${HOST}
+          PORT: ${PORT}
+          NODE_OPTIONS: ${NODE_OPTIONS}
+          JWT_SECRET: ${JWT_SECRET}
+          SMTP_SERVER: ${SMTP_SERVER}
+          SMTP_PORT: ${SMTP_PORT}
+          SMTP_USERNAME: ${SMTP_USERNAME}
+          SMTP_PASSWORD: ${SMTP_PASSWORD}
+          SMTP_AUTH: ${SMTP_AUTH}
     volumes:
       - ./logs:/app/server/logs
     networks:
@@ -86,6 +87,8 @@ volumes:
   postgres_data:
   static_assets:
     driver: local
+  letsencrypt:
+  letsencrypt_data:
 
 networks:
   auroville_network:

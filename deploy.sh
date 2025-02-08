@@ -44,7 +44,7 @@ docker system prune -f
 
 # Build the images
 echo "Building Docker images..."
-docker-compose build --no-cache
+docker-compose build --no-cache --force-rm
 
 # Stop existing containers
 echo "Stopping existing containers..."

@@ -7,7 +7,7 @@ export const environment = {
     ? 'https://api.auroville.social/api'
     : window.location.hostname === 'localhost'
       ? '/api'  // Use relative path to leverage Vite's proxy
-      : 'https://api.auroville.social/api',
+      : 'http://64.227.152.147/api',  // Development server IP
   FRONTEND_URL: isProd
     ? 'https://auroville.social'
     : window.location.hostname === 'localhost'

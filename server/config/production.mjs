@@ -2,6 +2,7 @@ const corsConfig = {
   origin: [
     'https://auroville.social',
     'https://www.auroville.social',
+    'https://api.auroville.social',
     process.env.NODE_ENV === 'development' && 'http://localhost:3000'
   ].filter(Boolean),
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
