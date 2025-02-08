@@ -1,9 +1,9 @@
-# Auroville Connect
+# Connect
 
-A community platform for Auroville residents to connect, share information, and engage in discussions.
+A community platform for residents to connect, share information, and engage in discussions.
 
-![Auroville Connect Dashboard](dashboard.png)
-*The Auroville Connect dashboard showing community events, announcements, and forum posts*
+![Connect Dashboard](dashboard.png)
+*The Connect dashboard showing community events, announcements, and forum posts*
 
 ## Features
 
