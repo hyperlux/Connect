@@ -18,44 +18,24 @@ const Welcome = lazy(() => import('./pages/Welcome')); // Import Welcome page
 
 // Authentication Wrapper Component
 const PrivateRoute: React.FC = () => {
-  const { isAuthenticated, isLoading, getCurrentUser } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  // Enhanced logging for authentication checks
-  console.log('AuthenticatedLayout rendering');
-  
-  // Check for loading state
   if (isLoading) {
-    console.log('Authentication still loading');
     return <LoadingSpinner />;
   }
 
-  // Perform detailed authentication check
-  const authenticated = isAuthenticated();
-  const user = getCurrentUser();
-
-  console.log('AuthenticatedLayout Auth Check:', {
-    authenticated,
-    user: user ? { 
-      id: user.id, 
-      email: user.email, 
-      role: user.role 
-    } : null
-  });
-
-  // Conditional rendering based on authentication status
-  if (authenticated && user) {
+  if (isAuthenticated()) {
     return <Outlet />;
   } else {
-    console.log('Not authenticated in AuthenticatedLayout, redirecting to login');
     return (
-      <Navigate 
-        to="/login" 
-        state={{ 
-          from: location, 
-          reason: 'Not authenticated' 
-        }} 
-        replace 
+      <Navigate
+        to="/login"
+        state={{
+          from: location,
+          reason: 'Not authenticated'
+        }}
+        replace
       />
     );
   }
@@ -63,37 +43,20 @@ const PrivateRoute: React.FC = () => {
 
 // Public Route Wrapper to prevent authenticated users from accessing login/register pages
 const PublicRoute: React.FC = () => {
-  const { isAuthenticated, isLoading, getCurrentUser } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
-  // Check for loading state
   if (isLoading) {
-    console.log('Authentication still loading');
     return <LoadingSpinner />;
   }
 
-  // Perform detailed authentication check
-  const authenticated = isAuthenticated();
-  const user = getCurrentUser();
-
-  console.log('PublicRoute Auth Check:', {
-    authenticated,
-    user: user ? { 
-      id: user.id, 
-      email: user.email, 
-      role: user.role 
-    } : null
-  });
-
-  // Conditional rendering based on authentication status
-  if (!authenticated || !user) {
+  if (!isAuthenticated()) {
     return <Outlet />;
   } else {
-    console.log('Already authenticated, redirecting to dashboard');
     return (
-      <Navigate 
-        to={location.state?.from?.pathname || "/dashboard"} 
-        replace 
+      <Navigate
+        to={location.state?.from?.pathname || "/dashboard"}
+        replace
       />
     );
   }

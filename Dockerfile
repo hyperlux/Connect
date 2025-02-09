@@ -92,8 +92,8 @@ COPY server/package-lock.json ./
 COPY prisma/schema.prisma ./prisma/
 
 # Install dependencies and generate Prisma client without database connection
-RUN npm install && \
-    npm install -g prisma && \
+RUN npm install -g prisma && \
+    npm install && \
     npx prisma generate && \
     ls -la node_modules/.prisma/client && \
     node -e "require('@prisma/client')" && \

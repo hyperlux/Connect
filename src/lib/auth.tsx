@@ -128,10 +128,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     initializeAuth();
-
-    const intervalId = setInterval(initializeAuth, 15 * 60 * 1000);
-
-    return () => clearInterval(intervalId);
   }, []);
 
   const login = async (credentials: LoginCredentials) => {
@@ -160,25 +156,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return response.data;
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Login failed';
-      
-      switch (err.response?.status) {
-        case 401:
-          setError('Invalid email or password');
-          break;
-        case 403:
-          if (err.response?.data?.needsVerification) {
-            setError('Please verify your email before logging in');
-          } else {
-            setError('Account is locked or disabled');
-          }
-          break;
-        case 500:
-          setError('Server error. Please try again later.');
-          break;
-        default:
-          setError(errorMessage);
-      }
-
+      setError(errorMessage);
       setIsAuthenticatedState(false);
       throw err;
     } finally {
@@ -218,11 +196,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       return response.data;
-    } catch (err: any) {
+   } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Registration failed';
       setError(errorMessage);
       setIsAuthenticatedState(false);
-      throw new Error(errorMessage);
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -241,7 +219,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Profile update failed';
       setError(errorMessage);
-      throw new Error(errorMessage);
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -260,15 +238,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Profile picture upload failed';
       setError(errorMessage);
-      throw new Error(errorMessage);
+      throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const isAuthenticated = () => {
-    return isAuthenticatedState;
-  };
+  const isAuthenticated = () => isAuthenticatedState;
 
   const contextValue: AuthContextType = {
     user,

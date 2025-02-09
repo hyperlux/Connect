@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import ServiceWorkerInitializer from './serviceWorkerRegistration'
 
 // Import Tailwind styles
 import './index.css'
@@ -25,7 +24,6 @@ const root = document.getElementById('root')!;
 root.innerHTML = ''; // Clear any existing content
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <ServiceWorkerInitializer />
     <App />
   </React.StrictMode>
 )

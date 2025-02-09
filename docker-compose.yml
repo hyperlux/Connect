@@ -85,8 +85,6 @@ services:
 
 volumes:
   postgres_data:
-  static_assets:
-    driver: local
   letsencrypt:
   letsencrypt_data:
 

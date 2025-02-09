@@ -8,22 +8,6 @@ import { z } from 'zod';
 
 const router = express.Router();
 
-// CORS and preflight handling
-router.options('*', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-Custom-Header, Accept, Cache-Control');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.sendStatus(204);
-});
-
-router.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-Custom-Header, Accept, Cache-Control');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
