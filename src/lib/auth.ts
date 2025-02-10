@@ -1,4 +1,4 @@
-import { api } from './api';
+import api from './api';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -239,5 +239,3 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return children;
 };
-
-export { api };

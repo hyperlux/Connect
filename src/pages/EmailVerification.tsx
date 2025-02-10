@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { api } from '../lib/api';
+import api from '../lib/api';
 
 export default function EmailVerification() {
   const [searchParams] = useSearchParams();

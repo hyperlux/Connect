@@ -10,7 +10,8 @@ const corsOptions = {
     'http://localhost:4173', 
     'http://localhost:5173', 
     'http://64.227.152.147:4173', 
-    'http://64.227.152.147'
+    'http://64.227.152.147',
+    'https://auroville.social'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

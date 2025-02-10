@@ -20,7 +20,7 @@ COPY package*.json ./
 COPY vite.config.ts ./
 COPY index.html ./
 COPY tsconfig*.json ./
-COPY postcss.config.js ./
+COPY postcss.config.cjs ./
 COPY tailwind.config.js ./
 
 # Install all dependencies in one command
@@ -31,10 +31,16 @@ RUN npm cache clean --force && \
 COPY src ./src
 COPY public ./public
 
+# Explicitly create dist directory
+RUN mkdir -p dist
+
 # Build the frontend with comprehensive error checking and logging
 RUN set -e && \
     echo "Building frontend..." && \
-    NODE_ENV=production npm run build && \
+    NODE_ENV=production \
+    VITE_API_URL=${VITE_API_URL:-"https://api.example.com"} \
+    VITE_FRONTEND_URL=${VITE_FRONTEND_URL:-"https://frontend.example.com"} \
+    npm run build && \
     echo "Build completed successfully" && \
     echo "Build output:" && \
     ls -la dist && \

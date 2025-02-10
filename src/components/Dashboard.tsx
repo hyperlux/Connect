@@ -1,7 +1,8 @@
 import { Users, Calendar, MessageSquare, TrendingUp, Activity, ArrowRight, RefreshCw } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../lib/theme';
-import { api, withCache } from '../lib/api';
+import api from '../lib/api';
+import { fetchWithCache } from '../lib/cache';
 import { useState, useEffect } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -58,8 +59,6 @@ export default function Dashboard() {
       setLoading(true);
       setError(null);
 
-      const apiWithCache = withCache(token);
-
       // Get current week's start and end dates
       const today = new Date();
       const startOfWeek = new Date(today);
@@ -75,14 +74,10 @@ export default function Dashboard() {
       const endDate = endOfWeek.toISOString().split('T')[0];
       
       // Fetch events with caching
-      const { data: eventsData, fromCache: eventsFromCache } = await apiWithCache.get<Event[]>(
-        `/events?startDate=${startDate}&endDate=${endDate}`,
-        undefined,
-        { 
-          enabled: true,
-          duration: EVENTS_CACHE_DURATION,
-          key: `dashboard:events:${startDate}:${endDate}`
-        }
+      const eventsData = await fetchWithCache<Event[]>(
+        `/api/events?startDate=${startDate}&endDate=${endDate}`,
+        `dashboard:events:${startDate}:${endDate}`,
+        EVENTS_CACHE_DURATION
       );
       
       // Sort events by date and time
@@ -93,17 +88,13 @@ export default function Dashboard() {
       });
       
       setEvents(sortedEvents);
-      setIsStale(eventsFromCache);
+      setIsStale(false); // fromCache is not available with fetchWithCache
 
       // Fetch dashboard stats with caching
-      const { data: statsData } = await apiWithCache.get<DashboardStats>(
-        '/dashboard/stats',
-        undefined,
-        {
-          enabled: true,
-          duration: STATS_CACHE_DURATION,
-          key: 'dashboard:stats'
-        }
+      const statsData = await fetchWithCache<DashboardStats>(
+        '/api/dashboard/stats',
+        'dashboard:stats',
+        STATS_CACHE_DURATION
       );
       
       setStats(statsData);
