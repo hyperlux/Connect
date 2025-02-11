@@ -12,8 +12,12 @@ export const environment = {
     ? 'https://auroville.social'
     : window.location.hostname === 'localhost'
       ? 'http://localhost:5174'
-      : 'https://auroville.social'
+      : 'https://auroville.social',
+  SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL || '',
+  SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 };
 
 export const API_URL = environment.API_URL;
 export const FRONTEND_URL = environment.FRONTEND_URL;
+export const SUPABASE_URL = environment.SUPABASE_URL;
+export const SUPABASE_ANON_KEY = environment.SUPABASE_ANON_KEY;

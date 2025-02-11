@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
 
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
-import { getFromCacheWithExpiry, saveToCache } from './cache';
-import { API_URL } from './environment';
+import { getFromCacheWithExpiry, saveToCache } from './cache.js';
+import { API_URL } from './environment.js';
 
 // Create axios instance with default config
 export const api = axios.create({
@@ -11,6 +11,13 @@ export const api = axios.create({
     'Content-Type': 'application/json'
   },
   timeout: 30000, // Increase timeout for slower connections
+});
+
+// Log configuration details
+console.log('API Configuration:', {
+  baseURL: API_URL,
+  importMetaEnv: import.meta.env,
+  windowLocation: window.location.hostname
 });
 
 // Add a request interceptor

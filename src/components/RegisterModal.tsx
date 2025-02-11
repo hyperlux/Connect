@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { useAuth } from '../lib/auth';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { supabase } from '../lib/supabase.js';
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -9,36 +9,63 @@ interface RegisterModalProps {
   onSwitchToLogin: () => void;
 }
 
-export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModalProps) {
-  const { register: formRegister, handleSubmit, formState: { errors }, reset } = useForm();
-  const { register: registerUser, isLoading, error, clearError } = useAuth();
-  const [submitError, setSubmitError] = useState<string | null>(null);
+interface RegisterFormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
-  React.useEffect(() => {
-    if (error) {
-      setSubmitError(error);
-    }
-  }, [error]);
+export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModalProps) {
+  const { 
+    register: formRegister, 
+    handleSubmit, 
+    formState: { errors }, 
+    reset,
+    watch 
+  } = useForm<RegisterFormData>({
+    mode: 'onBlur'
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (isOpen) {
       reset();
-      clearError();
       setSubmitError(null);
     }
-  }, [isOpen, reset, clearError]);
+  }, [isOpen, reset]);
 
-  const onSubmit = async (data: any) => {
+  const onSubmit: SubmitHandler<RegisterFormData> = async (data) => {
+    // Validate confirm password
+    if (data.password !== data.confirmPassword) {
+      setSubmitError('Passwords do not match');
+      return;
+    }
+
+    setIsLoading(true);
+    setSubmitError(null);
+
     try {
-      setSubmitError(null);
-      await registerUser({
-        name: data.name,
+      const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
-        password: data.password
+        password: data.password,
+        options: {
+          data: {
+            name: data.name
+          },
+          emailRedirectTo: window.location.origin // Optional: set redirect URL
+        }
       });
+
+      if (error) throw error;
+      
+      // Note: Email verification is now handled by Supabase automatically
       onClose();
     } catch (error: any) {
       setSubmitError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -79,7 +106,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
             />
             {errors.name && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.name.message as string}
+                {errors.name.message}
               </p>
             )}
           </div>
@@ -102,7 +129,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.email.message as string}
+                {errors.email.message}
               </p>
             )}
           </div>
@@ -125,7 +152,30 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
             />
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">
-                {errors.password.message as string}
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              {...formRegister('confirmPassword', {
+                required: 'Please confirm your password',
+                validate: (val: string) => {
+                  const password = watch('password');
+                  return password === val || 'Passwords do not match';
+                }
+              })}
+              className="w-full rounded-lg border-gray-300 focus:border-auroville-primary focus:ring-auroville-primary"
+              disabled={isLoading}
+            />
+            {errors.confirmPassword && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.confirmPassword.message}
               </p>
             )}
           </div>
